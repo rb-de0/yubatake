@@ -3,98 +3,92 @@ import FluentProvider
 import HTTP
 
 final class Post: Model {
+    
     let storage = Storage()
-    
-    // MARK: Properties and database keys
-    
-    /// The content of the post
+
+    var title: String
     var content: String
+    var isPublish: Bool
+    var categoryId: Identifier?
+    var userId: Identifier?
     
-    /// The column names for `id` and `content` in the database
     static let idKey = "id"
+    static let titleKey = "title"
     static let contentKey = "content"
+    static let isPublishKey = "is_publish"
 
-    /// Creates a new Post
-    init(content: String) {
+    init(title: String, content: String, isPublish: Bool, category: Category, user: User) {
+        self.title = title
         self.content = content
+        self.isPublish = isPublish
+        self.categoryId = category.id
+        self.userId = user.id
     }
 
-    // MARK: Fluent Serialization
-
-    /// Initializes the Post from the
-    /// database row
     init(row: Row) throws {
+        title = try row.get(Post.titleKey)
         content = try row.get(Post.contentKey)
+        isPublish = try row.get(Post.isPublishKey)
+        categoryId = try row.get(Category.foreignIdKey)
+        userId = try row.get(User.foreignIdKey)
     }
 
-    // Serializes the Post to the database
     func makeRow() throws -> Row {
         var row = Row()
+        try row.set(Post.titleKey, title)
         try row.set(Post.contentKey, content)
+        try row.set(Post.isPublishKey, isPublish)
+        try row.set(Category.foreignIdKey, categoryId)
+        try row.set(User.foreignIdKey, userId)
         return row
     }
 }
 
-// MARK: Fluent Preparation
-
+// MARK: - Preparation
 extension Post: Preparation {
-    /// Prepares a table/collection in the database
-    /// for storing Posts
+    
     static func prepare(_ database: Database) throws {
+        
         try database.create(self) { builder in
             builder.id()
+            builder.string(Post.titleKey)
             builder.string(Post.contentKey)
+            builder.bool(Post.isPublishKey)
+            builder.parent(Category.self)
+            builder.parent(User.self)
         }
     }
 
-    /// Undoes what was done in `prepare`
     static func revert(_ database: Database) throws {
         try database.delete(self)
     }
 }
 
-// MARK: JSON
-
-// How the model converts from / to JSON.
-// For example when:
-//     - Creating a new Post (POST /posts)
-//     - Fetching a post (GET /posts, GET /posts/:id)
-//
-extension Post: JSONConvertible {
-    convenience init(json: JSON) throws {
-        try self.init(
-            content: json.get(Post.contentKey)
-        )
-    }
+// MARK: - JSONRepresentable
+extension Post: JSONRepresentable {
     
     func makeJSON() throws -> JSON {
-        var json = JSON()
-        try json.set(Post.idKey, id)
-        try json.set(Post.contentKey, content)
-        return json
+        var row = try makeRow()
+        try row.set(Post.idKey, id)
+        return JSON(row)
     }
 }
 
-// MARK: HTTP
+// MARK: - ResponseRepresentable
+extension Post: ResponseRepresentable {}
 
-// This allows Post models to be returned
-// directly in route closures
-extension Post: ResponseRepresentable { }
-
-// MARK: Update
-
-// This allows the Post model to be updated
-// dynamically by the request.
-extension Post: Updateable {
-    // Updateable keys are called when `post.update(for: req)` is called.
-    // Add as many updateable keys as you like here.
-    public static var updateableKeys: [UpdateableKey<Post>] {
-        return [
-            // If the request contains a String at key "content"
-            // the setter callback will be called.
-            UpdateableKey(Post.contentKey, String.self) { post, content in
-                post.content = content
-            }
-        ]
+// MARK: - Relation
+extension Post {
+    
+    var category: Parent<Post, Category> {
+        return parent(id: categoryId)
+    }
+    
+    var user: Parent<Post, User> {
+        return parent(id: userId)
+    }
+    
+    var tags: Siblings<Post, Tag, Pivot<Post, Tag>> {
+        return siblings()
     }
 }
