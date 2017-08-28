@@ -1,0 +1,7 @@
+#extend("base/base")
+
+#export("title") {
+  Login
+}
+
+#export("content") {}

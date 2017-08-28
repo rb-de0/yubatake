@@ -1,4 +1,5 @@
 import FluentProvider
+import LeafProvider
 
 extension Config {
     public func setup() throws {
@@ -11,6 +12,7 @@ extension Config {
     
     private func setupProviders() throws {
         try addProvider(FluentProvider.Provider.self)
+        try addProvider(LeafProvider.Provider.self)
     }
     
     private func setupPreparations() throws {
