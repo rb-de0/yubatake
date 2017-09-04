@@ -1,0 +1,11 @@
+#login-form {
+  margin: 16% auto;
+  padding: 8px 16px 16px;
+  width: 480px;
+  background-color: #ffffff;
+}
+
+.login-form-label {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
