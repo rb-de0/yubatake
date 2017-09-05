@@ -3,11 +3,27 @@
 
 <head>
   <title>#import("title")</title>
+  #embed("embeds/resources")
+  #embed("embeds/meta")
+  #import("additional-resources")
 </head>
 
 <body>
-  <div class="content">
-    #import("content")
+
+  <div id="menu">
+    <div id="menu-container">
+      <div id="menu-title">Admin</div>
+      <div id="menu-item-newposts">New</div>
+      <div id="menu-item-container">
+        <div class="menu-item menu-item-selected">Posts</div>
+        <div class="menu-item">Tags</div>
+        <div class="menu-item">Categories</div>
+      </div>
+      <div id="menu-item-logout">Logout</div>
+    </div>
+  </div>
+  <div id="content">
+    Content
   </div>
 </body>
 
