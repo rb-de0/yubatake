@@ -5,8 +5,6 @@
   <title>Login</title>
   #embed("embeds/resources")
   #embed("embeds/meta")
-
-  <link href="/styles/login.css" rel="stylesheet">
 </head>
 
 <body>
@@ -18,11 +16,11 @@
       <div class="field-error">error message</div>
 
       <fieldset class="pure-group">
-        <div class="login-form-label">
+        <div class="form-label">
           <label for="name">ID</label>
         </div>
         <input id="name" class="pure-input-1" type="text" placeholder="ID">
-        <div class="login-form-label">
+        <div class="form-label">
           <label for="password">Password</label>
         </div>
         <input id="password" class="pure-input-1" type="password" placeholder="Password">
