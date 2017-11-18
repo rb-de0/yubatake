@@ -118,6 +118,62 @@ ul {
   color: #222222;
 }
 
+/* --------------------------
+* Public
+* --------------------------
+*/
+
+.post-card {
+  position: relative;
+}
+
+.post-card-content {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.post-card-title {
+  padding: 8px;
+  height: 24px;
+  font-size: 20px;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.post-card-part-of-content-container {
+  padding: 8px;
+  height: 72px;
+}
+
+.post-card-part-of-content {
+  font-size: 16px;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.post-card-category {
+  padding: 4px 8px;
+  height: 24px;
+  overflow: hidden;
+}
+
+.post-card-tags {
+  padding: 4px 8px;
+  height: 24px;
+  overflow: hidden;
+}
+
+
+
+/* --------------------------
+* Admin
+* --------------------------
+*/
+
 #admin-page-title {
   margin-top: 32px;
   font-size: 28px;
