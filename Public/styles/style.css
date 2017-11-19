@@ -118,6 +118,11 @@ ul {
   color: #222222;
 }
 
+#content-page-title {
+  margin-bottom: 16px;
+  font-size: 28px;
+}
+
 /* --------------------------
 * Public
 * --------------------------

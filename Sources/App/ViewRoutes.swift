@@ -20,5 +20,8 @@ final class ViewRoutes: RouteCollection {
         
         // Public
         builder.get("") { _ in try self.view.make("public/posts") }
+        builder.get("/tag") { _ in try self.view.make("public/posts-in-a-tag") }
+        builder.get("/category") { _ in try self.view.make("public/posts-in-a-category") }
     }
 }
+
