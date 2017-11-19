@@ -1,0 +1,9 @@
+#extend("base/base")
+
+#export("content") {
+  <div id="content-page-title">Title</div>
+  <div id="post-content-header">
+    <div class="post-content-header-content">Category: Programming</div>
+    <div class="post-content-header-content">Tag: iOS, Swift</div>
+  </div>
+}

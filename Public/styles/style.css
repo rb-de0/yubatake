@@ -172,6 +172,13 @@ ul {
   overflow: hidden;
 }
 
+#post-content-header {
+   display: flex;
+}
+
+.post-content-header-content {
+  margin-right: 8px;
+}
 
 
 /* --------------------------
