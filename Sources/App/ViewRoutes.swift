@@ -17,6 +17,9 @@ final class ViewRoutes: RouteCollection {
         builder.get("admin/tags") { _ in try self.view.make("admin/tags") }
         builder.get("admin/categories") { _ in try self.view.make("admin/categories") }
         builder.get("admin/new-post") { _ in try self.view.make("admin/new-post") }
+        builder.get("admin/new-tag") { _ in try self.view.make("admin/new-tag") }
+        builder.get("admin/new-category") { _ in try self.view.make("admin/new-category") }
+        
         
         // Public
         builder.get("") { _ in try self.view.make("public/posts") }

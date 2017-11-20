@@ -21,7 +21,8 @@
     </table>
 
     <div id="admin-table-footer">
-      <div id="delete-button">
+      <div id="admin-edit-button-container">
+        <a class="pure-button" href="/admin/new-category">New</a>
         <a class="pure-button">Delete</a>
       </div>
 
