@@ -119,6 +119,7 @@ ul {
 }
 
 #content-page-title {
+  margin-top: 16px;
   margin-bottom: 16px;
   font-size: 28px;
 }
@@ -237,7 +238,7 @@ ul {
   margin-top: 16px;
 }
 
-#admin-table-footer #admin-edit-button-container{
+#admin-table-footer #admin-edit-button-container {
   float: left;
 }
 
