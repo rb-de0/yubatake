@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>#import("title")</title>
+  #embed("embeds/resources")
+  #embed("embeds/meta")
+</head>
+
+<body>
+
+  <div id="content">
+    #import("content")
+  </div>
+
+  <div id="toggle-menu">
+    <div id="toggle-menu-container">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div id="menu">
+
+    <div class="pure-menu">
+      <div class="pure-menu-heading">Dashboard</div>
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/admin/new-post">NewPost</a>
+        </li>
+        <li class="pure-menu-item pure-menu-selected">
+          <a class="pure-menu-link" href="/admin/posts">Posts</a>
+        </li>
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/admin/tags">Tags</a>
+        </li>
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/admin/categories">Categories</a>
+        </li>
+      </ul>
+
+      <a id="menu-item-logout" class="pure-menu-link" href="/admin/logout">Logout</a>
+    </div>
+  </div>
+
+</body>
+
+</html>

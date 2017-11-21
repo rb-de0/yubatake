@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>#import("title")</title>
+  #embed("embeds/resources")
+  #embed("embeds/meta")
+</head>
+
+<body>
+
+  <div id="content">
+    #import("content")
+  </div>
+
+  <div id="toggle-menu">
+    <div id="toggle-menu-container">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+
+  <div id="menu">
+
+    <div class="pure-menu">
+      <div class="pure-menu-heading">SiteTitle</div>
+    </div>
+  </div>
+
+</body>
+
+</html>

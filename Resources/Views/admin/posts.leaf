@@ -1,0 +1,39 @@
+#extend("base/admin-base")
+
+#export("content") {
+  <div id="admin-page-title">All Posts</div>
+
+  <form id="admin-selectable-form">
+    <table id="admin-table" class="pure-table pure-table-horizontal">
+      <thead id="admin-table-header">
+        <tr>
+          <th id="posts-table-head-checkbox"><input type="checkbox"/></th>
+          <th id="posts-table-head-title">Title</th>
+          <th id="posts-table-head-user">User</th>
+          <th id="posts-table-head-category">Category</th>
+          <th id="posts-table-head-update">Last Update</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td class="posts-table-checkbox"><input type="checkbox"/></td>
+          <td class="posts-table-title">Title</td>
+          <td class="posts-table-user">User</td>
+          <td class="posts-table-category">Category</td>
+          <td class="posts-table-update">Last Update</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div id="admin-table-footer">
+      <div id="delete-button">
+        <a class="pure-button">Delete</a>
+      </div>
+      <div id="page-navigator">
+        <a class="pure-button" href="/">Previous</a>
+        <a class="pure-button" href="/">Next</a>
+      </div>
+    </div>
+  </div>
+}

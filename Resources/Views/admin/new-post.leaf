@@ -1,0 +1,76 @@
+#extend("base/admin-base")
+
+#export("content") {
+  <div id="admin-page-title">New Post</div>
+
+  <form class="pure-form">
+
+    <div class="field-error">error message</div>
+
+    <fieldset class="pure-group">
+      <div class="form-label">
+        <label for="admin-post-title">Title</label>
+      </div>
+      <input id="admin-post-title" class="pure-input-1" type="text" placeholder="Title">
+    </fieldset>
+
+    <fieldset class="pure-group">
+      <div class="pure-u-1-2">
+        <div id="admin-category-container">
+          <div class="admin-supplement-title">
+            Category
+          </div>
+          <div class="admin-supplement-list-container">
+            <ul class="admin-supplement-list">
+              <li>
+                <label for="option-one" class="admin-supplement-category-item pure-radio">
+                  <input id="option-one" name="category" type="radio" value="" checked>
+                  One
+                </label>
+              </li>
+              <li>
+                <label for="option-two" class="admin-supplement-category-item pure-radio">
+                  <input id="option-two" name="category" type="radio" value="">
+                  Two
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="pure-group">
+      <div class="pure-u-1-2">
+        <div id="admin-tag-container">
+          <div class="admin-supplement-title">
+            Tags
+          </div>
+          <input id="admin-tag-text" class="pure-input-1" type="text" placeholder="Tag">
+          <div class="admin-supplement-list-container">
+            <ul class="admin-supplement-list">
+              <li class="admin-supplement-tag-item">Tag1</li>
+              <li class="admin-supplement-tag-item">Tag2</li>
+              <li class="admin-supplement-tag-item">Tag3</li>
+              <li class="admin-supplement-tag-item">Tag4</li>
+              <li class="admin-supplement-tag-item">Tag5</li>
+              <li class="admin-supplement-tag-item">Tag6</li>
+              <li class="admin-supplement-tag-item">Tag7</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="pure-group">
+      <div class="form-label">
+        <label for="admin-post-contents">Contents</label>
+      </div>
+      <textarea id="admin-post-contents" class="pure-input-1" placeholder="Contents" rows="20"></textarea>
+    </fieldset>
+
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">Post</button>
+  </form>
+
+</div>
+}

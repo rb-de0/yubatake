@@ -1,0 +1,340 @@
+/* --------------------------
+* Common
+* --------------------------
+*/
+
+body {
+  font-family: sans-serif;
+  background-color: #f1f1f1;
+}
+
+input[type=checkbox] {
+  height: 16px;
+  width: 16px;
+}
+
+ul {
+  margin: 0px;
+}
+
+.pure-form .pure-group li input {
+  display: inline;
+}
+
+.form-label {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* --------------------------
+* Menu
+* --------------------------
+*/
+
+#menu {
+  background-color: #222222;
+  color: white;
+}
+
+#menu {
+  margin-left: -240px;
+  width: 240px;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  padding-top: 8px;
+}
+
+#menu.open-menu {
+  margin-left: 0;
+}
+
+#menu a {
+  color: #AAAAAA;
+}
+
+#menu a:hover {
+  background-color: #333333;
+}
+
+#menu .pure-menu-heading {
+  padding: 0.5em 0.8em;
+  font-size: 125%;
+  color: #fff;
+}
+
+#menu .pure-menu-selected a {
+  background-color: #555555;
+  color: #fff;
+}
+
+#menu-item-logout {
+  position: absolute;
+  bottom: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --------------------------
+* Toggle Menu
+* --------------------------
+*/
+
+#toggle-menu {
+  position: fixed;
+  display: block;
+  top: 0;
+  left: 0;
+  width: 38px;
+  height: 38px;
+  background-color: #333333;
+  cursor: pointer;
+}
+
+#toggle-menu-container {
+  margin: 12px auto;
+}
+
+#toggle-menu span {
+  display: block;
+  margin: 4px auto;
+  width: 70%;
+  height: 2px;
+  background-color: #fff;
+}
+
+#toggle-menu.open-menu {
+  left: 240px;
+}
+
+/* --------------------------
+* Content
+* --------------------------
+*/
+
+#content {
+  padding: 16px 32px 16px;
+  margin-left: 0px;
+  color: #222222;
+}
+
+#content-page-title {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  font-size: 28px;
+}
+
+/* --------------------------
+* Public
+* --------------------------
+*/
+
+.post-card {
+  position: relative;
+}
+
+.post-card-content {
+  padding: 8px;
+  background-color: #fff;
+}
+
+.post-card-title {
+  padding: 8px;
+  height: 24px;
+  font-size: 20px;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.post-card-part-of-content-container {
+  padding: 8px;
+  height: 72px;
+}
+
+.post-card-part-of-content {
+  font-size: 16px;
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.post-card-category {
+  padding: 4px 8px;
+  height: 24px;
+  overflow: hidden;
+}
+
+.post-card-tags {
+  padding: 4px 8px;
+  height: 24px;
+  overflow: hidden;
+}
+
+#post-content-header {
+   display: flex;
+}
+
+.post-content-header-content {
+  margin-right: 8px;
+}
+
+
+/* --------------------------
+* Admin
+* --------------------------
+*/
+
+#admin-page-title {
+  margin-top: 32px;
+  font-size: 28px;
+}
+
+#admin-table {
+  margin-top: 8px;
+  width: 100%;
+}
+
+#admin-table-header {
+  background-color: #222222;
+  color: #fff;
+}
+
+#posts-table-head-checkbox {
+  width: 5%;
+}
+
+#posts-table-head-user {
+  width: 15%;
+}
+
+#posts-table-head-category {
+  width: 20%;
+}
+
+#posts-table-head-update {
+  width: 20%;
+}
+
+#tags-table-head-checkbox {
+  width: 5%;
+}
+
+#tags-table-head-name {
+  width: 80%;
+}
+
+#categories-table-head-checkbox {
+  width: 5%;
+}
+
+#categories-table-head-name {
+  width: 80%;
+}
+
+#admin-table-footer {
+  margin-top: 16px;
+}
+
+#admin-table-footer #admin-edit-button-container {
+  float: left;
+}
+
+#admin-table-footer .pure-button {
+  background-color: #222222;
+  color: #fff;
+}
+
+#page-navigator {
+  float: right;
+}
+
+#admin-category-container {
+  padding: 0px;
+}
+
+#admin-tag-container {
+  padding: 0px;
+}
+
+.admin-supplement-title {
+  margin: 8px 0px;
+}
+
+.admin-supplement-list-container {
+  padding: 0px;
+  height: 160px;
+  overflow: auto;
+  background-color: #fff;
+}
+
+.admin-supplement-list {
+  list-style: none;
+  padding: 8px;
+}
+
+.admin-supplement-list .admin-supplement-category-item {
+  margin: 2px 0px;
+}
+
+.admin-supplement-list .admin-supplement-category-item  input:first-child:last-child {
+  top: 0px;
+}
+
+.admin-supplement-list .admin-supplement-tag-item {
+  margin: 2px 0px;
+}
+
+.admin-supplement-tag-item {
+  cursor: pointer;
+}
+
+.admin-supplement-tag-item:hover {
+  background-color: #dddddd;
+}
+/* --------------------------
+* Login
+* --------------------------
+*/
+
+#login-form {
+  margin: 16% auto;
+  padding: 8px 16px 16px;
+  width: 480px;
+  background-color: white;
+}
+
+
+/* --------------------------
+* Error
+* --------------------------
+*/
+
+.field-error {
+  color: #ff0000;
+}
+
+/* --------------------------
+* PC
+* --------------------------
+*/
+@media screen and (min-width: 48em) {
+
+  #content {
+    margin-left: 240px;
+  }
+
+  #menu {
+    margin-left: 0;
+  }
+
+  #admin-page-title {
+    margin-top: 0;
+  }
+
+  #toggle-menu {
+    display: none;
+  }
+}
