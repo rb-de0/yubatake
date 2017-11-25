@@ -5,7 +5,6 @@ extension Droplet {
         
         resource("posts", PostController())
         
-        // TODO: Remove
-        try collection(ViewRoutes(view: view))
+        try collection(AdminRoutes.self)
     }
 }

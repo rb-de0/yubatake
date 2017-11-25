@@ -16,6 +16,11 @@ extension Config {
     }
     
     private func setupPreparations() throws {
-        preparations.append(Post.self)
+        preparations = [
+            Post.self,
+            Category.self,
+            Tag.self,
+            User.self
+        ]
     }
 }

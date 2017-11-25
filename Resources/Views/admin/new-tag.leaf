@@ -1,20 +1,19 @@
 #extend("base/admin-base")
 
 #export("content") {
-  <div id="admin-page-title">New Tag</div>
+  <div id="admin-page-title">#if(id) {Edit Tag} ##else() {New Tag}</div>
 
-  <form class="pure-form">
-
+  <form class="pure-form" action="/admin/tags#if(id) {/#(id)/edit}" method="post">
     <div class="field-error">error message</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
         <label for="admin-tag-title">Name</label>
       </div>
-      <input id="admin-tag-title" class="pure-input-1" type="text" placeholder="Title">
+      <input id="admin-tag-title" class="pure-input-1" name="name" value="#(name)" type="text" placeholder="Name">
     </fieldset>
 
-    <button type="submit" class="pure-button pure-input-1 pure-button-primary">Create</button>
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">#if(id) {Update} ##else() {Create}</button>
   </form>
 
 </div>
