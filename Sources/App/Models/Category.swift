@@ -11,10 +11,10 @@ final class Category: Model {
     static let idKey = "id"
     static let nameKey = "name"
     
-    init(name: String) {
-        self.name = name
+    init(request: Request) {
+        name = request.data[Category.nameKey]?.string ?? ""
     }
-    
+
     init(row: Row) throws {
         name = try row.get(Category.nameKey)
     }
@@ -60,5 +60,24 @@ extension Category {
     
     var posts: Children<Category, Post> {
         return children()
+    }
+}
+
+// MARK: - Timestampable
+extension Category: Timestampable {}
+
+// MARK: - Paginatable
+extension Category: Paginatable {}
+
+
+// MARK: - Updateable
+extension Category: Updateable {
+    
+    func update(for req: Request) throws {
+        name = req.data[Category.nameKey]?.string ?? ""
+    }
+    
+    static var updateableKeys: [UpdateableKey<Category>] {
+        return []
     }
 }

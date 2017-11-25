@@ -3,33 +3,42 @@
 #export("content") {
   <div id="admin-page-title">All Categories</div>
 
-  <form id="admin-selectable-form">
+  <form id="admin-selectable-form" action="/admin/categories/delete" method="post">
     <table id="admin-table" class="pure-table pure-table-horizontal">
       <thead id="admin-table-header">
         <tr>
-          <th id="categories-table-head-checkbox"><input type="checkbox"/></th>
+          <th id="categories-table-head-checkbox"><input id="all-checkbox" type="checkbox"/></th>
           <th id="categories-table-head-name">Name</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr>
-          <td class="categories-table-checkbox"><input type="checkbox"/></td>
-          <td class="categories-table-name">Name</td>
-        </tr>
+        #loop(data, "category") {
+          <tr>
+            <td class="tags-table-checkbox">
+              <input class="one-checkbox" type="checkbox" name="categories[]" value="#(category.id)"/>
+            </td>
+            <td class="tags-table-name">#(category.name)</td>
+          </tr>
+        }
       </tbody>
     </table>
 
     <div id="admin-table-footer">
       <div id="admin-edit-button-container">
-        <a class="pure-button" href="/admin/new-category">New</a>
-        <a class="pure-button">Delete</a>
+        <a class="pure-button" href="/admin/categories/create">New</a>
+        <button type="submit" class="pure-button">Delete</button>
       </div>
 
       <div id="page-navigator">
-        <a class="pure-button" href="/">Previous</a>
-        <a class="pure-button" href="/">Next</a>
+        #if(page.position.previous) {
+          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.previous)">Previous</a>
+        }
+        #if(page.position.next) {
+          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
+        }
       </div>
     </div>
+
   </form>
 }

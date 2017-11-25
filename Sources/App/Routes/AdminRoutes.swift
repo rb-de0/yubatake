@@ -7,5 +7,6 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
         let admin = builder.grouped("admin")
         
         admin.editableResource("tags", AdminTagController())
+        admin.editableResource("categories", AdminCategoryController())
     }
 }

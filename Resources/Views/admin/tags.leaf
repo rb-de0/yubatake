@@ -35,7 +35,7 @@
           <a class="pure-button" href="#(request.uri.path)?page=#(page.position.previous)">Previous</a>
         }
         #if(page.position.next) {
-          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Previous</a>
+          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
         }
       </div>
     </div>
