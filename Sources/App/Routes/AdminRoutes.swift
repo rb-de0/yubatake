@@ -8,5 +8,6 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
         
         admin.editableResource("tags", AdminTagController())
         admin.editableResource("categories", AdminCategoryController())
+        admin.editableResource("posts", AdminPostController())
     }
 }

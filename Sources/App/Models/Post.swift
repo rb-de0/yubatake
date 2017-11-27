@@ -4,6 +4,17 @@ import HTTP
 
 final class Post: Model {
     
+    static let idKey = "id"
+    static let titleKey = "title"
+    static let contentKey = "content"
+    static let isPublishKey = "is_publish"
+    static let categoryKey = "category"
+    static let userKey = "user"
+    static let tagsKey = "tags"
+    static let tagsStringKey = "tagsString"
+    static let createdAtKey = "createdAt"
+    static let updatedAtKey = "updatedAt"
+    
     let storage = Storage()
 
     var title: String
@@ -12,17 +23,13 @@ final class Post: Model {
     var categoryId: Identifier?
     var userId: Identifier?
     
-    static let idKey = "id"
-    static let titleKey = "title"
-    static let contentKey = "content"
-    static let isPublishKey = "is_publish"
-
-    init(title: String, content: String, isPublish: Bool, category: Category, user: User) {
-        self.title = title
-        self.content = content
-        self.isPublish = isPublish
-        self.categoryId = category.id
-        self.userId = user.id
+    init(request: Request) {
+        title = request.data[Post.titleKey]?.string ?? ""
+        content = request.data[Post.contentKey]?.string ?? ""
+        isPublish = request.data[Post.isPublishKey]?.bool ?? false
+        categoryId = request.data[Post.categoryKey]?.int.map { Identifier($0) }
+        
+        // TODO: User from auth
     }
 
     init(row: Row) throws {
@@ -54,8 +61,8 @@ extension Post: Preparation {
             builder.string(Post.titleKey)
             builder.string(Post.contentKey)
             builder.bool(Post.isPublishKey)
-            builder.parent(Category.self)
-            builder.parent(User.self)
+            builder.parent(Category.self, optional: true)
+            builder.parent(User.self, optional: true)
         }
     }
 
@@ -69,7 +76,14 @@ extension Post: JSONRepresentable {
     
     func makeJSON() throws -> JSON {
         var row = try makeRow()
+        let relatedTags = try tags.all()
         try row.set(Post.idKey, id)
+        try row.set(Post.categoryKey, category.get()?.makeJSON())
+        try row.set(Post.userKey, user.get()?.makeJSON())
+        try row.set(Post.tagsKey, relatedTags.makeJSON())
+        try row.set(Post.tagsStringKey, relatedTags.map { $0.name }.joined(separator: Tag.separator))
+        try row.set(Post.createdAtKey, createdAt)
+        try row.set(Post.updatedAtKey, updatedAt)
         return JSON(row)
     }
 }
@@ -90,5 +104,27 @@ extension Post {
     
     var tags: Siblings<Post, Tag, Pivot<Post, Tag>> {
         return siblings()
+    }
+}
+
+// MARK: - Timestampable
+extension Post: Timestampable {}
+
+// MARK: - Paginatable
+extension Post: Paginatable {}
+
+
+// MARK: - Updateable
+extension Post: Updateable {
+    
+    func update(for req: Request) throws {
+        title = req.data[Post.titleKey]?.string ?? ""
+        content = req.data[Post.contentKey]?.string ?? ""
+        isPublish = req.data[Post.isPublishKey]?.bool ?? false
+        categoryId = req.data[Post.categoryKey]?.int.map { Identifier($0) }
+    }
+    
+    static var updateableKeys: [UpdateableKey<Post>] {
+        return []
     }
 }

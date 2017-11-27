@@ -4,15 +4,20 @@ import HTTP
 
 final class Tag: Model {
     
+    static let idKey = "id"
+    static let nameKey = "name"
+    static let separator = ","
+    
     let storage = Storage()
     
     var name: String
     
-    static let idKey = "id"
-    static let nameKey = "name"
-    
     init(request: Request) {
         name = request.data[Tag.nameKey]?.string ?? ""
+    }
+    
+    init(name: String) {
+        self.name = name
     }
 
     init(row: Row) throws {
@@ -24,6 +29,23 @@ final class Tag: Model {
         try row.set(Category.nameKey, name)
         return row
     }
+    
+    static func tags(from request: Request) throws -> [Tag] {
+        guard let tagString = request.data["tags"]?.string else {
+            return []
+        }
+        
+        let tagStrings = tagString.components(separatedBy: Tag.separator)
+        return tagStrings.map { Tag(name: $0) }
+    }
+    
+    static func notInsertedTags(in tags: [Tag]) throws -> [Tag] {
+        return try tags.filter { try Tag.makeQuery().filter("name" == $0.name).count() == 0 }
+    }
+    
+    static func insertedTags(in tags: [Tag]) throws -> [Tag] {
+        return try tags.flatMap { try Tag.makeQuery().filter("name" == $0.name).first() }
+    }
 }
 
 // MARK: - Preparation
@@ -33,7 +55,7 @@ extension Tag: Preparation {
         
         try database.create(self) { builder in
             builder.id()
-            builder.string(Tag.nameKey)
+            builder.string(Tag.nameKey, unique: true)
         }
     }
     

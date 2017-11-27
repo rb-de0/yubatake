@@ -20,7 +20,8 @@ extension Config {
             Post.self,
             Category.self,
             Tag.self,
-            User.self
+            User.self,
+            Pivot<Post, Tag>.self
         ]
     }
 }

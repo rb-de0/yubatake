@@ -4,12 +4,12 @@ import HTTP
 
 final class Category: Model {
     
+    static let idKey = "id"
+    static let nameKey = "name"
+    
     let storage = Storage()
     
     var name: String
-    
-    static let idKey = "id"
-    static let nameKey = "name"
     
     init(request: Request) {
         name = request.data[Category.nameKey]?.string ?? ""
@@ -33,7 +33,7 @@ extension Category: Preparation {
         
         try database.create(self) { builder in
             builder.id()
-            builder.string(Category.nameKey)
+            builder.string(Category.nameKey, unique: true)
         }
     }
     

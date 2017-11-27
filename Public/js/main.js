@@ -1,15 +1,26 @@
 $(function() {
   $('#toggle-menu').click(function(){
-    $('#menu').toggleClass('open-menu');
-    $('#toggle-menu').toggleClass('open-menu');
-  });
-});
+    $('#menu').toggleClass('open-menu')
+    $('#toggle-menu').toggleClass('open-menu')
+  })
+})
 
 $(document).on('click', '.admin-supplement-tag-item', function (e) {
-  var text = $('#admin-tag-text').val();
-  var space = text === "" ? "" : " ";
-  $('#admin-tag-text').val(text + space + e.target.textContent);
-});
+  var text = $('#admin-tag-text').val()
+  var tags = text.split(",")
+
+  var sameTags = tags.filter(function(tag) {
+    return tag === e.target.textContent
+  })
+
+  if(sameTags.length > 0) {
+    return
+  }
+
+  var lastCharacter = text.substr(text.length - 1)
+  var separator = lastCharacter === "," ? "" : ","
+  $('#admin-tag-text').val(text + separator + e.target.textContent)
+})
 
 $(document).on('click', '.one-checkbox', function (e) {
 
@@ -21,10 +32,10 @@ $(document).on('click', '.one-checkbox', function (e) {
   if (allCheckbox.checked && unCheckedCount > 0) {
     allCheckbox.checked = false
   }
-});
+})
 
 $(document).on('click', '#all-checkbox', function (e) {
   $('.one-checkbox').each(function(index, elem) {
     elem.checked = e.target.checked
   })
-});
+})
