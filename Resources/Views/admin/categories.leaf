@@ -18,7 +18,7 @@
             <td class="tags-table-checkbox">
               <input class="one-checkbox" type="checkbox" name="categories[]" value="#(category.id)"/>
             </td>
-            <td class="tags-table-name">#(category.name)</td>
+            <td class="tags-table-name"><a href="/admin/categories/#(category.id)/edit">#(category.name)</a></td>
           </tr>
         }
       </tbody>
