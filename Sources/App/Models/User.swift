@@ -4,14 +4,15 @@ import HTTP
 
 final class User: Model {
     
+    static let idKey = "id"
+    static let nameKey = "name"
+    static let passwordKey = "password"
+    
     let storage = Storage()
     
     var name: String
     var password: String
     
-    static let idKey = "id"
-    static let nameKey = "name"
-    static let passwordKey = "password"
     
     init(name: String, password: String) {
         self.name = name

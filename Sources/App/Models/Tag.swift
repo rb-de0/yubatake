@@ -4,17 +4,22 @@ import HTTP
 
 final class Tag: Model {
     
+    static let idKey = "id"
+    static let nameKey = "name"
+    static let separator = ","
+    
     let storage = Storage()
     
     var name: String
     
-    static let idKey = "id"
-    static let nameKey = "name"
+    init(request: Request) {
+        name = request.data[Tag.nameKey]?.string ?? ""
+    }
     
     init(name: String) {
         self.name = name
     }
-    
+
     init(row: Row) throws {
         name = try row.get(Category.nameKey)
     }
@@ -23,6 +28,23 @@ final class Tag: Model {
         var row = Row()
         try row.set(Category.nameKey, name)
         return row
+    }
+    
+    static func tags(from request: Request) throws -> [Tag] {
+        guard let tagString = request.data["tags"]?.string else {
+            return []
+        }
+        
+        let tagStrings = tagString.components(separatedBy: Tag.separator)
+        return tagStrings.map { Tag(name: $0) }
+    }
+    
+    static func notInsertedTags(in tags: [Tag]) throws -> [Tag] {
+        return try tags.filter { try Tag.makeQuery().filter("name" == $0.name).count() == 0 }
+    }
+    
+    static func insertedTags(in tags: [Tag]) throws -> [Tag] {
+        return try tags.flatMap { try Tag.makeQuery().filter("name" == $0.name).first() }
     }
 }
 
@@ -33,7 +55,7 @@ extension Tag: Preparation {
         
         try database.create(self) { builder in
             builder.id()
-            builder.string(Tag.nameKey)
+            builder.string(Tag.nameKey, unique: true)
         }
     }
     
@@ -60,5 +82,24 @@ extension Tag {
 
     var posts: Siblings<Tag, Post, Pivot<Tag, Post>> {
         return siblings()
+    }
+}
+
+// MARK: - Timestampable
+extension Tag: Timestampable {}
+
+// MARK: - Paginatable
+extension Tag: Paginatable {}
+
+
+// MARK: - Updateable
+extension Tag: Updateable {
+    
+    func update(for req: Request) throws {
+        name = req.data[Tag.nameKey]?.string ?? ""
+    }
+    
+    static var updateableKeys: [UpdateableKey<Tag>] {
+        return []
     }
 }

@@ -4,17 +4,17 @@ import HTTP
 
 final class Category: Model {
     
+    static let idKey = "id"
+    static let nameKey = "name"
+    
     let storage = Storage()
     
     var name: String
     
-    static let idKey = "id"
-    static let nameKey = "name"
-    
-    init(name: String) {
-        self.name = name
+    init(request: Request) {
+        name = request.data[Category.nameKey]?.string ?? ""
     }
-    
+
     init(row: Row) throws {
         name = try row.get(Category.nameKey)
     }
@@ -33,7 +33,7 @@ extension Category: Preparation {
         
         try database.create(self) { builder in
             builder.id()
-            builder.string(Category.nameKey)
+            builder.string(Category.nameKey, unique: true)
         }
     }
     
@@ -60,5 +60,24 @@ extension Category {
     
     var posts: Children<Category, Post> {
         return children()
+    }
+}
+
+// MARK: - Timestampable
+extension Category: Timestampable {}
+
+// MARK: - Paginatable
+extension Category: Paginatable {}
+
+
+// MARK: - Updateable
+extension Category: Updateable {
+    
+    func update(for req: Request) throws {
+        name = req.data[Category.nameKey]?.string ?? ""
+    }
+    
+    static var updateableKeys: [UpdateableKey<Category>] {
+        return []
     }
 }

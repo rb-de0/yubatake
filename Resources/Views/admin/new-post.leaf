@@ -1,9 +1,9 @@
 #extend("base/admin-base")
 
 #export("content") {
-  <div id="admin-page-title">New Post</div>
+  <div id="admin-page-title">#if(post) {Edit Post} ##else() {New Post}</div>
 
-  <form class="pure-form">
+  <form class="pure-form" action="/admin/posts#if(post) {/#(post.id)/edit}" method="post">
 
     <div class="field-error">error message</div>
 
@@ -11,7 +11,7 @@
       <div class="form-label">
         <label for="admin-post-title">Title</label>
       </div>
-      <input id="admin-post-title" class="pure-input-1" type="text" placeholder="Title">
+      <input id="admin-post-title" class="pure-input-1" type="text" name="title" value="#(post.title)" placeholder="Title">
     </fieldset>
 
     <fieldset class="pure-group">
@@ -23,17 +23,19 @@
           <div class="admin-supplement-list-container">
             <ul class="admin-supplement-list">
               <li>
-                <label for="option-one" class="admin-supplement-category-item pure-radio">
-                  <input id="option-one" name="category" type="radio" value="" checked>
-                  One
+                <label for="non-categorized" class="admin-supplement-category-item pure-radio">
+                  <input id="non-categorized" type="radio" name="category" #if(post.category) {} ##else() {checked}>
+                  NonCategorized
                 </label>
               </li>
-              <li>
-                <label for="option-two" class="admin-supplement-category-item pure-radio">
-                  <input id="option-two" name="category" type="radio" value="">
-                  Two
-                </label>
-              </li>
+              #loop(categories, "category") {
+                <li>
+                  <label for="#(category.name)" class="admin-supplement-category-item pure-radio">
+                    <input id="#(category.name)" type="radio" name="category" value="#(category.id)" #equal(category.id, post.category.id) {checked}>
+                    #(category.name)
+                  </label>
+                </li>
+              }
             </ul>
           </div>
         </div>
@@ -44,18 +46,14 @@
       <div class="pure-u-1-2">
         <div id="admin-tag-container">
           <div class="admin-supplement-title">
-            Tags
+            Tags(comma separated)
           </div>
-          <input id="admin-tag-text" class="pure-input-1" type="text" placeholder="Tag">
+          <input id="admin-tag-text" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
           <div class="admin-supplement-list-container">
             <ul class="admin-supplement-list">
-              <li class="admin-supplement-tag-item">Tag1</li>
-              <li class="admin-supplement-tag-item">Tag2</li>
-              <li class="admin-supplement-tag-item">Tag3</li>
-              <li class="admin-supplement-tag-item">Tag4</li>
-              <li class="admin-supplement-tag-item">Tag5</li>
-              <li class="admin-supplement-tag-item">Tag6</li>
-              <li class="admin-supplement-tag-item">Tag7</li>
+              #loop(tags, "tag") {
+                <li class="admin-supplement-tag-item">#(tag.name)</li>
+              }
             </ul>
           </div>
         </div>
@@ -66,10 +64,12 @@
       <div class="form-label">
         <label for="admin-post-contents">Contents</label>
       </div>
-      <textarea id="admin-post-contents" class="pure-input-1" placeholder="Contents" rows="20"></textarea>
+      <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
 
-    <button type="submit" class="pure-button pure-input-1 pure-button-primary">Post</button>
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">
+      #if(post) {Update} ##else() {Post}
+    </button>
   </form>
 
 </div>

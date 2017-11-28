@@ -3,11 +3,11 @@
 #export("content") {
   <div id="admin-page-title">All Posts</div>
 
-  <form id="admin-selectable-form">
+  <form id="admin-selectable-form" action="/admin/posts/delete" method="post">
     <table id="admin-table" class="pure-table pure-table-horizontal">
       <thead id="admin-table-header">
         <tr>
-          <th id="posts-table-head-checkbox"><input type="checkbox"/></th>
+          <th id="posts-table-head-checkbox"><input id="all-checkbox" type="checkbox"/></th>
           <th id="posts-table-head-title">Title</th>
           <th id="posts-table-head-user">User</th>
           <th id="posts-table-head-category">Category</th>
@@ -16,23 +16,34 @@
       </thead>
 
       <tbody>
-        <tr>
-          <td class="posts-table-checkbox"><input type="checkbox"/></td>
-          <td class="posts-table-title">Title</td>
-          <td class="posts-table-user">User</td>
-          <td class="posts-table-category">Category</td>
-          <td class="posts-table-update">Last Update</td>
-        </tr>
+        #loop(data, "post") {
+          <tr>
+            <td class="posts-table-checkbox">
+              <input class="one-checkbox" type="checkbox" name="posts[]" value="#(post.id)"/>
+            </td>
+            <td class="posts-table-title"><a href="/admin/posts/#(post.id)/edit">#(post.title)</a></td>
+            <td class="posts-table-user">#(post.user.name)</td>
+            <td class="posts-table-category">#(post.category.name)</td>
+            <td class="posts-table-update">#(post.updatedAt)</td>
+          </tr>
+        }
+
       </tbody>
     </table>
 
     <div id="admin-table-footer">
-      <div id="delete-button">
-        <a class="pure-button">Delete</a>
+      <div id="admin-edit-button-container">
+        <a class="pure-button" href="/admin/posts/create">New</a>
+        <button type="submit" class="pure-button">Delete</button>
       </div>
+
       <div id="page-navigator">
-        <a class="pure-button" href="/">Previous</a>
-        <a class="pure-button" href="/">Next</a>
+        #if(page.position.previous) {
+          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.previous)">Previous</a>
+        }
+        #if(page.position.next) {
+          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
+        }
       </div>
     </div>
   </div>
