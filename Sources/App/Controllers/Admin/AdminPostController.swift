@@ -22,14 +22,13 @@ final class AdminPostController: EditableResourceRepresentable {
         )
     }
     
-    
     func index(request: Request) throws -> ResponseRepresentable {
         let page = try Post.makeQuery().paginate(for: request).makeJSON()
-        return try AdminViewCreator.create("admin/posts", context: page, for: request)
+        return try AdminViewContext(menuType: .posts).formView("admin/posts", context: page, for: request)
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
-        return try AdminViewCreator.create("admin/new-post", context: tagsAndCategories(), for: request)
+        return try AdminViewContext(menuType: .newPost).formView("admin/new-post", context: tagsAndCategories(), for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
@@ -57,7 +56,7 @@ final class AdminPostController: EditableResourceRepresentable {
     func edit(request: Request, post: Post) throws -> ResponseRepresentable {
         var context = try tagsAndCategories()
         try context.set("post", post.makeJSON())
-        return try AdminViewCreator.create("admin/new-post", context: context, for: request)
+        return try AdminViewContext(menuType: .posts).formView("admin/new-post", context: context, for: request)
     }
     
     func update(request: Request, post: Post) throws -> ResponseRepresentable {

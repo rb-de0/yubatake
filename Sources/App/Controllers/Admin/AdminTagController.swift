@@ -19,14 +19,13 @@ final class AdminTagController: EditableResourceRepresentable {
         )
     }
 
-
     func index(request: Request) throws -> ResponseRepresentable {
         let page = try Tag.makeQuery().paginate(for: request).makeJSON()
-        return try AdminViewCreator.create("admin/tags", context: page, for: request)
+        return try AdminViewContext(menuType: .tags).formView("admin/tags", context: page, for: request)
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
-        return try AdminViewCreator.create("admin/new-tag", for: request)
+        return try AdminViewContext(menuType: .tags).formView("admin/new-tag", for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
@@ -41,7 +40,7 @@ final class AdminTagController: EditableResourceRepresentable {
     }
     
     func edit(request: Request, tag: Tag) throws -> ResponseRepresentable {
-        return try AdminViewCreator.create("admin/new-tag", context: tag.makeJSON(), for: request)
+        return try AdminViewContext(menuType: .tags).formView("admin/new-tag", context: tag.makeJSON(), for: request)
     }
     
     func update(request: Request, tag: Tag) throws -> ResponseRepresentable {

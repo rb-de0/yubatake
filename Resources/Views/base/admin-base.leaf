@@ -26,16 +26,16 @@
     <div class="pure-menu">
       <div class="pure-menu-heading">Dashboard</div>
       <ul class="pure-menu-list">
-        <li class="pure-menu-item">
+        <li class="pure-menu-item #equal(menuType, "new_posts") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/posts/create">NewPost</a>
         </li>
-        <li class="pure-menu-item pure-menu-selected">
+        <li class="pure-menu-item #equal(menuType, "posts") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/posts">Posts</a>
         </li>
-        <li class="pure-menu-item">
+        <li class="pure-menu-item #equal(menuType, "tags") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/tags">Tags</a>
         </li>
-        <li class="pure-menu-item">
+        <li class="pure-menu-item #equal(menuType, "categories") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/categories">Categories</a>
         </li>
       </ul>

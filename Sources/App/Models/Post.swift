@@ -11,7 +11,7 @@ final class Post: Model {
     static let categoryKey = "category"
     static let userKey = "user"
     static let tagsKey = "tags"
-    static let tagsStringKey = "tagsString"
+    static let tagsStringKey = "tags_string"
     static let createdAtKey = "createdAt"
     static let updatedAtKey = "updatedAt"
     

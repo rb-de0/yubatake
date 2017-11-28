@@ -18,15 +18,14 @@ final class AdminCategoryController: EditableResourceRepresentable {
             destroyKey: "categories"
         )
     }
-    
-    
+
     func index(request: Request) throws -> ResponseRepresentable {
         let page = try Category.makeQuery().paginate(for: request).makeJSON()
-        return try AdminViewCreator.create("admin/categories", context: page, for: request)
+        return try AdminViewContext(menuType: .categories).formView("admin/categories", context: page, for: request)
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
-        return try AdminViewCreator.create("admin/new-category", for: request)
+        return try AdminViewContext(menuType: .categories).formView("admin/new-category", for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
@@ -41,7 +40,7 @@ final class AdminCategoryController: EditableResourceRepresentable {
     }
     
     func edit(request: Request, category: Category) throws -> ResponseRepresentable {
-        return try AdminViewCreator.create("admin/new-category", context: category.makeJSON(), for: request)
+        return try AdminViewContext(menuType: .categories).formView("admin/new-category", context: category.makeJSON(), for: request)
     }
     
     func update(request: Request, category: Category) throws -> ResponseRepresentable {

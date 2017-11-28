@@ -48,7 +48,7 @@
           <div class="admin-supplement-title">
             Tags(comma separated)
           </div>
-          <input id="admin-tag-text" class="pure-input-1" name="tags" value="#(post.tagsString)" type="text" placeholder="Tags">
+          <input id="admin-tag-text" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
           <div class="admin-supplement-list-container">
             <ul class="admin-supplement-list">
               #loop(tags, "tag") {

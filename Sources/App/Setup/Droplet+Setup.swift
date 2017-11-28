@@ -4,8 +4,8 @@ extension Droplet {
     
     public func setup() throws {
         
-        // setup view creator
-        AdminViewCreator.setUp(viewRenderer: view)
+        // setup view context
+        AdminViewContext.setUp(viewRenderer: view)
         
         // setup routing
         try setupRoutes()
