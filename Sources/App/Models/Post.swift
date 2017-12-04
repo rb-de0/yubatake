@@ -7,6 +7,7 @@ final class Post: Model {
     static let idKey = "id"
     static let titleKey = "title"
     static let contentKey = "content"
+    static let partOfContentKey = "part_of_content"
     static let isPublishKey = "is_publish"
     static let categoryKey = "category"
     static let userKey = "user"
@@ -14,6 +15,8 @@ final class Post: Model {
     static let tagsStringKey = "tags_string"
     static let createdAtKey = "createdAt"
     static let updatedAtKey = "updatedAt"
+    
+    static let partOfContentSize = 100
     
     let storage = Storage()
 
@@ -78,6 +81,7 @@ extension Post: JSONRepresentable {
         var row = try makeRow()
         let relatedTags = try tags.all()
         try row.set(Post.idKey, id)
+        try row.set(Post.partOfContentKey, content.take(n: Post.partOfContentSize))
         try row.set(Post.categoryKey, category.get()?.makeJSON())
         try row.set(Post.userKey, user.get()?.makeJSON())
         try row.set(Post.tagsKey, relatedTags.makeJSON())

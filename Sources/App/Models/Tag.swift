@@ -30,6 +30,8 @@ final class Tag: Model {
         return row
     }
     
+    // MARK: - Helper
+    
     static func tags(from request: Request) throws -> [Tag] {
         guard let tagString = request.data["tags"]?.string else {
             return []

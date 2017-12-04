@@ -133,8 +133,14 @@ ul {
   position: relative;
 }
 
+.post-card-container a {
+  text-decoration: none;
+  color: #222222;
+}
+
 .post-card-content {
   padding: 8px;
+  margin: 8px;
   background-color: #fff;
 }
 
