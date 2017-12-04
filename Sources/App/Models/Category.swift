@@ -11,10 +11,14 @@ final class Category: Model {
     
     var name: String
     
+    private init(name: String) {
+        self.name = name
+    }
+    
     init(request: Request) {
         name = request.data[Category.nameKey]?.string ?? ""
     }
-
+    
     init(row: Row) throws {
         name = try row.get(Category.nameKey)
     }
@@ -23,6 +27,10 @@ final class Category: Model {
         var row = Row()
         try row.set(Category.nameKey, name)
         return row
+    }
+    
+    static func makeNonCategorized() -> Category {
+        return Category(name: "NonCategorized")
     }
 }
 

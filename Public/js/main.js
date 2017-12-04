@@ -18,7 +18,7 @@ $(document).on('click', '.admin-supplement-tag-item', function (e) {
   }
 
   var lastCharacter = text.substr(text.length - 1)
-  var separator = lastCharacter === "," ? "" : ","
+  var separator = (lastCharacter === "," || text === "") ? "" : ","
   $('#admin-tag-text').val(text + separator + e.target.textContent)
 })
 
