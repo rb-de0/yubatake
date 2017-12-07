@@ -24,7 +24,7 @@ final class AdminViewContext {
         
         var node = try context.makeNode(in: ViewContext.shared)
         
-        try node.set("menuType", menuType.rawValue)
+        try node.set("menu_type", menuType.rawValue)
         
         return try type(of: self).viewRenderer.make(path, node, for: request)
     }
