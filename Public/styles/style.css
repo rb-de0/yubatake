@@ -75,6 +75,17 @@ ul {
   box-sizing: border-box;
 }
 
+#menu-header-site-name {
+  font-size: 24px;
+  white-space: normal;
+}
+
+#menu-header-site-description {
+  margin-top: 8px;
+  font-size: 14px;
+  white-space: normal;
+}
+
 /* --------------------------
 * Toggle Menu
 * --------------------------

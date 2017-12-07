@@ -19,6 +19,11 @@ final class PublicViewContext {
     }
     
     func formView(_ path: String, context: NodeRepresentable = Node(ViewContext.shared), for request: Request) throws -> View {
-        return try type(of: self).viewRenderer.make(path, context, for: request)
+        
+        var node = try context.makeNode(in: ViewContext.shared)
+        
+        try node.set("site_info", SiteInfo.shared()?.makeJSON())
+        
+        return try type(of: self).viewRenderer.make(path, node, for: request)
     }
 }

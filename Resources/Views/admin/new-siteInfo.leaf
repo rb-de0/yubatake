@@ -1,0 +1,30 @@
+#extend("base/admin-base")
+
+#export("content") {
+  <div id="admin-page-title">Edit SiteInfo</div>
+
+  <form class="pure-form" action="/admin/siteinfo/edit" method="post">
+
+    <div class="field-error">error message</div>
+
+    <fieldset class="pure-group">
+      <div class="form-label">
+        <label for="admin-siteinfo-name">SiteName</label>
+      </div>
+      <input id="admin-siteinfo-name" class="pure-input-1" type="text" name="name" value="#(name)" placeholder="Name">
+    </fieldset>
+
+    <fieldset class="pure-group">
+      <div class="form-label">
+        <label for="admin-siteinfo-description">Description</label>
+      </div>
+      <textarea id="admin-siteinfo-description" class="pure-input-1" name="description" placeholder="Description" rows="8">#(description)</textarea>
+    </fieldset>
+
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">
+      Update
+    </button>
+  </form>
+
+</div>
+}

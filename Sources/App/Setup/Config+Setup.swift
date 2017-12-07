@@ -21,6 +21,7 @@ extension Config {
             Category.self,
             Tag.self,
             User.self,
+            SiteInfo.self,
             Pivot<Post, Tag>.self
         ]
     }
