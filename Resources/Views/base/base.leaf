@@ -24,7 +24,14 @@
   <div id="menu">
 
     <div class="pure-menu">
-      <div class="pure-menu-heading">SiteTitle</div>
+      <div class="pure-menu-heading">
+        #if(site_info) {
+          <div id="menu-header-site-name">#(site_info.name)</div>
+          <div id="menu-header-site-description">#(site_info.description)</div>
+        } ##else() {
+          <div id="menu-header-site-name">SITETITLE</div>
+        }
+      </div>
     </div>
   </div>
 
