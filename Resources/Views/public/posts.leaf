@@ -12,10 +12,9 @@
 
     #loop(data, "post") {
       <div class="pure-u-1 pure-u-lg-1-2 pure-u-xl-1-3 post-card-container">
-        <a href="/posts/#(post.id)">
         <div class="post-card">
           <div class="post-card-content">
-            <div class="post-card-title">#(post.title)</div>
+            <a href="/posts/#(post.id)"><div class="post-card-title">#(post.title)</div></a>
             <div class="post-card-part-of-content-container">
               <div class="post-card-part-of-content">
                 #(post.part_of_content)
@@ -29,11 +28,14 @@
               }
             </div>
             <div class="post-card-tags">
-              Tags: #loop(post.tags, "tag") {<a href="/tags/#(tag.id)/posts">#(tag.name)</a>}
+              Tags: #if(tags) {
+                #loop(post.tags, "tag") {<a href="/tags/#(tag.id)/posts">#(tag.name)</a>}
+              } ##else() {
+                None
+              }
             </div>
           </div>
         </div>
-        </a>
       </div>
     }
 

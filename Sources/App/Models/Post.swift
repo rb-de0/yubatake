@@ -16,6 +16,8 @@ final class Post: Model {
     static let tagsStringKey = "tags_string"
     static let createdAtKey = "createdAt"
     static let updatedAtKey = "updatedAt"
+    static let formattedCreatedAtKey = "formattedCreatedAt"
+    static let formattedUpdatedAtKey = "formattedUpdatedAt"
     
     static let partOfContentSize = 100
     
@@ -96,6 +98,8 @@ extension Post: JSONRepresentable {
         try row.set(Post.tagsStringKey, relatedTags.map { $0.name }.joined(separator: Tag.separator))
         try row.set(Post.createdAtKey, createdAt)
         try row.set(Post.updatedAtKey, updatedAt)
+        try row.set(Post.formattedCreatedAtKey, formattedCreatedAt)
+        try row.set(Post.formattedUpdatedAtKey, formattedUpdatedAt)
         return JSON(row)
     }
 }
