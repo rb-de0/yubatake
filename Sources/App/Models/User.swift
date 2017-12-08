@@ -1,3 +1,4 @@
+import Crypto
 import Vapor
 import FluentProvider
 import HTTP
@@ -68,5 +69,14 @@ extension User {
     
     var posts: Children<User, Post> {
         return children()
+    }
+}
+
+extension User {
+    
+    static func makeRootUser(hash: HashProtocol) throws -> (user: User, rawPassword: String) {
+        let rawPassword = try Crypto.Random.bytes(count: 16).base64Encoded.makeString()
+        let password = try hash.make(rawPassword).makeString()
+        return (User(name: "root", password: password), rawPassword)
     }
 }
