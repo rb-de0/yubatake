@@ -4,7 +4,8 @@
   <div id="admin-page-title">#if(id) {Edit Tag} ##else() {New Tag}</div>
 
   <form class="pure-form" action="/admin/tags#if(id) {/#(id)/edit}" method="post">
-    <div class="field-error">error message</div>
+
+    <div class="field-error">#(request.storage.error_message)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">

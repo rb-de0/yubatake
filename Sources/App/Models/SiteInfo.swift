@@ -1,6 +1,7 @@
-import Vapor
 import FluentProvider
 import HTTP
+import ValidationProvider
+import Vapor
 
 final class SiteInfo: Model {
     
@@ -13,14 +14,22 @@ final class SiteInfo: Model {
     var name: String
     var description: String
     
-    init(request: Request) {
+    init(request: Request) throws {
+        
         name = request.data[SiteInfo.nameKey]?.string ?? ""
         description = request.data[SiteInfo.descriptionKey]?.string ?? ""
+        
+        try validate()
     }
     
     init(row: Row) throws {
         name = try row.get(SiteInfo.nameKey)
         description = try row.get(SiteInfo.descriptionKey)
+    }
+    
+    func validate() throws {
+        try name.validated(by: Count.containedIn(low: 1, high: 32))
+        try description.validated(by: Count.containedIn(low: 1, high: 128))
     }
     
     func makeRow() throws -> Row {
@@ -73,8 +82,11 @@ extension SiteInfo: Timestampable {}
 extension SiteInfo: Updateable {
     
     func update(for req: Request) throws {
+        
         name = req.data[SiteInfo.nameKey]?.string ?? ""
         description = req.data[SiteInfo.descriptionKey]?.string ?? ""
+        
+        try validate()
     }
     
     static var updateableKeys: [UpdateableKey<SiteInfo>] {
