@@ -1,6 +1,7 @@
-import Vapor
 import FluentProvider
 import HTTP
+import ValidationProvider
+import Vapor
 
 final class Category: Model {
     
@@ -15,12 +16,19 @@ final class Category: Model {
         self.name = name
     }
     
-    init(request: Request) {
+    init(request: Request) throws {
+        
         name = request.data[Category.nameKey]?.string ?? ""
+        
+        try validate()
     }
     
     init(row: Row) throws {
         name = try row.get(Category.nameKey)
+    }
+    
+    func validate() throws {
+        try name.validated(by: Count.containedIn(low: 1, high: 32))
     }
     
     func makeRow() throws -> Row {
@@ -82,7 +90,10 @@ extension Category: Paginatable {}
 extension Category: Updateable {
     
     func update(for req: Request) throws {
+        
         name = req.data[Category.nameKey]?.string ?? ""
+        
+        try validate()
     }
     
     static var updateableKeys: [UpdateableKey<Category>] {

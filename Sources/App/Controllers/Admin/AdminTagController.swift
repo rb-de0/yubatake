@@ -1,6 +1,19 @@
 import HTTP
+import Vapor
+import Validation
 
 final class AdminTagController: EditableResourceRepresentable {
+    
+    struct ContextMaker {
+        
+        static func makeIndexView() -> AdminViewContext {
+            return AdminViewContext(path: "admin/tags", menuType: .tags)
+        }
+        
+        static func makeCreateView() -> AdminViewContext {
+            return AdminViewContext(path: "admin/new-tag", menuType: .tags)
+        }
+    }
     
     func makeResource() -> EditableResource<Tag> {
         
@@ -21,37 +34,61 @@ final class AdminTagController: EditableResourceRepresentable {
 
     func index(request: Request) throws -> ResponseRepresentable {
         let page = try Tag.makeQuery().paginate(for: request).makeJSON()
-        return try AdminViewContext(menuType: .tags).formView("admin/tags", context: page, for: request)
+        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
-        return try AdminViewContext(menuType: .tags).formView("admin/new-tag", for: request)
+        return try ContextMaker.makeCreateView().makeResponse(for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
-        let tag = Tag(request: request)
-        try tag.save()
         
-        guard let id = tag.id?.int else {
-            throw Abort.serverError
+        do {
+            
+            let tag = try Tag(request: request)
+            try tag.save()
+            
+            guard let id = tag.id?.int else {
+                throw Abort.serverError
+            }
+            
+            return Response(redirect: "/admin/tags/\(id)/edit")
+            
+        } catch let validationError as ValidationError {
+            
+            return Response(redirect: "/admin/tags/create", withErrorMessage: validationError.reason, for: request)
+            
+        } catch {
+            
+            return Response(redirect: "/admin/tags/create", withErrorMessage: error.localizedDescription, for: request)
         }
-        
-        return Response(redirect: "/admin/tags/\(id)/edit")
     }
     
     func edit(request: Request, tag: Tag) throws -> ResponseRepresentable {
-        return try AdminViewContext(menuType: .tags).formView("admin/new-tag", context: tag.makeJSON(), for: request)
+        return try ContextMaker.makeCreateView().makeResponse(context: tag.makeJSON(), for: request)
     }
     
     func update(request: Request, tag: Tag) throws -> ResponseRepresentable {
-        try tag.update(for: request)
-        try tag.save()
         
         guard let id = tag.id?.int else {
             throw Abort.serverError
         }
         
-        return Response(redirect: "/admin/tags/\(id)/edit")
+        do {
+            
+            try tag.update(for: request)
+            try tag.save()
+        
+            return Response(redirect: "/admin/tags/\(id)/edit")
+            
+        } catch let validationError as ValidationError {
+            
+            return Response(redirect: "/admin/tags/\(id)/edit", withErrorMessage: validationError.reason, for: request)
+            
+        } catch {
+            
+            return Response(redirect: "/admin/tags/\(id)/edit", withErrorMessage: error.localizedDescription, for: request)
+        }
     }
     
     func destroy(request: Request, tags: [Tag]) throws -> ResponseRepresentable {

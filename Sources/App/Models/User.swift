@@ -1,6 +1,7 @@
-import Vapor
 import FluentProvider
 import HTTP
+import ValidationProvider
+import Vapor
 
 final class User: Model {
     
@@ -13,15 +14,22 @@ final class User: Model {
     var name: String
     var password: String
     
-    
-    init(name: String, password: String) {
+    init(name: String, password: String) throws {
+        
         self.name = name
         self.password = password
+        
+        try validate()
     }
     
     init(row: Row) throws {
         name = try row.get(User.nameKey)
         password = try row.get(User.passwordKey)
+    }
+    
+    func validate() throws {
+        try name.validated(by: Count.containedIn(low: 1, high: 32))
+        try password.validated(by: Count.containedIn(low: 1, high: 32))
     }
     
     func makeRow() throws -> Row {
