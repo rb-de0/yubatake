@@ -1,6 +1,6 @@
+import Crypto
 import FluentProvider
 import HTTP
-import ValidationProvider
 import Vapor
 
 final class User: Model {
@@ -14,22 +14,14 @@ final class User: Model {
     var name: String
     var password: String
     
-    init(name: String, password: String) throws {
-        
+    init(name: String, password: String) {
         self.name = name
         self.password = password
-        
-        try validate()
     }
     
     init(row: Row) throws {
         name = try row.get(User.nameKey)
         password = try row.get(User.passwordKey)
-    }
-    
-    func validate() throws {
-        try name.validated(by: Count.containedIn(low: 1, high: 32))
-        try password.validated(by: Count.containedIn(low: 1, high: 32))
     }
     
     func makeRow() throws -> Row {
@@ -76,5 +68,14 @@ extension User {
     
     var posts: Children<User, Post> {
         return children()
+    }
+}
+
+extension User {
+    
+    static func makeRootUser(hash: HashProtocol) throws -> (user: User, rawPassword: String) {
+        let rawPassword = try Crypto.Random.bytes(count: 16).base64Encoded.makeString()
+        let password = try hash.make(rawPassword).makeString()
+        return (User(name: "root", password: password), rawPassword)
     }
 }
