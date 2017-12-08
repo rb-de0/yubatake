@@ -1,5 +1,6 @@
 import FluentProvider
 import LeafProvider
+import MarkdownProvider
 
 extension Config {
     public func setup() throws {
@@ -13,6 +14,7 @@ extension Config {
     private func setupProviders() throws {
         try addProvider(FluentProvider.Provider.self)
         try addProvider(LeafProvider.Provider.self)
+        try addProvider(MarkdownProvider.Provider.self)
     }
     
     private func setupPreparations() throws {

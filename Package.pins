@@ -68,6 +68,12 @@
       "version": "2.0.2"
     },
     {
+      "package": "Kanna",
+      "reason": null,
+      "repositoryURL": "https://github.com/tid-kijyun/Kanna.git",
+      "version": "2.2.1"
+    },
+    {
       "package": "Leaf",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/leaf.git",
@@ -78,6 +84,12 @@
       "reason": null,
       "repositoryURL": "https://github.com/vapor/leaf-provider.git",
       "version": "1.1.0"
+    },
+    {
+      "package": "MarkdownProvider",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor-community/markdown-provider.git",
+      "version": "1.1.1"
     },
     {
       "package": "Multipart",
@@ -116,6 +128,18 @@
       "version": "2.0.1"
     },
     {
+      "package": "SwiftClibxml2",
+      "reason": null,
+      "repositoryURL": "https://github.com/tid-kijyun/SwiftClibxml2.git",
+      "version": "1.0.2"
+    },
+    {
+      "package": "SwiftMarkdown",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor-community/markdown.git",
+      "version": "0.4.0"
+    },
+    {
       "package": "TLS",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/tls.git",
@@ -138,6 +162,12 @@
       "reason": null,
       "repositoryURL": "https://github.com/vapor/vapor.git",
       "version": "2.1.0"
+    },
+    {
+      "package": "cmark",
+      "reason": null,
+      "repositoryURL": "https://github.com/brokenhandsio/cmark-gfm.git",
+      "version": "1.0.0"
     }
   ],
   "version": 1
