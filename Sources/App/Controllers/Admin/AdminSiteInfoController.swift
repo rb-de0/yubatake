@@ -1,7 +1,15 @@
 import HTTP
 import Vapor
+import Validation
 
 final class AdminSiteInfoController: ResourceRepresentable {
+    
+    struct ContextMaker {
+        
+        static func makeCreateView() -> AdminViewContext {
+            return AdminViewContext(path: "admin/new-siteInfo", menuType: .siteInfo)
+        }
+    }
     
     func makeResource() -> Resource<SiteInfo> {
         return Resource(index: index, store: store)
@@ -10,20 +18,31 @@ final class AdminSiteInfoController: ResourceRepresentable {
     func index(request: Request) throws -> ResponseRepresentable {
         
         guard let siteInfo = try SiteInfo.shared() else {
-            return try AdminViewContext(menuType: .siteInfo).formView("admin/new-siteInfo", for: request)
+            return try ContextMaker.makeCreateView().makeResponse(for: request)
         }
         
-        return try AdminViewContext(menuType: .siteInfo).formView("admin/new-siteInfo", context: siteInfo.makeJSON(), for: request)
+        return try ContextMaker.makeCreateView().makeResponse(context: siteInfo.makeJSON(), for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
         
-        let siteInfo = try SiteInfo.shared() ?? SiteInfo(request: request)
+        do {
+            
+            let siteInfo = try SiteInfo.shared() ?? SiteInfo(request: request)
         
-        try siteInfo.update(for: request)
-        try siteInfo.save()
-
-        return Response(redirect: "/admin/siteinfo/edit")
+            try siteInfo.update(for: request)
+            try siteInfo.save()
+            
+            return Response(redirect: "/admin/siteinfo/edit")
+            
+        } catch let validationError as ValidationError {
+            
+            return Response(redirect: "/admin/siteinfo/edit", withErrorMessage: validationError.reason, for: request)
+            
+        } catch {
+            
+            return Response(redirect: "/admin/siteinfo/edit", withErrorMessage: error.localizedDescription, for: request)
+        }
     }
 }
 

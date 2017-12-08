@@ -1,6 +1,7 @@
-import Vapor
 import FluentProvider
 import HTTP
+import ValidationProvider
+import Vapor
 
 final class Post: Model {
     
@@ -26,13 +27,15 @@ final class Post: Model {
     var categoryId: Identifier?
     var userId: Identifier?
     
-    init(request: Request) {
+    init(request: Request) throws {
         title = request.data[Post.titleKey]?.string ?? ""
         content = request.data[Post.contentKey]?.string ?? ""
         isPublish = request.data[Post.isPublishKey]?.bool ?? false
         categoryId = request.data[Post.categoryKey]?.int.map { Identifier($0) }
         
         // TODO: User from auth
+        
+        try validate()
     }
 
     init(row: Row) throws {
@@ -41,6 +44,11 @@ final class Post: Model {
         isPublish = try row.get(Post.isPublishKey)
         categoryId = try row.get(Category.foreignIdKey)
         userId = try row.get(User.foreignIdKey)
+    }
+    
+    func validate() throws {
+        try title.validated(by: Count.containedIn(low: 1, high: 128))
+        try content.validated(by: Count.containedIn(low: 1, high: 8192))
     }
 
     func makeRow() throws -> Row {
@@ -122,10 +130,13 @@ extension Post: Paginatable {}
 extension Post: Updateable {
     
     func update(for req: Request) throws {
+        
         title = req.data[Post.titleKey]?.string ?? ""
         content = req.data[Post.contentKey]?.string ?? ""
         isPublish = req.data[Post.isPublishKey]?.bool ?? false
         categoryId = req.data[Post.categoryKey]?.int.map { Identifier($0) }
+        
+        try validate()
     }
     
     static var updateableKeys: [UpdateableKey<Post>] {

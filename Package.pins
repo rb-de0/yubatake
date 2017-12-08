@@ -134,6 +134,18 @@
       "version": "2.0.4"
     },
     {
+      "package": "Validation",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor/validation.git",
+      "version": "1.1.1"
+    },
+    {
+      "package": "ValidationProvider",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor/validation-provider.git",
+      "version": "1.2.0"
+    },
+    {
       "package": "Vapor",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/vapor.git",

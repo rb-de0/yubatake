@@ -12,19 +12,27 @@ final class AdminViewContext {
     
     // MARK: - Instance
     
-    private let title: String
     private let menuType: AdminMenuType
+    private let path: String
     
-    init(title: String? = nil, menuType: AdminMenuType) {
-        self.title = title ?? ""
+    private var title: String?
+    
+    init(path: String, menuType: AdminMenuType, title: String? = nil) {
+        self.path = path
         self.menuType = menuType
+        self.title = title
     }
     
-    func formView(_ path: String, context: NodeRepresentable = Node(ViewContext.shared), for request: Request) throws -> View {
+    func addTitle(_ title: String) -> Self {
+        self.title = title
+        return self
+    }
+    
+    func makeResponse(context: NodeRepresentable = Node(ViewContext.shared), for request: Request) throws -> View {
         
         var node = try context.makeNode(in: ViewContext.shared)
         
-        try node.set("menuType", menuType.rawValue)
+        try node.set("menu_type", menuType.rawValue)
         
         return try type(of: self).viewRenderer.make(path, node, for: request)
     }

@@ -1,6 +1,7 @@
-import Vapor
 import FluentProvider
 import HTTP
+import ValidationProvider
+import Vapor
 
 final class Tag: Model {
     
@@ -12,8 +13,11 @@ final class Tag: Model {
     
     var name: String
     
-    init(request: Request) {
+    init(request: Request) throws {
+        
         name = request.data[Tag.nameKey]?.string ?? ""
+        
+        try validate()
     }
     
     init(name: String) {
@@ -22,6 +26,10 @@ final class Tag: Model {
 
     init(row: Row) throws {
         name = try row.get(Category.nameKey)
+    }
+    
+    func validate() throws {
+        try name.validated(by: Count.containedIn(low: 1, high: 16))
     }
     
     func makeRow() throws -> Row {
@@ -98,7 +106,10 @@ extension Tag: Paginatable {}
 extension Tag: Updateable {
     
     func update(for req: Request) throws {
+        
         name = req.data[Tag.nameKey]?.string ?? ""
+        
+        try validate()
     }
     
     static var updateableKeys: [UpdateableKey<Tag>] {

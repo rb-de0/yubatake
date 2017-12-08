@@ -1,7 +1,7 @@
 import Crypto
-import Vapor
 import FluentProvider
 import HTTP
+import Vapor
 
 final class User: Model {
     
@@ -13,7 +13,6 @@ final class User: Model {
     
     var name: String
     var password: String
-    
     
     init(name: String, password: String) {
         self.name = name

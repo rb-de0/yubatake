@@ -26,19 +26,19 @@
     <div class="pure-menu">
       <div class="pure-menu-heading">Dashboard</div>
       <ul class="pure-menu-list">
-        <li class="pure-menu-item #equal(menuType, "new_posts") { pure-menu-selected }">
+        <li class="pure-menu-item #equal(menu_type, "new_posts") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/posts/create">NewPost</a>
         </li>
-        <li class="pure-menu-item #equal(menuType, "posts") { pure-menu-selected }">
+        <li class="pure-menu-item #equal(menu_type, "posts") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/posts">Posts</a>
         </li>
-        <li class="pure-menu-item #equal(menuType, "tags") { pure-menu-selected }">
+        <li class="pure-menu-item #equal(menu_type, "tags") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/tags">Tags</a>
         </li>
-        <li class="pure-menu-item #equal(menuType, "categories") { pure-menu-selected }">
+        <li class="pure-menu-item #equal(menu_type, "categories") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/categories">Categories</a>
         </li>
-        <li class="pure-menu-item #equal(menuType, "siteInfo") { pure-menu-selected }">
+        <li class="pure-menu-item #equal(menu_type, "site_info") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/siteinfo/edit">SiteInfo</a>
         </li>
       </ul>

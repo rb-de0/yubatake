@@ -1,9 +1,20 @@
 import FluentProvider
 import HTTP
 import Vapor
-
+import Validation
 
 final class AdminPostController: EditableResourceRepresentable {
+    
+    struct ContextMaker {
+        
+        static func makeIndexView() -> AdminViewContext {
+            return AdminViewContext(path: "admin/posts", menuType: .posts)
+        }
+        
+        static func makeCreateView() -> AdminViewContext {
+            return AdminViewContext(path: "admin/new-post", menuType: .posts)
+        }
+    }
     
     func makeResource() -> EditableResource<Post> {
         
@@ -24,67 +35,90 @@ final class AdminPostController: EditableResourceRepresentable {
     
     func index(request: Request) throws -> ResponseRepresentable {
         let page = try Post.makeQuery().paginate(for: request).makeJSON()
-        return try AdminViewContext(menuType: .posts).formView("admin/posts", context: page, for: request)
+        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
-        return try AdminViewContext(menuType: .newPost).formView("admin/new-post", context: tagsAndCategories(), for: request)
+        return try ContextMaker.makeCreateView().makeResponse(context: tagsAndCategories(), for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
         
-        let post = Post(request: request)
-        try post.save()
-        
-        let tagParams = try Tag.tags(from: request)
-        try Tag.notInsertedTags(in: tagParams).forEach {
-            try $0.save()
+        do {
+            
+            let post = try Post(request: request)
+            try post.save()
+            
+            let tagParams = try Tag.tags(from: request)
+            try Tag.notInsertedTags(in: tagParams).forEach {
+                try $0.save()
+            }
+            let tags = try Tag.insertedTags(in: tagParams)
+            
+            try tags.forEach {
+                try post.tags.add($0)
+            }
+            
+            guard let id = post.id?.int else {
+                throw Abort.serverError
+            }
+            
+            return Response(redirect: "/admin/posts/\(id)/edit")
+            
+        } catch let validationError as ValidationError {
+            
+            return Response(redirect: "/admin/posts/create", withErrorMessage: validationError.reason, for: request)
+            
+        } catch {
+            
+            return Response(redirect: "/admin/posts/create", withErrorMessage: error.localizedDescription, for: request)
         }
-        let tags = try Tag.insertedTags(in: tagParams)
-        
-        try tags.forEach {
-            try post.tags.add($0)
-        }
-        
-        guard let id = post.id?.int else {
-            throw Abort.serverError
-        }
-        
-        return Response(redirect: "/admin/posts/\(id)/edit")
     }
     
     func edit(request: Request, post: Post) throws -> ResponseRepresentable {
         var context = try tagsAndCategories()
         try context.set("post", post.makeJSON())
-        return try AdminViewContext(menuType: .posts).formView("admin/new-post", context: context, for: request)
+        return try ContextMaker.makeCreateView().makeResponse(context: context, for: request)
     }
     
     func update(request: Request, post: Post) throws -> ResponseRepresentable {
-        try post.update(for: request)
-        try post.save()
-        
-        let tagParams = try Tag.tags(from: request)
-        try Tag.notInsertedTags(in: tagParams).forEach {
-            try $0.save()
-        }
-        let tags = try Tag.insertedTags(in: tagParams)
-
-        try Tag.database?.transaction { conn in
-            
-            try post.tags.all().forEach {
-                try Pivot<Post, Tag>.detach(executor: conn, post, $0)
-            }
-
-            try tags.forEach {
-                try Pivot<Post, Tag>.attach(executor: conn, post, $0)
-            }
-        }
         
         guard let id = post.id?.int else {
             throw Abort.serverError
         }
         
-        return Response(redirect: "/admin/posts/\(id)/edit")
+        do {
+            
+            try post.update(for: request)
+            try post.save()
+            
+            let tagParams = try Tag.tags(from: request)
+            try Tag.notInsertedTags(in: tagParams).forEach {
+                try $0.save()
+            }
+            let tags = try Tag.insertedTags(in: tagParams)
+            
+            try Tag.database?.transaction { conn in
+                
+                try post.tags.all().forEach {
+                    try Pivot<Post, Tag>.detach(executor: conn, post, $0)
+                }
+                
+                try tags.forEach {
+                    try Pivot<Post, Tag>.attach(executor: conn, post, $0)
+                }
+            }
+            
+            return Response(redirect: "/admin/posts/\(id)/edit")
+            
+        } catch let validationError as ValidationError {
+            
+            return Response(redirect: "/admin/posts/\(id)/edit", withErrorMessage: validationError.reason, for: request)
+            
+        } catch {
+            
+            return Response(redirect: "/admin/posts/\(id)/edit", withErrorMessage: error.localizedDescription, for: request)
+        }
     }
     
     func destroy(request: Request, posts: [Post]) throws -> ResponseRepresentable {
@@ -96,11 +130,12 @@ final class AdminPostController: EditableResourceRepresentable {
         return Response(redirect: "/admin/posts")
     }
     
+    // MARK: - Private
+    
     private func tagsAndCategories() throws -> JSON {
         let tags = try Tag.all().makeJSON()
         let categories = try Category.all().makeJSON()
         return JSON(["tags": tags, "categories": categories])
-        
     }
 }
 
