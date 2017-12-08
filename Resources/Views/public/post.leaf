@@ -5,5 +5,8 @@
   <div id="post-content-header">
     <div class="post-content-header-content">Category: #(category.name)</div>
     <div class="post-content-header-content">Tag: #(tags_string)</div>
+    <div id="post-content-body">
+      #markdown(content)
+    </div>
   </div>
 }
