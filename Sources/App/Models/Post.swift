@@ -1,5 +1,7 @@
 import FluentProvider
 import HTTP
+import Kanna
+import SwiftMarkdown
 import ValidationProvider
 import Vapor
 
@@ -19,7 +21,7 @@ final class Post: Model {
     static let formattedCreatedAtKey = "formattedCreatedAt"
     static let formattedUpdatedAtKey = "formattedUpdatedAt"
     
-    static let partOfContentSize = 100
+    static let partOfContentSize = 150
     
     let storage = Storage()
 
@@ -91,7 +93,6 @@ extension Post: JSONRepresentable {
         var row = try makeRow()
         let relatedTags = try tags.all()
         try row.set(Post.idKey, id)
-        try row.set(Post.partOfContentKey, content.take(n: Post.partOfContentSize))
         try row.set(Post.categoryKey, category.get()?.makeJSON())
         try row.set(Post.userKey, user.get()?.makeJSON())
         try row.set(Post.tagsKey, relatedTags.makeJSON())
@@ -101,6 +102,17 @@ extension Post: JSONRepresentable {
         try row.set(Post.formattedCreatedAtKey, formattedCreatedAt)
         try row.set(Post.formattedUpdatedAtKey, formattedUpdatedAt)
         return JSON(row)
+    }
+    
+    func makePageJSON() throws -> JSON {
+        
+        let html = try markdownToHTML(content)
+        let doc = HTML(html: html, encoding: .utf8)
+        
+        var json = try makeJSON()
+        try json.set(Post.partOfContentKey, doc?.text?.take(n: Post.partOfContentSize))
+        
+        return json
     }
 }
 
@@ -145,5 +157,27 @@ extension Post: Updateable {
     
     static var updateableKeys: [UpdateableKey<Post>] {
         return []
+    }
+}
+
+// MARK: - Page + Post
+extension Page where E: Post {
+    
+    func makePageJSON() throws -> JSON {
+        var json = try makeJSON()
+        try json.set("data", data.makePageJSON())
+        return json
+    }
+}
+
+extension Sequence where Iterator.Element: Post {
+    
+    func makePageJSON() throws -> JSON {
+        
+        let json: [StructuredData] = try map {
+            try $0.makePageJSON().wrapped
+        }
+        
+        return JSON(.array(json))
     }
 }

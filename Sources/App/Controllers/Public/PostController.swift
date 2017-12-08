@@ -11,7 +11,7 @@ final class PostController: ResourceRepresentable {
     }
     
     func index(request: Request) throws -> ResponseRepresentable {
-        let page = try Post.makeQuery().paginate(for: request).makeJSON()
+        let page = try Post.makeQuery().paginate(for: request).makePageJSON()
         return try PublicViewContext().formView("public/posts", context: page, for: request)
     }
     
