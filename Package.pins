@@ -176,6 +176,12 @@
       "version": "2.4.0"
     },
     {
+      "package": "VaporSecurityHeaders",
+      "reason": null,
+      "repositoryURL": "https://github.com/brokenhandsio/VaporSecurityHeaders.git",
+      "version": "1.1.0"
+    },
+    {
       "package": "cmark",
       "reason": null,
       "repositoryURL": "https://github.com/brokenhandsio/cmark-gfm.git",

@@ -13,6 +13,7 @@ let package = Package(
         .Package(url: "https://github.com/vapor/validation-provider.git", majorVersion: 1),
         .Package(url: "https://github.com/vapor/auth-provider.git", majorVersion: 1),
         .Package(url: "https://github.com/vapor-community/markdown-provider.git", majorVersion: 1),
+        .Package(url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", majorVersion: 1),
         .Package(url: "https://github.com/tid-kijyun/Kanna.git", majorVersion: 2)
     ],
     exclude: [

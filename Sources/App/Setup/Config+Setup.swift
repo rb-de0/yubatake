@@ -1,6 +1,7 @@
 import FluentProvider
 import LeafProvider
 import MarkdownProvider
+import VaporSecurityHeaders
 
 extension Config {
     public func setup() throws {
@@ -8,6 +9,7 @@ extension Config {
         Node.fuzzy = [Row.self, JSON.self, Node.self]
 
         try setupProviders()
+        try setupConfigurable()
         try setupPreparations()
     }
     
@@ -15,6 +17,14 @@ extension Config {
         try addProvider(FluentProvider.Provider.self)
         try addProvider(LeafProvider.Provider.self)
         try addProvider(MarkdownProvider.Provider.self)
+    }
+    
+    private func setupConfigurable() throws {
+        let config = CSPConfig(config: self)
+        let securityHeadersFactory = SecurityHeadersFactory()
+        let cspConfig = ContentSecurityPolicyConfiguration(value: config.makeConfigirationString())
+        securityHeadersFactory.with(contentSecurityPolicy: cspConfig)
+        addConfigurable(middleware: securityHeadersFactory.builder(), name: "security-headers")
     }
     
     private func setupPreparations() throws {
