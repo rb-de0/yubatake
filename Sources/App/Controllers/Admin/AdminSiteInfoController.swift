@@ -16,19 +16,15 @@ final class AdminSiteInfoController: ResourceRepresentable {
     }
 
     func index(request: Request) throws -> ResponseRepresentable {
-        
-        guard let siteInfo = try SiteInfo.shared() else {
-            return try ContextMaker.makeCreateView().makeResponse(for: request)
-        }
-        
+        let siteInfo = try SiteInfo.shared()
         return try ContextMaker.makeCreateView().makeResponse(context: siteInfo.makeJSON(), for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
         
+        let siteInfo = try SiteInfo.shared()
+        
         do {
-            
-            let siteInfo = try SiteInfo.shared() ?? SiteInfo(request: request)
         
             try siteInfo.update(for: request)
             try siteInfo.save()

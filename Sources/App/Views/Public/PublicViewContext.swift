@@ -24,7 +24,7 @@ final class PublicViewContext: ApplicationHelper {
         
         var node = try context.makeNode(in: ViewContext.shared)
         
-        try node.set("site_info", SiteInfo.shared()?.makeJSON())
+        try node.set("site_info", SiteInfo.shared().makeJSON())
         
         return try type(of: self).viewRenderer.make(path, node, for: request)
     }
