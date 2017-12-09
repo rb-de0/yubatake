@@ -13,6 +13,7 @@
 
     <form class="pure-form" action="/login" method="post">
 
+      <input type="hidden" name="csrf-token" value="#(csrf_token)">
       <div class="field-error">#(request.storage.error_message)</div>
 
       <fieldset class="pure-group">

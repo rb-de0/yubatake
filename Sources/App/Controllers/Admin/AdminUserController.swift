@@ -7,7 +7,7 @@ final class AdminUserController: ResourceRepresentable {
     struct ContextMaker {
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-user", menuType: .siteInfo)
+            return AdminViewContext(path: "admin/edit-user", menuType: .userSettings)
         }
     }
     

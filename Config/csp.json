@@ -1,0 +1,10 @@
+{
+    "styleSources": [
+        "http://yui.yahooapis.com",
+        "https://cdnjs.cloudflare.com"
+    ],
+    "scriptSources": [
+        "https://code.jquery.com",
+        "https://cdnjs.cloudflare.com"
+    ]
+}

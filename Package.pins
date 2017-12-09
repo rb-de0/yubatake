@@ -26,6 +26,12 @@
       "version": "1.1.0"
     },
     {
+      "package": "CSRF",
+      "reason": null,
+      "repositoryURL": "https://github.com/vapor-community/CSRF.git",
+      "version": "1.1.0"
+    },
+    {
       "package": "CTLS",
       "reason": null,
       "repositoryURL": "https://github.com/vapor/ctls.git",
@@ -174,6 +180,12 @@
       "reason": null,
       "repositoryURL": "https://github.com/vapor/vapor.git",
       "version": "2.4.0"
+    },
+    {
+      "package": "VaporSecurityHeaders",
+      "reason": null,
+      "repositoryURL": "https://github.com/brokenhandsio/VaporSecurityHeaders.git",
+      "version": "1.1.0"
     },
     {
       "package": "cmark",
