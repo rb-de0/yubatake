@@ -4,15 +4,24 @@ extension Droplet {
     
     public func setup() throws {
         
-        // setup view context
-        PublicViewContext.setUp(viewRenderer: view)
-        AdminViewContext.setUp(viewRenderer: view)
+        // setup application helper
+        setupHalpers([
+            AdminViewContext.self,
+            PublicViewContext.self,
+            HashHelper.self
+        ])
         
-        // create root user at first time
+        // create root user at the first time
         try createRootUserIfNeeded()
         
         // setup routing
         try setupRoutes()
+    }
+    
+    private func setupHalpers(_ helpers: [ApplicationHelper.Type]) {
+        helpers.forEach {
+            $0.setup(self)
+        }
     }
     
     private func createRootUserIfNeeded() throws {
@@ -21,7 +30,7 @@ extension Droplet {
             return
         }
         
-        let (rootUser, rawPassword) = try User.makeRootUser(hash: hash)
+        let (rootUser, rawPassword) = try User.makeRootUser()
         log.info("Root user created.")
         log.info("Username: root")
         log.info("Password: \(rawPassword)")

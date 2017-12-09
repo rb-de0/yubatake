@@ -43,7 +43,7 @@
         </li>
       </ul>
 
-      <a id="menu-item-logout" class="pure-menu-link" href="/admin/logout">Logout</a>
+      <a id="menu-item-logout" class="pure-menu-link" href="/logout">Logout</a>
     </div>
   </div>
 

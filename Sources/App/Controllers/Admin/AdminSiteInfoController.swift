@@ -35,13 +35,9 @@ final class AdminSiteInfoController: ResourceRepresentable {
             
             return Response(redirect: "/admin/siteinfo/edit")
             
-        } catch let validationError as ValidationError {
-            
-            return Response(redirect: "/admin/siteinfo/edit", withErrorMessage: validationError.reason, for: request)
-            
         } catch {
             
-            return Response(redirect: "/admin/siteinfo/edit", withErrorMessage: error.localizedDescription, for: request)
+            return Response(redirect: "/admin/siteinfo/edit", withError: error, for: request)
         }
     }
 }

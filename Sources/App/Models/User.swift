@@ -1,3 +1,4 @@
+import AuthProvider
 import Crypto
 import FluentProvider
 import HTTP
@@ -71,11 +72,37 @@ extension User {
     }
 }
 
+// MARK: - PasswordAuthenticatable
+extension User: PasswordAuthenticatable {
+
+    static var usernameKey: String {
+        return User.nameKey
+    }
+}
+
+// MARK: - SessionPersistable
+extension User: SessionPersistable {}
+
 extension User {
     
-    static func makeRootUser(hash: HashProtocol) throws -> (user: User, rawPassword: String) {
+    static func makeRootUser() throws -> (user: User, rawPassword: String) {
         let rawPassword = try Crypto.Random.bytes(count: 16).base64Encoded.makeString()
-        let password = try hash.make(rawPassword).makeString()
+        let password = try HashHelper.hash.make(rawPassword).makeString()
         return (User(name: "root", password: password), rawPassword)
+    }
+}
+
+extension Request {
+    
+    func userNamePassword() throws -> Password {
+        
+        guard let userName = data[User.usernameKey]?.string,
+            let password = data[User.passwordKey]?.string else {
+            
+            throw Abort(.badRequest)
+        }
+        
+        let hassedPassword = try HashHelper.hash.make(password).makeString()
+        return Password(username: userName, password: hassedPassword)
     }
 }

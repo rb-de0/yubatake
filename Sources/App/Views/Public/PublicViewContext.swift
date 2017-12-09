@@ -1,24 +1,26 @@
 import Vapor
 
-final class PublicViewContext {
+final class PublicViewContext: ApplicationHelper {
     
     // MARK: - Class
     
     private static var viewRenderer: ViewRenderer!
     
-    class func setUp(viewRenderer: ViewRenderer) {
-        self.viewRenderer = viewRenderer
+    static func setup(_ drop: Droplet) {
+        viewRenderer = drop.view
     }
     
     // MARK: - Instance
     
     private let title: String
+    private let path: String
     
-    init(title: String? = nil) {
+    init(path: String, title: String? = nil) {
+        self.path = path
         self.title = title ?? ""
     }
     
-    func formView(_ path: String, context: NodeRepresentable = Node(ViewContext.shared), for request: Request) throws -> View {
+    func makeResponse(context: NodeRepresentable = Node(ViewContext.shared), for request: Request) throws -> View {
         
         var node = try context.makeNode(in: ViewContext.shared)
         
