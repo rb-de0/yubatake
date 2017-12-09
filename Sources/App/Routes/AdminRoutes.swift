@@ -17,5 +17,6 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
         admin.editableResource("categories", AdminCategoryController())
         admin.editableResource("posts", AdminPostController())
         admin.resource("siteinfo/edit", AdminSiteInfoController())
+        admin.resource("user/edit", AdminUserController())
     }
 }

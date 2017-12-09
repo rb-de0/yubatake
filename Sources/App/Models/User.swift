@@ -2,6 +2,7 @@ import AuthProvider
 import Crypto
 import FluentProvider
 import HTTP
+import ValidationProvider
 import Vapor
 
 final class User: Model {
@@ -69,6 +70,25 @@ extension User {
     
     var posts: Children<User, Post> {
         return children()
+    }
+}
+
+// MARK: - Updateable
+extension User: Updateable {
+    
+    func update(for req: Request) throws {
+        
+        let rawPassword = req.data[User.passwordKey]?.string ?? ""
+        
+        name = req.data[User.nameKey]?.string ?? ""
+        password = try HashHelper.hash.make(rawPassword).makeString()
+        
+        try name.validated(by: Count.containedIn(low: 1, high: 32))
+        try rawPassword.validated(by: Count.containedIn(low: 1, high: 32))
+    }
+    
+    static var updateableKeys: [UpdateableKey<User>] {
+        return []
     }
 }
 

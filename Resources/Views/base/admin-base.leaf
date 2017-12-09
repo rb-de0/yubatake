@@ -41,6 +41,9 @@
         <li class="pure-menu-item #equal(menu_type, "site_info") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/siteinfo/edit">SiteInfo</a>
         </li>
+        <li class="pure-menu-item #equal(menu_type, "user") { pure-menu-selected }">
+          <a class="pure-menu-link" href="/admin/user/edit">UserSetting</a>
+        </li>
       </ul>
 
       <a id="menu-item-logout" class="pure-menu-link" href="/logout">Logout</a>

@@ -1,0 +1,27 @@
+#extend("base/admin-base")
+
+#export("content") {
+  <div id="admin-page-title">Edit User</div>
+
+  <form class="pure-form" action="/admin/user/edit" method="post">
+
+    <div class="field-error">#(request.storage.error_message)</div>
+
+    <fieldset class="pure-group">
+      <div class="form-label">
+        <label for="admin-user-name">UserName</label>
+      </div>
+      <input id="admin-user-name" class="pure-input-1" type="text" name="name" value="#(name)" placeholder="Name">
+      <div class="form-label">
+        <label for="admin-user-password">password</label>
+      </div>
+      <input id="admin-user-password" class="pure-input-1" type="password" name="password">
+    </fieldset>
+
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">
+      Update
+    </button>
+  </form>
+
+</div>
+}
