@@ -5,4 +5,5 @@ enum AdminMenuType: String {
     case tags = "tags"
     case categories = "categories"
     case siteInfo = "site_info"
+    case userSettings = "user"
 }

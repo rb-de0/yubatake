@@ -34,7 +34,8 @@
         "date",
         "file",
         "sessions",
-        "security-headers"
+        "security-headers",
+        "csrf"
     ],
 
     "//": "Choose which commands this application can run",

@@ -1,3 +1,4 @@
+import CSRF
 import Vapor
 
 final class AdminViewContext: ApplicationHelper {
@@ -32,6 +33,7 @@ final class AdminViewContext: ApplicationHelper {
         
         var node = try context.makeNode(in: ViewContext.shared)
         
+        try node.set("csrf_token", try CSRF().createToken(from: request))
         try node.set("menu_type", menuType.rawValue)
         
         return try type(of: self).viewRenderer.make(path, node, for: request)

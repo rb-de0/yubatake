@@ -1,3 +1,4 @@
+import CSRF
 import FluentProvider
 import LeafProvider
 import MarkdownProvider
@@ -20,11 +21,19 @@ extension Config {
     }
     
     private func setupConfigurable() throws {
+        
+        // Security Headers
+        
         let config = CSPConfig(config: self)
         let securityHeadersFactory = SecurityHeadersFactory()
         let cspConfig = ContentSecurityPolicyConfiguration(value: config.makeConfigirationString())
         securityHeadersFactory.with(contentSecurityPolicy: cspConfig)
         addConfigurable(middleware: securityHeadersFactory.builder(), name: "security-headers")
+        
+        // CSRF
+        
+        let csrf = CSRF { request in request.data["csrf-token"]?.string ?? "" }
+        addConfigurable(middleware: csrf, name: "csrf")
     }
     
     private func setupPreparations() throws {
