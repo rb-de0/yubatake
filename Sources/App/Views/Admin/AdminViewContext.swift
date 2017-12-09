@@ -1,13 +1,13 @@
 import Vapor
 
-final class AdminViewContext {
+final class AdminViewContext: ApplicationHelper {
     
     // MARK: - Class
     
     private static var viewRenderer: ViewRenderer!
     
-    class func setUp(viewRenderer: ViewRenderer) {
-        self.viewRenderer = viewRenderer
+    static func setup(_ drop: Droplet) {
+        viewRenderer = drop.view
     }
     
     // MARK: - Instance

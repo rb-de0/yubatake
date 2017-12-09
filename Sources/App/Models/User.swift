@@ -1,6 +1,8 @@
+import AuthProvider
 import Crypto
 import FluentProvider
 import HTTP
+import ValidationProvider
 import Vapor
 
 final class User: Model {
@@ -71,11 +73,56 @@ extension User {
     }
 }
 
+// MARK: - Updateable
+extension User: Updateable {
+    
+    func update(for req: Request) throws {
+        
+        let rawPassword = req.data[User.passwordKey]?.string ?? ""
+        
+        name = req.data[User.nameKey]?.string ?? ""
+        password = try HashHelper.hash.make(rawPassword).makeString()
+        
+        try name.validated(by: Count.containedIn(low: 1, high: 32))
+        try rawPassword.validated(by: Count.containedIn(low: 1, high: 32))
+    }
+    
+    static var updateableKeys: [UpdateableKey<User>] {
+        return []
+    }
+}
+
+// MARK: - PasswordAuthenticatable
+extension User: PasswordAuthenticatable {
+
+    static var usernameKey: String {
+        return User.nameKey
+    }
+}
+
+// MARK: - SessionPersistable
+extension User: SessionPersistable {}
+
 extension User {
     
-    static func makeRootUser(hash: HashProtocol) throws -> (user: User, rawPassword: String) {
+    static func makeRootUser() throws -> (user: User, rawPassword: String) {
         let rawPassword = try Crypto.Random.bytes(count: 16).base64Encoded.makeString()
-        let password = try hash.make(rawPassword).makeString()
+        let password = try HashHelper.hash.make(rawPassword).makeString()
         return (User(name: "root", password: password), rawPassword)
+    }
+}
+
+extension Request {
+    
+    func userNamePassword() throws -> Password {
+        
+        guard let userName = data[User.usernameKey]?.string,
+            let password = data[User.passwordKey]?.string else {
+            
+            throw Abort(.badRequest)
+        }
+        
+        let hassedPassword = try HashHelper.hash.make(password).makeString()
+        return Password(username: userName, password: hassedPassword)
     }
 }

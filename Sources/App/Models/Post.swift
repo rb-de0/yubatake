@@ -36,9 +36,7 @@ final class Post: Model {
         content = request.data[Post.contentKey]?.string ?? ""
         isPublish = request.data[Post.isPublishKey]?.bool ?? false
         categoryId = request.data[Post.categoryKey]?.int.map { Identifier($0) }
-        
-        // TODO: User from auth
-        
+        userId = try request.auth.assertAuthenticated(User.self).id
         try validate()
     }
 

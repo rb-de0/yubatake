@@ -54,13 +54,9 @@ final class AdminTagController: EditableResourceRepresentable {
             
             return Response(redirect: "/admin/tags/\(id)/edit")
             
-        } catch let validationError as ValidationError {
-            
-            return Response(redirect: "/admin/tags/create", withErrorMessage: validationError.reason, for: request)
-            
         } catch {
             
-            return Response(redirect: "/admin/tags/create", withErrorMessage: error.localizedDescription, for: request)
+            return Response(redirect: "/admin/tags/create", withError: error, for: request)
         }
     }
     
@@ -81,13 +77,9 @@ final class AdminTagController: EditableResourceRepresentable {
         
             return Response(redirect: "/admin/tags/\(id)/edit")
             
-        } catch let validationError as ValidationError {
-            
-            return Response(redirect: "/admin/tags/\(id)/edit", withErrorMessage: validationError.reason, for: request)
-            
         } catch {
             
-            return Response(redirect: "/admin/tags/\(id)/edit", withErrorMessage: error.localizedDescription, for: request)
+            return Response(redirect: "/admin/tags/\(id)/edit", withError: error, for: request)
         }
     }
     

@@ -52,14 +52,10 @@ final class AdminCategoryController: EditableResourceRepresentable {
             }
         
             return Response(redirect: "/admin/categories/\(id)/edit")
-            
-        } catch let validationError as ValidationError {
-            
-            return Response(redirect: "/admin/categories/create", withErrorMessage: validationError.reason, for: request)
-            
+
         } catch {
             
-            return Response(redirect: "/admin/categories/create", withErrorMessage: error.localizedDescription, for: request)
+            return Response(redirect: "/admin/categories/create", withError: error, for: request)
         }
     }
     
@@ -79,13 +75,9 @@ final class AdminCategoryController: EditableResourceRepresentable {
             
             return Response(redirect: "/admin/categories/\(id)/edit")
             
-        } catch let validationError as ValidationError {
-            
-            return Response(redirect: "/admin/categories/\(id)/edit", withErrorMessage: validationError.reason, for: request)
-            
         } catch {
             
-            return Response(redirect: "/admin/categories/\(id)/edit", withErrorMessage: error.localizedDescription, for: request)
+            return Response(redirect: "/admin/categories/\(id)/edit", withError: error, for: request)
         }
         
     }

@@ -1,8 +1,11 @@
 import Vapor
 
 extension Droplet {
-    func setupRoutes() throws {        
-        try collection(PublicRoutes.self)
-        try collection(AdminRoutes.self)
+    func setupRoutes() throws {
+        
+        let root = grouped(MessageDeliveryMiddleware())
+        
+        try root.collection(PublicRoutes.self)
+        try root.collection(AdminRoutes.self)
     }
 }

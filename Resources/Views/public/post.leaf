@@ -13,7 +13,7 @@
       }
     </div>
     <div class="post-content-header-content">
-      #if(tags) {
+      #if(post.tags) {
         Tag: #loop(post.tags, "tag") {<a href="/tags/#(tag.id)/posts">#(tag.name)</a>}
       }
     </div>

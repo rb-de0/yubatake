@@ -65,13 +65,9 @@ final class AdminPostController: EditableResourceRepresentable {
             
             return Response(redirect: "/admin/posts/\(id)/edit")
             
-        } catch let validationError as ValidationError {
-            
-            return Response(redirect: "/admin/posts/create", withErrorMessage: validationError.reason, for: request)
-            
         } catch {
             
-            return Response(redirect: "/admin/posts/create", withErrorMessage: error.localizedDescription, for: request)
+            return Response(redirect: "/admin/posts/create", withError: error, for: request)
         }
     }
     
@@ -111,13 +107,9 @@ final class AdminPostController: EditableResourceRepresentable {
             
             return Response(redirect: "/admin/posts/\(id)/edit")
             
-        } catch let validationError as ValidationError {
-            
-            return Response(redirect: "/admin/posts/\(id)/edit", withErrorMessage: validationError.reason, for: request)
-            
         } catch {
             
-            return Response(redirect: "/admin/posts/\(id)/edit", withErrorMessage: error.localizedDescription, for: request)
+            return Response(redirect: "/admin/posts/\(id)/edit", withError: error, for: request)
         }
     }
     

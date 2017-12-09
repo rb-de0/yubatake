@@ -22,6 +22,11 @@ final class SiteInfo: Model {
         try validate()
     }
     
+    init(name: String, description: String) {
+        self.name = name
+        self.description = description
+    }
+    
     init(row: Row) throws {
         name = try row.get(SiteInfo.nameKey)
         description = try row.get(SiteInfo.descriptionKey)
@@ -39,8 +44,14 @@ final class SiteInfo: Model {
         return row
     }
     
-    static func shared() throws -> SiteInfo? {
-        return try SiteInfo.find(1)
+    static func shared() throws -> SiteInfo {
+        
+        guard let siteInfo = try SiteInfo.find(1) else {
+            throw Abort(.internalServerError)
+        }
+        
+        return siteInfo
+        
     }
 }
 
