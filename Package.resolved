@@ -38,6 +38,15 @@
         }
       },
       {
+        "package": "CMySQL",
+        "repositoryURL": "https://github.com/vapor/cmysql.git",
+        "state": {
+          "branch": null,
+          "revision": "d931ed6ce52e772cd364fc0da59312440d6eee43",
+          "version": "2.0.2"
+        }
+      },
+      {
         "package": "CSRF",
         "repositoryURL": "https://github.com/vapor-community/CSRF.git",
         "state": {
@@ -173,6 +182,33 @@
         }
       },
       {
+        "package": "MySQL",
+        "repositoryURL": "https://github.com/vapor/mysql.git",
+        "state": {
+          "branch": null,
+          "revision": "22f7cc1cb060f1e749a5d8feebb1803148744975",
+          "version": "2.0.3"
+        }
+      },
+      {
+        "package": "MySQLDriver",
+        "repositoryURL": "https://github.com/vapor/mysql-driver.git",
+        "state": {
+          "branch": null,
+          "revision": "2f6eead84aabb265a4dae3e07083dd1b7eaa262b",
+          "version": "2.0.3"
+        }
+      },
+      {
+        "package": "MySQLProvider",
+        "repositoryURL": "https://github.com/vapor/mysql-provider.git",
+        "state": {
+          "branch": null,
+          "revision": "b32b3ccce7cbe6f76a63dd9cab493ed458a31222",
+          "version": "2.0.0"
+        }
+      },
+      {
         "package": "Node",
         "repositoryURL": "https://github.com/vapor/node.git",
         "state": {
@@ -188,6 +224,24 @@
           "branch": null,
           "revision": "d7c4397d125caba795d14d956efacfe2a27a63d0",
           "version": "1.2.0"
+        }
+      },
+      {
+        "package": "Redis",
+        "repositoryURL": "https://github.com/vapor/redis.git",
+        "state": {
+          "branch": null,
+          "revision": "525df8967447366c77a833a55b985c6c8735307e",
+          "version": "2.1.0"
+        }
+      },
+      {
+        "package": "RedisProvider",
+        "repositoryURL": "https://github.com/vapor/redis-provider.git",
+        "state": {
+          "branch": null,
+          "revision": "a56e2d42f104b460d4138413be3a5c509442de8d",
+          "version": "2.0.0"
         }
       },
       {

@@ -12,6 +12,8 @@ let package = Package(
         .package(url: "https://github.com/vapor/leaf-provider.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/vapor/validation-provider.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/vapor/auth-provider.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/vapor/mysql-provider.git", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/vapor/redis-provider.git", .upToNextMajor(from: "2.0.0")),
         .package(url: "https://github.com/vapor-community/markdown-provider.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/vapor-community/CSRF.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", .upToNextMajor(from: "1.0.0")),
@@ -25,6 +27,8 @@ let package = Package(
             "ValidationProvider",
             "AuthProvider",
             "MarkdownProvider",
+            "MySQLProvider",
+            "RedisProvider",
             "CSRF",
             "VaporSecurityHeaders",
             "Kanna"
