@@ -4,10 +4,10 @@ extension String {
     
     func take(n: Int) -> String{
         
-        if n >= self.characters.count{
+        if n >= self.count {
             return self
         }
         
-        return self.substring(to: self.index(self.startIndex, offsetBy: n))
+        return String(self[..<index(self.startIndex, offsetBy: n)])
     }
 }
