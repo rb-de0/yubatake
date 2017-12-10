@@ -26,7 +26,7 @@
     <div class="pure-menu">
       <div class="pure-menu-heading">
         #if(site_info) {
-          <div id="menu-header-site-name">#(site_info.name)</div>
+          <a href="/"><div id="menu-header-site-name">#(site_info.name)</div></a>
           <div id="menu-header-site-description">#(site_info.description)</div>
         } ##else() {
           <div id="menu-header-site-name">SITETITLE</div>
