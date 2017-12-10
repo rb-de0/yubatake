@@ -1,28 +1,34 @@
+// swift-tools-version:4.0
 import PackageDescription
 
 let package = Package(
     name: "note",
-    targets: [
-        Target(name: "App"),
-        Target(name: "Run", dependencies: ["App"]),
+    products: [
+        .executable(name: "Run", targets: ["Run"])
     ],
     dependencies: [
-        .Package(url: "https://github.com/vapor/vapor.git", majorVersion: 2),
-        .Package(url: "https://github.com/vapor/fluent-provider.git", majorVersion: 1),
-        .Package(url: "https://github.com/vapor/leaf-provider.git", majorVersion: 1),
-        .Package(url: "https://github.com/vapor/validation-provider.git", majorVersion: 1),
-        .Package(url: "https://github.com/vapor/auth-provider.git", majorVersion: 1),
-        .Package(url: "https://github.com/vapor-community/markdown-provider.git", majorVersion: 1),
-        .Package(url: "https://github.com/vapor-community/CSRF.git", majorVersion: 1),
-        .Package(url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", majorVersion: 1),
-        .Package(url: "https://github.com/tid-kijyun/Kanna.git", majorVersion: 2)
+        .package(url: "https://github.com/vapor/vapor.git", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/vapor/fluent-provider.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/vapor/leaf-provider.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/vapor/validation-provider.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/vapor/auth-provider.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/vapor-community/markdown-provider.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/vapor-community/CSRF.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/tid-kijyun/Kanna.git", .upToNextMajor(from: "2.0.0"))
     ],
-    exclude: [
-        "Config",
-        "Database",
-        "Localization",
-        "Public",
-        "Resources"
+    targets: [
+        .target(name: "App", dependencies: [
+            "Vapor",
+            "FluentProvider",
+            "LeafProvider",
+            "ValidationProvider",
+            "AuthProvider",
+            "MarkdownProvider",
+            "CSRF",
+            "VaporSecurityHeaders",
+            "Kanna"
+        ]),
+        .target(name: "Run", dependencies: ["App"])
     ]
 )
-
