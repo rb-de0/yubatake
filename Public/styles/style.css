@@ -50,6 +50,7 @@ ul {
 }
 
 #menu a {
+  text-decoration: none;
   color: #AAAAAA;
 }
 
@@ -66,6 +67,11 @@ ul {
 #menu .pure-menu-selected a {
   background-color: #555555;
   color: #fff;
+}
+
+#menu-header-site-name {
+  text-decoration: none;
+  color: white;
 }
 
 #menu-item-logout {
@@ -190,6 +196,20 @@ ul {
   overflow: hidden;
 }
 
+#public-page-footer #page-navigator {
+  float: left;
+}
+
+#public-page-footer {
+  margin: 8px;
+  padding-bottom: 32px;
+}
+
+#public-page-footer .pure-button {
+  background-color: #222222;
+  color: #fff;
+}
+
 #post-content-title {
   margin-top: 16px;
   margin-bottom: 8px;
@@ -261,6 +281,11 @@ ul {
   width: 100%;
 }
 
+#admin-table a {
+  text-decoration: none;
+  color: #222222;
+}
+
 #admin-table-header {
   background-color: #222222;
   color: #fff;
@@ -311,7 +336,7 @@ ul {
   color: #fff;
 }
 
-#page-navigator {
+#admin-table-footer #page-navigator {
   float: right;
 }
 

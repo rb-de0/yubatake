@@ -4,6 +4,9 @@
   <div id="admin-page-title">All Categories</div>
 
   <form id="admin-selectable-form" action="/admin/categories/delete" method="post">
+
+    <input type="hidden" name="csrf-token" value="#(csrf_token)">
+    
     <table id="admin-table" class="pure-table pure-table-horizontal">
       <thead id="admin-table-header">
         <tr>

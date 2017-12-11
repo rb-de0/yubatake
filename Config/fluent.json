@@ -27,7 +27,7 @@
     "defaultPageKey": "page",
     
     "//": "Default page size if not otherwise specified on models",
-    "defaultPageSize": 10,
+    "defaultPageSize": 12,
 
     "//": "If true, all queries made to the database will be logged.",
     "log": false

@@ -40,4 +40,15 @@
     }
 
   </div>
+
+  <div id="public-page-footer">
+    <div id="page-navigator">
+      #if(page.position.previous) {
+        <a class="pure-button" href="#(request.uri.path)?page=#(page.position.previous)">Previous</a>
+      }
+      #if(page.position.next) {
+        <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
+      }
+    </div>
+  </div>
 }
