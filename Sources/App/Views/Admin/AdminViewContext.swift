@@ -36,7 +36,7 @@ final class AdminViewContext: ApplicationHelper {
         let siteInfo = try SiteInfo.shared()
         try node.set("csrf_token", try CSRF().createToken(from: request))
         try node.set("menu_type", menuType.rawValue)
-        try node.set("page_title", title ?? siteInfo)
+        try node.set("page_title", title ?? siteInfo.name)
         
         return try type(of: self).viewRenderer.make(path, node, for: request)
     }
