@@ -45,7 +45,7 @@ final class PostController: ResourceRepresentable {
     }
 
     func show(request: Request, post: Post) throws -> ResponseRepresentable {
-        return try ContextMaker.makeShowView().makeResponse(context: post.makeJSON(), for: request)
+        return try ContextMaker.makeShowView().addTitle(post.title).makeResponse(context: post.makeJSON(), for: request)
     }
 }
 

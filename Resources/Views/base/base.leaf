@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>#import("title")</title>
+  <title>#(page_title)</title>
   #embed("embeds/resources")
   #embed("embeds/meta")
 </head>

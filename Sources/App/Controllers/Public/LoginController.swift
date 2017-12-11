@@ -12,7 +12,7 @@ final class LoginController: ResourceRepresentable {
     }
     
     func index(request: Request) throws -> ResponseRepresentable {
-        return try PublicViewContext(path: "public/login").makeResponse(for: request)
+        return try PublicViewContext(path: "public/login", title: "Login").makeResponse(for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {
