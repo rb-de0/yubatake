@@ -166,7 +166,7 @@ Please write down the setting of MySQL Server.
 
 # Future Improvement
 
-[https://github.com/rb-de0/note/issues](https://github.com/rb-de0/note/issues)
+[https://github.com/rb-de0/note/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement](https://github.com/rb-de0/note/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
 
 
 # LICENSE
