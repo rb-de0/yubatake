@@ -5,17 +5,6 @@ final class PublicRoutes: RouteCollection, EmptyInitializable {
     
     func build(_ builder: RouteBuilder) throws {
         
-        // Login
-        
-        let group = builder.grouped(InverseRedirectMiddleware<User>.home(path: "admin/posts"))
-        group.resource("login", LoginController())
-        
-        // Logout
-        
-        builder.resource("logout", LogoutController())
-
-        // Posts
-        
         let controller = PostController()
         
         builder.resource("", controller)

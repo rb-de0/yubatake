@@ -5,13 +5,19 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
     
     func build(_ builder: RouteBuilder) throws {
         
-        let secureGroup = builder.grouped([
-            RedirectMiddleware.login(),
-            PersistMiddleware<User>(),
-            PasswordAuthenticationMiddleware<User>()
-        ])
+        let sessionGroup = builder.grouped(PersistMiddleware<User>())
         
-        let admin = secureGroup.grouped("admin")
+        // Login
+        let login = sessionGroup.grouped(InverseRedirectMiddleware<User>.home(path: "admin/posts"))
+        login.resource("login", LoginController())
+        
+        // Logout
+        sessionGroup.resource("logout", LogoutController())
+        
+        let admin = sessionGroup.grouped([
+            RedirectMiddleware.login(),
+            PasswordAuthenticationMiddleware<User>()
+        ]).grouped("admin")
         
         admin.editableResource("tags", AdminTagController())
         admin.editableResource("categories", AdminCategoryController())
