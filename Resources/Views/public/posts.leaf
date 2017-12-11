@@ -28,7 +28,7 @@
               }
             </div>
             <div class="post-card-tags">
-              Tags: #if(tags) {
+              Tags: #if(post.tags) {
                 #loop(post.tags, "tag") {<a href="/tags/#(tag.id)/posts">#(tag.name)</a>}
               } ##else() {
                 None

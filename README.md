@@ -118,9 +118,9 @@ If you want to use In Memory Database of SQLite as the database of your applicat
 
 ```
 {
-	"driver": "memory",
-	...,
-	...
+    "driver": "memory",
+    ...,
+    ...
 }
 ```
 
@@ -128,13 +128,12 @@ If you want to use In Memory Database of SQLite as the database of your applicat
 
 If you want to use In Memory Database as a store of sessions, change middleware of droplet.json from ```redis-sessions``` to ```sessions```.
 
-```JSON
+```
 {
-	...,
-	"middleware": [
-		...,
-		"sessions",
-		...
+    ...,
+    "middleware": [
+        ...,
+	"sessions"
     ],
     ...
 }
@@ -166,7 +165,7 @@ Please write down the setting of MySQL Server.
 
 # Future Improvement
 
-[https://github.com/rb-de0/note/issues](https://github.com/rb-de0/note/issues)
+[https://github.com/rb-de0/note/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement](https://github.com/rb-de0/note/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
 
 
 # LICENSE

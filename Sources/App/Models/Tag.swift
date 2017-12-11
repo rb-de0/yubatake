@@ -46,7 +46,7 @@ final class Tag: Model {
         }
         
         let tagStrings = tagString.components(separatedBy: Tag.separator)
-        return tagStrings.map { Tag(name: $0) }
+        return tagStrings.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }.map { Tag(name: $0) }
     }
     
     static func notInsertedTags(in tags: [Tag]) throws -> [Tag] {

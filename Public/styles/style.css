@@ -217,12 +217,13 @@ ul {
   font-weight: bold;
 }
 
-#post-content-header {
-   display: flex;
-   font-size: 14px;
+.post-content-header {
+  margin-bottom: 8px;
+  display: flex;
+  font-size: 14px;
 }
 
-#post-content-header a {
+.post-content-header a {
   text-decoration: none;
   color: #222222;
 }
