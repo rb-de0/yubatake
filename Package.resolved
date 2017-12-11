@@ -140,9 +140,9 @@
         "package": "Kanna",
         "repositoryURL": "https://github.com/tid-kijyun/Kanna.git",
         "state": {
-          "branch": null,
-          "revision": "2446979c1ba69f290aa3b5f028191a0120010da5",
-          "version": "2.2.1"
+          "branch": "feature/v4.0.0",
+          "revision": "58e3513d20cd16fe8b9ff16b5a2b481fcd643499",
+          "version": null
         }
       },
       {

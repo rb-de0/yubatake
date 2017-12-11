@@ -105,10 +105,10 @@ extension Post: JSONRepresentable {
     func makePageJSON() throws -> JSON {
         
         let html = try markdownToHTML(content)
-        let doc = HTML(html: html, encoding: .utf8)
+        let doc = try HTML(html: html, encoding: .utf8)
         
         var json = try makeJSON()
-        try json.set(Post.partOfContentKey, doc?.text?.take(n: Post.partOfContentSize))
+        try json.set(Post.partOfContentKey, doc.text?.take(n: Post.partOfContentSize))
         
         return json
     }
