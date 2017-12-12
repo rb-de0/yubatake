@@ -50,7 +50,7 @@ extension Config {
             Post.self,
             Tag.self,
             SiteInfo.self,
-            Pivot<Post, Tag>.self
+            PivotPostTag.self
         ]
     }
 }
