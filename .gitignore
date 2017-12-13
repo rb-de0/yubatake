@@ -3,6 +3,7 @@
 
 ### Vapor ###
 Config/secrets
+favicon.ico
 
 ### Vapor Patch ###
 Packages
