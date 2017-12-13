@@ -17,7 +17,7 @@ struct CSPConfig {
         
         let defaultSource = ["default-src", "'self'"].joined(separator: space)
         let styleSource = (["style-src","'self'"] + styleSources).joined(separator: space)
-        let scriptSource = (["script-src","'self'"] + scriptSources).joined(separator: space)
+        let scriptSource = (["script-src","'self'"] + scriptSources + ["'unsafe-inline'"]).joined(separator: space)
         
         return [defaultSource, styleSource, scriptSource].joined(separator: semicolon)
     }

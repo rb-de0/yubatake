@@ -39,7 +39,9 @@ final class AdminPostController: EditableResourceRepresentable {
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
-        return try ContextMaker.makeCreateView().makeResponse(context: tagsAndCategories(), for: request)
+        return try ContextMaker.makeCreateView()
+            .addMenu(.newPost)
+            .makeResponse(context: tagsAndCategories(), for: request)
     }
     
     func store(request: Request) throws -> ResponseRepresentable {

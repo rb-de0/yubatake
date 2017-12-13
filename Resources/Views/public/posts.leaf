@@ -14,7 +14,7 @@
       <div class="pure-u-1 pure-u-lg-1-2 pure-u-xl-1-3 post-card-container">
         <div class="post-card">
           <div class="post-card-content">
-            <a href="/posts/#(post.id)"><div class="post-card-title">#(post.title)</div></a>
+            <a class="title-link" href="/posts/#(post.id)"><div class="post-card-title">#(post.title)</div></a>
             <div class="post-card-part-of-content-container">
               <div class="post-card-part-of-content">
                 #(post.part_of_content)
@@ -22,14 +22,14 @@
             </div>
             <div class="post-card-category">
               Category: #if(post.category) {
-                <a href="/categories/#(post.category.id)/posts">#(post.category.name)</a>
+                <a class="category-link" href="/categories/#(post.category.id)/posts">#(post.category.name)</a>
               } ##else() {
-                <a href="/categories/noncategorized/posts">NonCategorized</a>
+                <a class="category-link" href="/categories/noncategorized/posts">NonCategorized</a>
               }
             </div>
             <div class="post-card-tags">
               Tags: #if(post.tags) {
-                #loop(post.tags, "tag") {<a href="/tags/#(tag.id)/posts">#(tag.name)</a>}
+                #loop(post.tags, "tag") {<a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a>}
               } ##else() {
                 None
               }
