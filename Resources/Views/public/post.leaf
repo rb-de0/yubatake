@@ -1,29 +1,36 @@
 #extend("base/base")
 
 #export("content") {
-  <div id="post-content-title">#(title)</div>
-  <div class="post-content-header">
-    <div class="post-content-header-content">
-      Category: #if(category) {
-        <a href="/categories/#(category.id)/posts">#(category.name)</a>
-      } ##else() {
-        <a href="/categories/noncategorized/posts">NonCategorized</a>
-      }
+  <div id="post-content-header" class="pure-g">
+    <div id="post-content-header-left" class="pure-u-1 pure-u-xl-1-2">
+      <div id="post-content-title">#(title)</div>
     </div>
-    <div class="post-content-header-content">
-      #if(tags) {
-        Tag: #loop(tags, "tag") {<a href="/tags/#(tag.id)/posts">#(tag.name)</a>}
-      }
+    <div id="post-content-header-right" class="pure-u-1 pure-u-xl-1-2">
+      <div class="post-content-header-list">
+        <div class="post-content-header-content">
+          Category: #if(category) {
+            <a class="category-link" href="/categories/#(category.id)/posts">#(category.name)</a>
+          } ##else() {
+            <a href="/categories/noncategorized/posts">NonCategorized</a>
+          }
+        </div>
+        <div class="post-content-header-content">
+          #if(tags) {
+            Tag: #loop(tags, "tag") {<a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a>}
+          }
+        </div>
+      </div>
+      <div class="post-content-header-list">
+        <div class="post-content-header-content">PublishedAt: #(formattedCreatedAt)</div>
+        <div class="post-content-header-content">UpdatedAt: #(formattedUpdatedAt)</div>
+      </div>
     </div>
-  </div>
-  <div class="post-content-header">
-    <div class="post-content-header-content">PublishedAt: #(formattedCreatedAt)</div>
-    <div class="post-content-header-content">UpdatedAt: #(formattedUpdatedAt)</div>
   </div>
   <hr id="post-content-border"></hr>
   <div id="post-content-body">
     #markdown(content)
   </div>
+
 
   <script>hljs.initHighlightingOnLoad()</script>
 }

@@ -26,6 +26,24 @@ ul {
   margin-bottom: 8px;
 }
 
+.category-link {
+  padding: 4px;
+  border-radius: 4px;
+  background-color: #0174DF;
+  color: white;
+}
+
+.tag-link {
+  padding: 4px;
+  border-radius: 4px;
+  background: #DF7401;
+  color: white;
+}
+
+.title-link {
+  color: #222222;
+}
+
 /* --------------------------
 * Menu
 * --------------------------
@@ -152,7 +170,6 @@ ul {
 
 .post-card-container a {
   text-decoration: none;
-  color: #222222;
 }
 
 .post-card-content {
@@ -212,28 +229,30 @@ ul {
 
 #post-content-title {
   margin-top: 16px;
-  margin-bottom: 8px;
   font-size: 36px;
   font-weight: bold;
 }
 
-.post-content-header {
+#post-content-header-right {
+  margin-top: 16px;
+}
+
+.post-content-header-list {
   margin-bottom: 8px;
   display: flex;
   font-size: 14px;
 }
 
-.post-content-header a {
+.post-content-header-list a {
   text-decoration: none;
-  color: #222222;
 }
 
 .post-content-header-content {
-  margin-right: 8px;
+  margin-right: 16px;
 }
 
 #post-content-border {
-  margin-top: 12px;
+  margin-top: 4px;
   margin-bottom: 32px;
   border-top: 1px solid #ddd;
 }
@@ -410,6 +429,18 @@ ul {
 * PC
 * --------------------------
 */
+
+@media screen and (min-width: 80em) {
+
+  #post-content-header-right {
+    margin-top: 24px;
+  }
+
+  .post-content-header-list {
+    justify-content: flex-end;
+  }
+}
+
 @media screen and (min-width: 48em) {
 
   #content {
