@@ -4,8 +4,6 @@ struct PivotPostTag: Preparation {
     
     static func prepare(_ database: Database) throws {
         
-        try Pivot<Post, Tag>.prepare(database)
-        
         let tmpQuery = try Post.makeQuery()
         let postForeignKey = ForeignKey(entity: Pivot<Post, Tag>.self, field: Post.foreignIdKey, foreignField: Post.idKey, foreignEntity: Post.self)
         let tagForeignKey = ForeignKey(entity: Pivot<Post, Tag>.self, field: Tag.foreignIdKey, foreignField: Tag.idKey, foreignEntity: Tag.self)
@@ -22,7 +20,5 @@ struct PivotPostTag: Preparation {
         try database.raw("alter table \(Pivot<Post, Tag>.name) add \(tagAddKeySQL)")
     }
     
-    static func revert(_ database: Database) throws {
-        try Pivot<Post, Tag>.revert(database)
-    }
+    static func revert(_ database: Database) throws {}
 }
