@@ -51,7 +51,8 @@ extension Config {
             Tag.self,
             SiteInfo.self,
             Pivot<Post, Tag>.self,
-            PivotPostTag.self
+            PivotPostTag.self,
+            ChangeContentLengthTo8192.self
         ]
     }
 }
