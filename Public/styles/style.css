@@ -44,6 +44,12 @@ ul {
   color: #222222;
 }
 
+.clearfix::after{
+  content: "";
+  display: block;
+  clear: both;
+}
+
 /* --------------------------
 * Menu
 * --------------------------
@@ -228,13 +234,18 @@ ul {
 }
 
 #post-content-title {
-  margin-top: 16px;
   font-size: 36px;
   font-weight: bold;
 }
 
+#post-content-header-left {
+  margin-top: 16px;
+  float: left;
+}
+
 #post-content-header-right {
   margin-top: 16px;
+  float: left;
 }
 
 .post-content-header-list {
@@ -433,7 +444,8 @@ ul {
 @media screen and (min-width: 80em) {
 
   #post-content-header-right {
-    margin-top: 24px;
+    margin-top: 16px;
+    float: right;
   }
 
   .post-content-header-list {
