@@ -8,7 +8,8 @@ extension Droplet {
         setupHalpers([
             AdminViewContext.self,
             PublicViewContext.self,
-            HashHelper.self
+            HashHelper.self,
+            TwitterHelper.self
         ])
         
         // create root user at the first time

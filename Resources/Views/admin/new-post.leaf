@@ -68,6 +68,14 @@
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
 
+    #if(post) {} ##else() {
+      <fieldset class="pure-group">
+        <label for="admin-post-should-tweet" class="pure-form-item-inline">
+          <input id="admin-post-should-tweet" name="should-tweet" type="checkbox"/> Post to Twitter?
+        </label>
+      </fieldset>
+    }
+
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
       #if(post) {Update} ##else() {Post}
     </button>

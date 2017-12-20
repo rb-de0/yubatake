@@ -21,6 +21,10 @@ ul {
   display: inline;
 }
 
+.pure-form .pure-group .pure-form-item-inline input  {
+  display: inline;
+}
+
 .form-label {
   margin-top: 8px;
   margin-bottom: 8px;
@@ -414,6 +418,12 @@ ul {
 .admin-supplement-tag-item:hover {
   background-color: #dddddd;
 }
+
+.admin-form-group-title {
+  margin-top: 16px;
+  font-size: 24px;
+}
+
 /* --------------------------
 * Login
 * --------------------------
