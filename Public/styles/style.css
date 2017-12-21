@@ -120,6 +120,20 @@ ul {
   white-space: normal;
 }
 
+#menu-subcontents {
+  padding: .5em 1em;
+}
+
+#menu-subcontents .menu-subcontents-header {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+#menu-subcontents .menu-subcontents-item {
+  margin: 2px 0px;
+  font-size: 13px;
+}
+
 /* --------------------------
 * Toggle Menu
 * --------------------------

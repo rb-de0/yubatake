@@ -22,6 +22,7 @@ final class Post: Model {
     static let formattedUpdatedAtKey = "formattedUpdatedAt"
     
     static let partOfContentSize = 150
+    static let recentlyPostCount = 10
     
     let storage = Storage()
 
@@ -61,6 +62,10 @@ final class Post: Model {
         try row.set(Category.foreignIdKey, categoryId)
         try row.set(User.foreignIdKey, userId)
         return row
+    }
+    
+    static func recentlyPosts(count: Int = Post.recentlyPostCount) throws -> [Post] {
+        return try Post.makeQuery().paginate(page: 1, count: count).data
     }
 }
 

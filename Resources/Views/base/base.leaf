@@ -25,11 +25,17 @@
 
     <div class="pure-menu">
       <div class="pure-menu-heading">
-        #if(site_info) {
-          <a href="/"><div id="menu-header-site-name">#(site_info.name)</div></a>
-          <div id="menu-header-site-description">#(site_info.description)</div>
-        } ##else() {
-          <div id="menu-header-site-name">SITETITLE</div>
+        <a href="/"><div id="menu-header-site-name">#(site_info.name)</div></a>
+        <div id="menu-header-site-description">#(site_info.description)</div>
+      </div>
+      <div id="menu-subcontents">
+        #if(recently_posts) {
+          <div class="menu-subcontents-header">Recently Posts</div>
+          #loop(recently_posts, "post") {
+            <div class="menu-subcontents-item">
+              <a class="title-link" href="/posts/#(post.id)">#(post.title)</a>
+            </div>
+          }
         }
       </div>
     </div>
