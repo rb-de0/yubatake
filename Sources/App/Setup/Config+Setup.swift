@@ -53,7 +53,8 @@ extension Config {
             Pivot<Post, Tag>.self,
             PivotPostTag.self,
             ChangeContentLengthTo8192.self,
-            TwitterAuth.self
+            TwitterAuth.self,
+            Image.self
         ]
     }
 }

@@ -3,7 +3,6 @@
 
 ### Vapor ###
 Config/secrets
-favicon.ico
 
 ### Vapor Patch ###
 Packages
@@ -13,4 +12,7 @@ xcuserdata
 DerivedData/
 .DS_Store
 
+### Public ###
+favicon.ico
+Public/documents/
 # End of https://www.gitignore.io/api/vapor

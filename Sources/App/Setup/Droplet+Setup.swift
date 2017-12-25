@@ -9,7 +9,8 @@ extension Droplet {
             AdminViewContext.self,
             PublicViewContext.self,
             HashHelper.self,
-            TwitterHelper.self
+            TwitterHelper.self,
+            FileHelper.self
         ])
         
         // create root user at the first time

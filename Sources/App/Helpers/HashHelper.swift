@@ -7,5 +7,4 @@ final class HashHelper: ApplicationHelper {
     static func setup(_ drop: Droplet) {
         hash = drop.hash
     }
-    
 }
