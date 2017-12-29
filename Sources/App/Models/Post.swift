@@ -1,7 +1,7 @@
 import FluentProvider
 import HTTP
-import Kanna
 import SwiftMarkdown
+import SwiftSoup
 import ValidationProvider
 import Vapor
 
@@ -20,6 +20,7 @@ final class Post: Model {
     static let updatedAtKey = "updatedAt"
     static let formattedCreatedAtKey = "formattedCreatedAt"
     static let formattedUpdatedAtKey = "formattedUpdatedAt"
+    static let htmlContentKey = "html_content"
     
     static let partOfContentSize = 150
     static let recentlyPostCount = 10
@@ -67,6 +68,12 @@ final class Post: Model {
     static func recentlyPosts(count: Int = Post.recentlyPostCount) throws -> [Post] {
         return try Post.makeQuery().paginate(page: 1, count: count).data
     }
+    
+    private func htmlWhiteList() throws -> Whitelist {
+        return try Whitelist.relaxed()
+            .removeProtocols("img", "src", "http", "https")
+            .removeProtocols("a", "href", "ftp", "http", "https", "mailto")
+    }
 }
 
 // MARK: - Preparation
@@ -104,16 +111,17 @@ extension Post: JSONRepresentable {
         try row.set(Post.updatedAtKey, updatedAt)
         try row.set(Post.formattedCreatedAtKey, formattedCreatedAt)
         try row.set(Post.formattedUpdatedAtKey, formattedUpdatedAt)
+        try row.set(Post.htmlContentKey, SwiftSoup.clean(try markdownToHTML(content, options: []), htmlWhiteList()))
         return JSON(row)
     }
     
     func makePageJSON() throws -> JSON {
         
-        let html = try markdownToHTML(content)
-        let doc = try HTML(html: html, encoding: .utf8)
+        let cleanHtml = try SwiftSoup.clean(try markdownToHTML(content, options: []), htmlWhiteList())
+        let doc = try SwiftSoup.parse(cleanHtml ?? "")
         
         var json = try makeJSON()
-        try json.set(Post.partOfContentKey, doc.text?.take(n: Post.partOfContentSize))
+        try json.set(Post.partOfContentKey, doc.text().take(n: Post.partOfContentSize))
         
         return json
     }
