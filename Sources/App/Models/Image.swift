@@ -59,7 +59,7 @@ extension Image: JSONRepresentable {
     
     func makeJSON() throws -> JSON {
         var row = try makeRow()
-        try row.set(SiteInfo.idKey, id)
+        try row.set(Image.idKey, id)
         return JSON(row)
     }
 }

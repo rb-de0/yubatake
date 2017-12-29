@@ -407,6 +407,10 @@ ul {
   height: 100%;
 }
 
+#admin-embedded-url {
+  font-weight: bold;
+}
+
 .admin-supplement-title {
   margin: 8px 0px;
 }
@@ -471,8 +475,6 @@ ul {
   width: 100%;
   height: 100%;
 }
-
-
 
 /* --------------------------
 * Login

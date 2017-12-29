@@ -29,7 +29,7 @@
   <div class="clearfix"></div>
   <hr id="post-content-border"></hr>
   <div id="post-content-body">
-    #markdown(content)
+    #raw(html_content)
   </div>
 
 
