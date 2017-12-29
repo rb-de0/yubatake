@@ -3,9 +3,14 @@
 * --------------------------
 */
 
+html {
+  height: 100%;
+}
+
 body {
   font-family: sans-serif;
   background-color: #f1f1f1;
+  height: 100%;
 }
 
 input[type=checkbox] {
@@ -495,10 +500,17 @@ ul {
 * --------------------------
 */
 
+#login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
 #login-form {
-  margin: 16% auto;
   padding: 8px 16px 16px;
-  width: 480px;
+  width: 90%;
   background-color: white;
 }
 
@@ -546,4 +558,9 @@ ul {
   #toggle-menu {
     display: none;
   }
+
+  #login-form {
+    width: 480px;
+  }
+
 }
