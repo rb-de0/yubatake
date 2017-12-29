@@ -47,7 +47,7 @@
       <div class="pure-u-1-2">
         <div id="admin-tag-container">
           <div class="admin-supplement-title">
-            Tags(comma separated)
+            <label for="admin-tag-text">Tags(comma separated)</label>
           </div>
           <input id="admin-tag-text" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
           <div class="admin-supplement-list-container">

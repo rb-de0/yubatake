@@ -39,3 +39,9 @@ $(document).on('click', '#all-checkbox', function (e) {
     elem.checked = e.target.checked
   })
 })
+
+$(document).on('change', '#image-file-data', function (e) {
+  var fileName = $(this).val().split('/').pop().split('\\').pop()
+  $('#image-file-name').val(fileName)
+  $('#admin-selectable-form').submit()
+})
