@@ -22,6 +22,14 @@ ul {
   margin: 0px;
 }
 
+th {
+  word-break: break-all;
+}
+
+tr {
+  word-break: break-all;
+}
+
 .pure-form .pure-group li input {
   display: inline;
 }
