@@ -81,6 +81,7 @@ ul {
   top: 0;
   bottom: 0;
   padding-top: 8px;
+  overflow: scroll;
 }
 
 #menu.open-menu {
@@ -110,13 +111,6 @@ ul {
 #menu-header-site-name {
   text-decoration: none;
   color: white;
-}
-
-#menu-item-logout {
-  position: absolute;
-  bottom: 32px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 #menu-header-site-name {
