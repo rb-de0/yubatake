@@ -270,12 +270,13 @@ tr {
 
 #post-content-header-left {
   margin-top: 16px;
+  margin-right: 16px;
   float: left;
 }
 
 #post-content-header-right {
   margin-top: 16px;
-  float: left;
+  float: right;
 }
 
 .post-content-header-list {
