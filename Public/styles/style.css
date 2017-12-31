@@ -3,9 +3,14 @@
 * --------------------------
 */
 
+html {
+  height: 100%;
+}
+
 body {
   font-family: sans-serif;
   background-color: #f1f1f1;
+  height: 100%;
 }
 
 input[type=checkbox] {
@@ -15,6 +20,14 @@ input[type=checkbox] {
 
 ul {
   margin: 0px;
+}
+
+th {
+  word-break: break-all;
+}
+
+tr {
+  word-break: break-all;
 }
 
 .pure-form .pure-group li input {
@@ -76,6 +89,7 @@ ul {
   top: 0;
   bottom: 0;
   padding-top: 8px;
+  overflow: scroll;
 }
 
 #menu.open-menu {
@@ -105,13 +119,6 @@ ul {
 #menu-header-site-name {
   text-decoration: none;
   color: white;
-}
-
-#menu-item-logout {
-  position: absolute;
-  bottom: 32px;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 #menu-header-site-name {
@@ -263,12 +270,13 @@ ul {
 
 #post-content-header-left {
   margin-top: 16px;
+  margin-right: 16px;
   float: left;
 }
 
 #post-content-header-right {
   margin-top: 16px;
-  float: left;
+  float: right;
 }
 
 .post-content-header-list {
@@ -495,10 +503,17 @@ ul {
 * --------------------------
 */
 
+#login-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
 #login-form {
-  margin: 16% auto;
   padding: 8px 16px 16px;
-  width: 480px;
+  width: 90%;
   background-color: white;
 }
 
@@ -546,4 +561,9 @@ ul {
   #toggle-menu {
     display: none;
   }
+
+  #login-form {
+    width: 480px;
+  }
+
 }
