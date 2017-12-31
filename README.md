@@ -52,22 +52,6 @@ For ubuntu
 $ sudo apt-get install redis-server
 ```
 
-#### 4. Install libxml2
-
-note uses libxml2 for HTML parsing. You need to install libxml2 in your environment.
-
-For macOS
-
-```bash
-$ brew install libxml2
-$ brew link --force libxml2
-```
-
-For ubuntu
-
-```bash
-$ sudo apt-get install libxml2-dev
-```
 
 ## Setup Application
 
