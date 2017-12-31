@@ -1,4 +1,5 @@
 import Vapor
+import Foundation
 
 final class TwitterHelper: ApplicationHelper {
     
@@ -21,7 +22,17 @@ final class TwitterHelper: ApplicationHelper {
         
         let poppo = user.makePoppo()
         let url = "\(request.uri.scheme)://\(request.uri.hostname)/\(id)"
-        let message = String(format: messageFormat, post.title, url)
-        poppo.tweet(status: message)
+
+	#if os(Linux)
+            post.title.withCString { title in
+                url.withCString { url in
+                    let message = String(format: messageFormat, title, url)
+                    poppo.tweet(status: message)
+                }
+            }
+        #else
+            let message = String(format: messageFormat, post.title, url)
+            poppo.tweet(status: message)
+        #endif
     }
 }
