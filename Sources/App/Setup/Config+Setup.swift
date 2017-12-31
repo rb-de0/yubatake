@@ -52,7 +52,9 @@ extension Config {
             SiteInfo.self,
             Pivot<Post, Tag>.self,
             PivotPostTag.self,
-            ChangeContentLengthTo8192.self
+            ChangeContentLengthTo8192.self,
+            TwitterAuth.self,
+            Image.self
         ]
     }
 }

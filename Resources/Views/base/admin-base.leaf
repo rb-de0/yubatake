@@ -38,15 +38,19 @@
         <li class="pure-menu-item #equal(menu_type, "categories") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/categories">Categories</a>
         </li>
+        <li class="pure-menu-item #equal(menu_type, "images") { pure-menu-selected }">
+          <a class="pure-menu-link" href="/admin/images">Images</a>
+        </li>
         <li class="pure-menu-item #equal(menu_type, "site_info") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/siteinfo/edit">SiteInfo</a>
         </li>
         <li class="pure-menu-item #equal(menu_type, "user") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/user/edit">UserSetting</a>
         </li>
+        <li class="pure-menu-item">
+          <a class="pure-menu-link" href="/logout">Logout</a>
+        </li>
       </ul>
-
-      <a id="menu-item-logout" class="pure-menu-link" href="/logout">Logout</a>
     </div>
   </div>
 

@@ -34,6 +34,7 @@ final class PublicViewContext: ApplicationHelper {
         try node.set("csrf_token", try CSRF().createToken(from: request))
         try node.set("site_info", siteInfo.makeJSON())
         try node.set("page_title", title ?? siteInfo.name)
+        try node.set("recently_posts", try Post.recentlyPosts().makeJSON())
         
         return try type(of: self).viewRenderer.make(path, node, for: request)
     }

@@ -17,7 +17,8 @@ let package = Package(
         .package(url: "https://github.com/vapor-community/markdown-provider.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/vapor-community/CSRF.git", .upToNextMajor(from: "1.0.0")),
         .package(url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", .upToNextMajor(from: "1.0.0")),
-        .package(url: "https://github.com/tid-kijyun/Kanna.git", .branch("feature/v4.0.0"))
+        .package(url: "https://github.com/scinfu/SwiftSoup.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/rb-de0/Poppo.git", .upToNextMajor(from: "0.4.0"))
     ],
     targets: [
         .target(name: "App", dependencies: [
@@ -31,7 +32,8 @@ let package = Package(
             "RedisProvider",
             "CSRF",
             "VaporSecurityHeaders",
-            "Kanna"
+            "Poppo",
+            "SwiftSoup"
         ]),
         .target(name: "Run", dependencies: ["App"])
     ]

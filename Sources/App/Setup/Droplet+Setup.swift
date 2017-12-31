@@ -1,4 +1,5 @@
 @_exported import Vapor
+import LeafProvider
 
 extension Droplet {
     
@@ -8,8 +9,13 @@ extension Droplet {
         setupHalpers([
             AdminViewContext.self,
             PublicViewContext.self,
-            HashHelper.self
+            HashHelper.self,
+            TwitterHelper.self,
+            FileHelper.self
         ])
+        
+        // register leaf tags
+        registerTags()
         
         // create root user at the first time
         try createRootUserIfNeeded()
@@ -25,6 +31,10 @@ extension Droplet {
         helpers.forEach {
             $0.setup(self)
         }
+    }
+    
+    private func registerTags() {
+        (view as? LeafRenderer)?.stem.register(Escape())
     }
     
     private func createRootUserIfNeeded() throws {

@@ -65,6 +65,11 @@ final class AdminPostController: EditableResourceRepresentable {
                 throw Abort.serverError
             }
             
+            if let _ = request.data["should-tweet"]?.string {
+                let user = try request.auth.assertAuthenticated(User.self)
+                try TwitterHelper.tweetNewPost(post, from: user, on: request)
+            }
+            
             return Response(redirect: "/admin/posts/\(id)/edit")
             
         } catch {

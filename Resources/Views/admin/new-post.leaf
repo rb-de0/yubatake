@@ -47,7 +47,7 @@
       <div class="pure-u-1-2">
         <div id="admin-tag-container">
           <div class="admin-supplement-title">
-            Tags(comma separated)
+            <label for="admin-tag-text">Tags(comma separated)</label>
           </div>
           <input id="admin-tag-text" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
           <div class="admin-supplement-list-container">
@@ -67,6 +67,14 @@
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
+
+    #if(post) {} ##else() {
+      <fieldset class="pure-group">
+        <label for="admin-post-should-tweet" class="pure-form-item-inline">
+          <input id="admin-post-should-tweet" name="should-tweet" type="checkbox"/> Post to Twitter?
+        </label>
+      </fieldset>
+    }
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
       #if(post) {Update} ##else() {Post}
