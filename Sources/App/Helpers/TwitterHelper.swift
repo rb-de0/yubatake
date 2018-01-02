@@ -29,6 +29,10 @@ final class TwitterHelper: ApplicationHelper {
             throw Abort.serverError
         }
         
+        guard let hostName = hostName else {
+            throw Abort.serverError
+        }
+        
         let poppo = user.makePoppo()
         let url = "\(request.uri.scheme)://\(hostName)/\(id)"
 
