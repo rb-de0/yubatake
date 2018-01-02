@@ -6,7 +6,7 @@ final class TwitterHelper: ApplicationHelper {
     private static var messageFormat: String!
     private static var hostName: String!
     
-    static func setup(_ drop: Droplet) {
+    static func setup(_ drop: Droplet) throws {
         
         guard let messageFormat = drop.config["twitter", "messageFormat"]?.string,
             let hostName = drop.config["twitter", "hostname"]?.string else {

@@ -6,8 +6,10 @@ final class FileHelper: ApplicationHelper {
     static let imageRelativePath = "/documents/imgs"
     static var publicDir: String!
     
-    static func setup(_ drop: Droplet) {
+    static func setup(_ drop: Droplet) throws {
         publicDir = drop.config.publicDir
+        
+        try createImageDirIfNeeded()
     }
     
     class func saveImage(data: Data, at path: String) throws {
@@ -21,5 +23,9 @@ final class FileHelper: ApplicationHelper {
     
     class func deleteImage(at path: String) throws {
         try FileManager.default.removeItem(atPath: publicDir.finished(with: "/") + path)
+    }
+    
+    private class func createImageDirIfNeeded() throws {
+        try FileManager.default.createDirectory(atPath: publicDir.finished(with: "/") + imageRelativePath, withIntermediateDirectories: true, attributes: nil)
     }
 }
