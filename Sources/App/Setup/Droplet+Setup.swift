@@ -6,7 +6,7 @@ extension Droplet {
     public func setup() throws {
         
         // setup application helper
-        setupHalpers([
+        try setupHalpers([
             AdminViewContext.self,
             PublicViewContext.self,
             HashHelper.self,
@@ -27,9 +27,9 @@ extension Droplet {
         try setupRoutes()
     }
     
-    private func setupHalpers(_ helpers: [ApplicationHelper.Type]) {
-        helpers.forEach {
-            $0.setup(self)
+    private func setupHalpers(_ helpers: [ApplicationHelper.Type]) throws {
+        try helpers.forEach {
+            try $0.setup(self)
         }
     }
     
