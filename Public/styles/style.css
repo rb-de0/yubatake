@@ -246,7 +246,8 @@ tr {
 .post-card-tags {
   padding: 4px 8px;
   height: 24px;
-  overflow: hidden;
+  white-space: nowrap;
+  overflow: scroll;
 }
 
 #public-page-footer #page-navigator {
@@ -289,8 +290,13 @@ tr {
   text-decoration: none;
 }
 
+.post-content-header-content::first-line {
+  line-height: 1.5;
+}
+
 .post-content-header-content {
   margin-right: 16px;
+  line-height: 2.0;
 }
 
 #post-content-border {
