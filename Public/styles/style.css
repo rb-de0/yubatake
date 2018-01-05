@@ -296,7 +296,11 @@ tr {
 
 .post-content-header-content {
   margin-right: 16px;
-  line-height: 2.0;
+  line-height: 2.6;
+}
+
+.post-content-header-text {
+  margin-right: 16px;
 }
 
 #post-content-border {

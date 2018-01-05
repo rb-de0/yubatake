@@ -21,8 +21,8 @@
         </div>
       </div>
       <div class="post-content-header-list">
-        <div class="post-content-header-content">PublishedAt: #(formattedCreatedAt)</div>
-        <div class="post-content-header-content">UpdatedAt: #(formattedUpdatedAt)</div>
+        <div class="post-content-header-text">PublishedAt: #(formattedCreatedAt)</div>
+        <div class="post-content-header-text">UpdatedAt: #(formattedUpdatedAt)</div>
       </div>
     </div>
   </div>
