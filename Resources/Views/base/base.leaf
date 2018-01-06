@@ -29,9 +29,9 @@
         <div id="menu-header-site-description">#(site_info.description)</div>
       </div>
       <div id="menu-subcontents">
-        #if(recently_posts) {
-          <div class="menu-subcontents-header">Recently Posts</div>
-          #loop(recently_posts, "post") {
+        #if(recent_posts) {
+          <div class="menu-subcontents-header">Recent Posts</div>
+          #loop(recent_posts, "post") {
             <div class="menu-subcontents-item">
               <a class="title-link" href="/posts/#(post.id)">#(post.title)</a>
             </div>

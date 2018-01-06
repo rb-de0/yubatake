@@ -23,7 +23,7 @@ final class Post: Model {
     static let htmlContentKey = "html_content"
     
     static let partOfContentSize = 150
-    static let recentlyPostCount = 10
+    static let recentPostCount = 10
     
     let storage = Storage()
 
@@ -65,7 +65,7 @@ final class Post: Model {
         return row
     }
     
-    static func recentlyPosts(count: Int = Post.recentlyPostCount) throws -> [Post] {
+    static func recentPosts(count: Int = Post.recentPostCount) throws -> [Post] {
         return try Post.makeQuery().paginate(page: 1, count: count).data
     }
     
