@@ -11,7 +11,8 @@ extension Droplet {
             PublicViewContext.self,
             HashHelper.self,
             TwitterHelper.self,
-            FileHelper.self
+            FileHelper.self,
+            HtmlHelper.self
         ])
         
         // register leaf tags

@@ -1,6 +1,5 @@
 import FluentProvider
 import HTTP
-import SwiftMarkdown
 import SwiftSoup
 import ValidationProvider
 import Vapor
@@ -68,12 +67,6 @@ final class Post: Model {
     static func recentPosts(count: Int = Post.recentPostCount) throws -> [Post] {
         return try Post.makeQuery().paginate(page: 1, count: count).data
     }
-    
-    private func htmlWhiteList() throws -> Whitelist {
-        return try Whitelist.relaxed()
-            .removeProtocols("img", "src", "http", "https")
-            .removeProtocols("a", "href", "ftp", "http", "https", "mailto")
-    }
 }
 
 // MARK: - Preparation
@@ -111,13 +104,13 @@ extension Post: JSONRepresentable {
         try row.set(Post.updatedAtKey, updatedAt)
         try row.set(Post.formattedCreatedAtKey, formattedCreatedAt)
         try row.set(Post.formattedUpdatedAtKey, formattedUpdatedAt)
-        try row.set(Post.htmlContentKey, SwiftSoup.clean(try markdownToHTML(content, options: []), htmlWhiteList()))
+        try row.set(Post.htmlContentKey, try HtmlHelper.html(from: content))
         return JSON(row)
     }
     
     func makePageJSON() throws -> JSON {
         
-        let cleanHtml = try SwiftSoup.clean(try markdownToHTML(content, options: []), htmlWhiteList())
+        let cleanHtml = try HtmlHelper.html(from: content)
         let doc = try SwiftSoup.parse(cleanHtml ?? "")
         
         var json = try makeJSON()

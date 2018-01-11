@@ -18,5 +18,4 @@
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">#if(id) {Update} ##else() {Create}</button>
   </form>
 
-</div>
 }
