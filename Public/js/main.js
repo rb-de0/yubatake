@@ -1,9 +1,14 @@
+
+// -- Menu
+
 $(function() {
   $('#toggle-menu').click(function(){
     $('#menu').toggleClass('open-menu')
     $('#toggle-menu').toggleClass('open-menu')
   })
 })
+
+// -- Admin Table
 
 $(document).on('click', '.admin-supplement-tag-item', function (e) {
   var text = $('#admin-tag-text').val()
@@ -40,8 +45,31 @@ $(document).on('click', '#all-checkbox', function (e) {
   })
 })
 
+// -- Images
+
 $(document).on('change', '#image-file-data', function (e) {
   var fileName = $(this).val().split('/').pop().split('\\').pop()
   $('#image-file-name').val(fileName)
   $('#admin-selectable-form').submit()
 })
+
+// -- Preview
+
+$(document).on('click', '#admin-content-preview-button', function (e) {
+  e.preventDefault()
+  $('#admin-content-preview').show()
+
+  $.post(makeRequestURL("/api/converted_markdown"), $("form").serialize())
+    .done(function(response) {
+      $("#post-content-body").html(response["html"])
+    })
+})
+
+$(document).on('click', '#admin-content-preview-close-button', function (e) {
+  e.preventDefault()
+  $('#admin-content-preview').hide()
+})
+
+function makeRequestURL(path) {
+  return location.protocol + "//" + location.host + path
+}

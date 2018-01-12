@@ -62,8 +62,9 @@
     </fieldset>
 
     <fieldset class="pure-group">
-      <div class="form-label">
+      <div id="admin-content-input-header">
         <label for="admin-post-contents">Contents</label>
+        <button id="admin-content-preview-button" class="pure-button pure-button-primary">Preview</button>
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
@@ -81,5 +82,11 @@
     </button>
   </form>
 
-</div>
+  <div id="admin-content-preview">
+    <button id="admin-content-preview-close-button" class="pure-button pure-button-primary">Close</button>
+    <div id="post-content-body">
+      #raw(html_content)
+    </div>
+  </div>
+
 }
