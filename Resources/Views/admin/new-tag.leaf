@@ -4,7 +4,7 @@
   <div id="admin-page-title">#if(id) {Edit Tag} ##else() {New Tag}</div>
 
   <form class="pure-form" action="/admin/tags#if(id) {/#(id)/edit}" method="post">
-    
+
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
     <div class="field-error">#(request.storage.error_message)</div>
 
@@ -18,5 +18,4 @@
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">#if(id) {Update} ##else() {Create}</button>
   </form>
 
-</div>
 }

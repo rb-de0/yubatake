@@ -7,5 +7,6 @@ extension Droplet {
         
         try root.collection(PublicRoutes.self)
         try root.collection(AdminRoutes.self)
+        try root.collection(APIRoutes.self)
     }
 }
