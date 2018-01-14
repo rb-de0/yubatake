@@ -282,7 +282,7 @@ tr {
 }
 
 .post-content-header-list {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: flex;
   font-size: 14px;
 }
@@ -291,13 +291,9 @@ tr {
   text-decoration: none;
 }
 
-.post-content-header-content::first-line {
-  line-height: 1.5;
-}
-
 .post-content-header-content {
   margin-right: 16px;
-  line-height: 2.6;
+  line-height: 2.0;
 }
 
 .post-content-header-text {
@@ -344,6 +340,7 @@ tr {
 
 #post-content-body a {
   text-decoration: none;
+  word-break: break-all;
   color: #337ab7;
 }
 
