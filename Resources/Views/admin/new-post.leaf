@@ -16,7 +16,7 @@
     </fieldset>
 
     <fieldset class="pure-group">
-      <div class="pure-u-1-2">
+      <div class="pure-u-1 pure-u-md-1-2">
         <div id="admin-category-container">
           <div class="admin-supplement-title">
             Category
@@ -44,7 +44,7 @@
     </fieldset>
 
     <fieldset class="pure-group">
-      <div class="pure-u-1-2">
+      <div class="pure-u-1 pure-u-md-1-2">
         <div id="admin-tag-container">
           <div class="admin-supplement-title">
             <label for="admin-tag-text">Tags(comma separated)</label>
@@ -61,6 +61,27 @@
       </div>
     </fieldset>
 
+    <fieldset id="admin-option-field-set" class="pure-group">
+      <div class="admin-supplement-title">
+        <label>Options</label>
+      </div>
+
+      <fieldset class="pure-group">
+        #if(post) {} ##else() {
+          <div class="admin-option-item">
+            <label for="admin-post-should-tweet" class="pure-form-item-inline">
+              <input id="admin-post-should-tweet" name="should-tweet" type="checkbox"/> Share to Twitter
+            </label>
+          </div>
+        }
+        <div class="admin-option-item">
+          <label for="admin-post-static-content" class="pure-form-item-inline">
+            <input id="admin-post-static-content" name="is_static" type="checkbox" #if(post.is_static) {checked="checked"}/> Static Content
+          </label>
+        </div>
+      </fieldset>
+    </fieldset>
+
     <fieldset class="pure-group">
       <div id="admin-content-input-header">
         <label for="admin-post-contents">Contents</label>
@@ -68,14 +89,6 @@
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
-
-    #if(post) {} ##else() {
-      <fieldset class="pure-group">
-        <label for="admin-post-should-tweet" class="pure-form-item-inline">
-          <input id="admin-post-should-tweet" name="should-tweet" type="checkbox"/> Post to Twitter?
-        </label>
-      </fieldset>
-    }
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
       #if(post) {Update} ##else() {Post}

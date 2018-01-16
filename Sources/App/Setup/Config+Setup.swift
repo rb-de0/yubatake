@@ -44,6 +44,7 @@ extension Config {
     }
     
     private func setupPreparations() throws {
+        
         preparations = [
             Category.self,
             User.self,
@@ -54,7 +55,8 @@ extension Config {
             PivotPostTag.self,
             ChangeContentLengthTo8192.self,
             TwitterAuth.self,
-            Image.self
+            Image.self,
+            SupportStaticContent.self
         ]
     }
 }

@@ -13,6 +13,8 @@ final class Post: Model {
     static let isPublishKey = "is_publish"
     static let categoryKey = "category"
     static let userKey = "user"
+    static let isStaticKey = "is_static"
+    
     static let tagsKey = "tags"
     static let tagsStringKey = "tags_string"
     static let createdAtKey = "createdAt"
@@ -31,6 +33,7 @@ final class Post: Model {
     var isPublish: Bool
     var categoryId: Identifier?
     var userId: Identifier?
+    var isStatic: Bool
     
     init(request: Request) throws {
         title = request.data[Post.titleKey]?.string ?? ""
@@ -38,6 +41,7 @@ final class Post: Model {
         isPublish = request.data[Post.isPublishKey]?.bool ?? false
         categoryId = request.data[Post.categoryKey]?.int.map { Identifier($0) }
         userId = try request.auth.assertAuthenticated(User.self).id
+        isStatic = request.data[Post.isStaticKey]?.bool ?? false
         try validate()
     }
 
@@ -47,6 +51,7 @@ final class Post: Model {
         isPublish = try row.get(Post.isPublishKey)
         categoryId = try row.get(Category.foreignIdKey)
         userId = try row.get(User.foreignIdKey)
+        isStatic = try row.get(Post.isStaticKey)
     }
     
     func validate() throws {
@@ -61,11 +66,16 @@ final class Post: Model {
         try row.set(Post.isPublishKey, isPublish)
         try row.set(Category.foreignIdKey, categoryId)
         try row.set(User.foreignIdKey, userId)
+        try row.set(Post.isStaticKey, isStatic)
         return row
     }
     
     static func recentPosts(count: Int = Post.recentPostCount) throws -> [Post] {
-        return try Post.makeQuery().paginate(page: 1, count: count).data
+        return try Post.makeQuery().publicAll().paginate(page: 1, count: count).data
+    }
+    
+    static func staticContents() throws -> [Post] {
+        return try Post.makeQuery().staticAll().all()
     }
 }
 
@@ -100,6 +110,7 @@ extension Post: JSONRepresentable {
         try row.set(Post.userKey, user.get()?.makeJSON())
         try row.set(Post.tagsKey, relatedTags.makeJSON())
         try row.set(Post.tagsStringKey, relatedTags.map { $0.name }.joined(separator: Tag.separator))
+        try row.set(Post.isStaticKey, isStatic)
         try row.set(Post.createdAtKey, createdAt)
         try row.set(Post.updatedAtKey, updatedAt)
         try row.set(Post.formattedCreatedAtKey, formattedCreatedAt)
@@ -155,6 +166,7 @@ extension Post: Updateable {
         content = req.data[Post.contentKey]?.string ?? ""
         isPublish = req.data[Post.isPublishKey]?.bool ?? false
         categoryId = req.data[Post.categoryKey]?.int.map { Identifier($0) }
+        isStatic = req.data[Post.isStaticKey]?.bool ?? false
         
         try validate()
     }
@@ -183,5 +195,18 @@ extension Sequence where Iterator.Element: Post {
         }
         
         return JSON(.array(json))
+    }
+}
+
+// MARK: - Support Static Content
+extension Query where E: Post {
+    
+    func publicAll() throws -> Query<E> {
+        // TODO: Support draft
+        return try filter(Post.isStaticKey, false)
+    }
+    
+    func staticAll() throws -> Query<E> {
+        return try filter(Post.isStaticKey, true)
     }
 }

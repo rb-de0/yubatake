@@ -30,6 +30,10 @@ tr {
   word-break: break-all;
 }
 
+ol {
+  -webkit-padding-start: 24px;
+}
+
 .pure-form .pure-group li input {
   display: inline;
 }
@@ -265,39 +269,37 @@ tr {
   color: #fff;
 }
 
+#post-content-header-left {
+  margin-bottom: 16px;
+}
+
 #post-content-title {
   font-size: 36px;
   font-weight: bold;
 }
 
-#post-content-header-left {
-  margin-top: 16px;
-  margin-right: 16px;
-  float: left;
-}
-
-#post-content-header-right {
-  margin-top: 16px;
-  float: right;
-}
-
-.post-content-header-list {
+#post-content-header-date {
+  margin-top: 6px;
   margin-bottom: 6px;
-  display: flex;
   font-size: 14px;
-}
-
-.post-content-header-list a {
-  text-decoration: none;
-}
-
-.post-content-header-content {
-  margin-right: 16px;
-  line-height: 2.0;
+  display: flex;
 }
 
 .post-content-header-text {
   margin-right: 16px;
+  margin-left: 0px;
+}
+
+.post-content-header-content {
+  line-height: 2.0;
+}
+
+.post-content-header-content a {
+  text-decoration: none;
+}
+
+.post-content-header-text {
+  word-break: break-all;
 }
 
 #post-content-border {
@@ -427,6 +429,10 @@ tr {
   padding: 0px;
 }
 
+#admin-option-field-set {
+  padding-bottom: 0px;
+}
+
 #image-file-data {
   display: none;
 }
@@ -452,8 +458,8 @@ tr {
 
 #admin-content-input-header {
   margin-bottom: 8px;
-  display:flex;
-  justify-content:space-between;
+  display: flex;
+  justify-content: space-between;
   align-items: flex-end;
 }
 
@@ -515,6 +521,9 @@ tr {
   background-color: #dddddd;
 }
 
+.admin-option-item {
+  padding: 2px 0px;
+}
 .admin-form-group-title {
   margin-top: 16px;
   font-size: 24px;
@@ -578,15 +587,31 @@ tr {
 * --------------------------
 */
 
-@media screen and (min-width: 80em) {
+@media screen and (min-width: 64em) {
 
-  #post-content-header-right {
-    margin-top: 16px;
-    float: right;
+  #post-content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
   }
 
-  .post-content-header-list {
+  #post-content-header-left {
+    margin-bottom: 0px;
+  }
+
+  #post-content-header-content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  #post-content-header-date {
     justify-content: flex-end;
+  }
+
+  .post-content-header-text {
+    margin-right: 0px;
+    margin-left: 16px;
   }
 }
 
