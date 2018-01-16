@@ -427,6 +427,10 @@ tr {
   padding: 0px;
 }
 
+#admin-option-field-set {
+  padding-bottom: 0px;
+}
+
 #image-file-data {
   display: none;
 }
@@ -515,6 +519,9 @@ tr {
   background-color: #dddddd;
 }
 
+.admin-option-item {
+  padding: 2px 0px;
+}
 .admin-form-group-title {
   margin-top: 16px;
   font-size: 24px;

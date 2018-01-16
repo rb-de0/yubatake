@@ -1,12 +1,12 @@
 #extend("base/admin-base")
 
 #export("content") {
-  <div id="admin-page-title">All Posts</div>
+  <div id="admin-page-title">All #if(is_static) {StaticContents} ##else() {Posts}</div>
 
   <form id="admin-selectable-form" action="/admin/posts/delete" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
-    
+
     <table id="admin-table" class="pure-table pure-table-horizontal">
       <thead id="admin-table-header">
         <tr>

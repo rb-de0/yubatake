@@ -19,11 +19,14 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
             PasswordAuthenticationMiddleware<User>()
         ]).grouped("admin")
         
+        let adminPostController = AdminPostController()
+        
         admin.editableResource("tags", AdminTagController())
         admin.editableResource("categories", AdminCategoryController())
-        admin.editableResource("posts", AdminPostController())
+        admin.editableResource("posts", adminPostController)
         admin.editableResource("images", AdminImageViewController())
         admin.resource("siteinfo/edit", AdminSiteInfoController())
         admin.resource("user/edit", AdminUserController())
+        admin.get("static-contents", handler: adminPostController.indexStaticContent)
     }
 }

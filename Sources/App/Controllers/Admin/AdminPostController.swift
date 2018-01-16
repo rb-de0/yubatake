@@ -34,8 +34,14 @@ final class AdminPostController: EditableResourceRepresentable {
     }
     
     func index(request: Request) throws -> ResponseRepresentable {
-        let page = try Post.makeQuery().paginate(for: request).makeJSON()
+        let page = try Post.makeQuery().publicAll().paginate(for: request).makeJSON()
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
+    }
+    
+    func indexStaticContent(request: Request) throws -> ResponseRepresentable {
+        var page = try Post.makeQuery().staticAll().paginate(for: request).makePageJSON()
+        try page.set(Post.isStaticKey, true)
+        return try ContextMaker.makeIndexView().addMenu(.staticContent).makeResponse(context: page, for: request)
     }
     
     func create(request: Request) throws -> ResponseRepresentable {
@@ -122,11 +128,13 @@ final class AdminPostController: EditableResourceRepresentable {
     
     func destroy(request: Request, posts: [Post]) throws -> ResponseRepresentable {
         
+        let isStatic = posts.first?.isStatic ?? false
+        
         try posts.forEach {
             try $0.delete()
         }
         
-        return Response(redirect: "/admin/posts")
+        return isStatic ? Response(redirect: "/admin/static-contents") : Response(redirect: "/admin/posts")
     }
     
     // MARK: - Private
