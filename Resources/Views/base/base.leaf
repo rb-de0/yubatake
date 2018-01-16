@@ -30,7 +30,7 @@
       </div>
       <div id="menu-subcontents">
         #if(static_contents) {
-          <div class="menu-subcontents-header">Static Content</div>
+          <div class="menu-subcontents-header">Static Contents</div>
           #loop(static_contents, "static_content") {
             <div class="menu-subcontents-item">
               <a class="title-link" href="/posts/#(static_content.id)">#(static_content.title)</a>
