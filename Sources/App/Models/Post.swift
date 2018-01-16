@@ -73,6 +73,10 @@ final class Post: Model {
     static func recentPosts(count: Int = Post.recentPostCount) throws -> [Post] {
         return try Post.makeQuery().publicAll().paginate(page: 1, count: count).data
     }
+    
+    static func staticContents() throws -> [Post] {
+        return try Post.makeQuery().staticAll().all()
+    }
 }
 
 // MARK: - Preparation
