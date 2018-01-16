@@ -35,6 +35,7 @@ final class PublicViewContext: ApplicationHelper {
         try node.set("site_info", siteInfo.makeJSON())
         try node.set("page_title", title ?? siteInfo.name)
         try node.set("recent_posts", try Post.recentPosts().makeJSON())
+        try node.set("static_contents", try Post.staticContents().makeJSON())
         
         return try type(of: self).viewRenderer.make(path, node, for: request)
     }

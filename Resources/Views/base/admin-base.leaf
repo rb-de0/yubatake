@@ -32,6 +32,9 @@
         <li class="pure-menu-item #equal(menu_type, "posts") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/posts">Posts</a>
         </li>
+        <li class="pure-menu-item #equal(menu_type, "static_content") { pure-menu-selected }">
+          <a class="pure-menu-link" href="/admin/static-contents">StaticContent</a>
+        </li>
         <li class="pure-menu-item #equal(menu_type, "tags") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/tags">Tags</a>
         </li>

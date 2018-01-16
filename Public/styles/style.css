@@ -282,7 +282,7 @@ tr {
 }
 
 .post-content-header-list {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: flex;
   font-size: 14px;
 }
@@ -291,13 +291,9 @@ tr {
   text-decoration: none;
 }
 
-.post-content-header-content::first-line {
-  line-height: 1.5;
-}
-
 .post-content-header-content {
   margin-right: 16px;
-  line-height: 2.6;
+  line-height: 2.0;
 }
 
 .post-content-header-text {
@@ -344,6 +340,7 @@ tr {
 
 #post-content-body a {
   text-decoration: none;
+  word-break: break-all;
   color: #337ab7;
 }
 
@@ -428,6 +425,10 @@ tr {
 
 #admin-tag-container {
   padding: 0px;
+}
+
+#admin-option-field-set {
+  padding-bottom: 0px;
 }
 
 #image-file-data {
@@ -518,6 +519,9 @@ tr {
   background-color: #dddddd;
 }
 
+.admin-option-item {
+  padding: 2px 0px;
+}
 .admin-form-group-title {
   margin-top: 16px;
   font-size: 24px;
