@@ -27,7 +27,7 @@
             <td class="posts-table-title"><a href="/admin/posts/#(post.id)/edit">#(post.title)</a></td>
             <td class="posts-table-user">#(post.user.name)</td>
             <td class="posts-table-category">#(post.category.name)</td>
-            <td class="posts-table-update">#(post.formattedUpdatedAt)</td>
+            <td class="posts-table-update">#(post.formatted_updated_at)</td>
           </tr>
         }
 

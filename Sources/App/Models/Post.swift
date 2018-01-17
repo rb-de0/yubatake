@@ -19,8 +19,8 @@ final class Post: Model {
     static let tagsStringKey = "tags_string"
     static let createdAtKey = "createdAt"
     static let updatedAtKey = "updatedAt"
-    static let formattedCreatedAtKey = "formattedCreatedAt"
-    static let formattedUpdatedAtKey = "formattedUpdatedAt"
+    static let formattedCreatedAtKey = "formatted_created_at"
+    static let formattedUpdatedAtKey = "formatted_updated_at"
     static let htmlContentKey = "html_content"
     
     static let partOfContentSize = 150

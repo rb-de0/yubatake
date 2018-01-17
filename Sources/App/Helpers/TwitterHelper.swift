@@ -8,19 +8,13 @@ final class TwitterHelper: ApplicationHelper {
     
     static func setup(_ drop: Droplet) throws {
         
-        guard let messageFormat = drop.config["twitter", "messageFormat"]?.string,
-            let hostName = drop.config["twitter", "hostname"]?.string else {
-                
-            fatalError("Not found twitter.json or necessary key.")
-        }
-        
         #if os(Linux)
-        self.messageFormat = messageFormat.replacingOccurrences(of: "$@", with: "$s")
+        self.messageFormat = ConfigProvider.app.messageFormat.replacingOccurrences(of: "$@", with: "$s")
         #else
-        self.messageFormat = messageFormat
+        self.messageFormat = ConfigProvider.app.messageFormat
         #endif
         
-        self.hostName = hostName
+        self.hostName = ConfigProvider.app.hostName
     }
     
     static func tweetNewPost(_ post: Post, from user: User, on request: Request) throws {

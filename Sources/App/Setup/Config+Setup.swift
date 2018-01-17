@@ -12,9 +12,16 @@ extension Config {
         
         Node.fuzzy = [Row.self, JSON.self, Node.self]
 
+        setupApplicationConfig()
+        
         try setupProviders()
         try setupConfigurable()
         try setupPreparations()
+    }
+    
+    private func setupApplicationConfig() {
+        ConfigProvider.app = ApplicationConfig(config: self)
+        ConfigProvider.csp = CSPConfig(config: self)
     }
     
     private func setupProviders() throws {
@@ -27,9 +34,8 @@ extension Config {
     private func setupConfigurable() throws {
         
         // Security Headers
-        let config = CSPConfig(config: self)
         let securityHeadersFactory = SecurityHeadersFactory()
-        let cspConfig = ContentSecurityPolicyConfiguration(value: config.makeConfigirationString())
+        let cspConfig = ContentSecurityPolicyConfiguration(value: ConfigProvider.csp.makeConfigirationString())
         securityHeadersFactory.with(contentSecurityPolicy: cspConfig)
         addConfigurable(middleware: securityHeadersFactory.builder(), name: "security-headers")
         

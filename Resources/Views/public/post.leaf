@@ -6,7 +6,7 @@
       <div id="post-content-title">#(title)</div>
     </div>
     <div id="post-content-header-right" class="pure-u-1">
-      
+
       #if(is_static) {} ##else() {
         <div id="post-content-header-content-container">
           <div class="post-content-header-content">
@@ -29,8 +29,8 @@
       }
 
       <div id="post-content-header-date">
-        <div class="post-content-header-text">PublishedAt: #(formattedCreatedAt)</div>
-        <div class="post-content-header-text">UpdatedAt: #(formattedUpdatedAt)</div>
+        <div class="post-content-header-text">PublishedAt: #(formatted_created_at)</div>
+        <div class="post-content-header-text">UpdatedAt: #(formatted_updated_at)</div>
       </div>
 
     </div>

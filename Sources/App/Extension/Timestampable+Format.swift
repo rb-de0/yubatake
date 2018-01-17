@@ -4,7 +4,7 @@ import FluentProvider
 extension Timestampable {
     
     private var dateFormat: String {
-        return "yyyy-MM-dd HH:mm"
+        return ConfigProvider.app.dateFormat
     }
     
     var formattedCreatedAt: String? {
