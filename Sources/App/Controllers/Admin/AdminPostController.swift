@@ -39,7 +39,7 @@ final class AdminPostController: EditableResourceRepresentable {
     }
     
     func indexStaticContent(request: Request) throws -> ResponseRepresentable {
-        var page = try Post.makeQuery().staticAll().paginate(for: request).makePageJSON()
+        var page = try Post.makeQuery().staticAll().paginate(for: request).makeJSON()
         try page.set(Post.isStaticKey, true)
         return try ContextMaker.makeIndexView().addMenu(.staticContent).makeResponse(context: page, for: request)
     }
