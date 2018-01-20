@@ -10,6 +10,7 @@ final class Post: Model {
     static let titleKey = "title"
     static let contentKey = "content"
     static let partOfContentKey = "part_of_content"
+    static let htmlContentKey = "html_content"
     static let isPublishKey = "is_publish"
     static let categoryKey = "category"
     static let userKey = "user"
@@ -21,8 +22,9 @@ final class Post: Model {
     static let updatedAtKey = "updatedAt"
     static let formattedCreatedAtKey = "formatted_created_at"
     static let formattedUpdatedAtKey = "formatted_updated_at"
-    static let htmlContentKey = "html_content"
     
+    static let titleSize = 128
+    static let contentSize = 8192
     static let partOfContentSize = 150
     static let recentPostCount = 10
     
@@ -30,24 +32,33 @@ final class Post: Model {
 
     var title: String
     var content: String
+    var htmlContent: String
+    var partOfContent: String
     var isPublish: Bool
     var categoryId: Identifier?
     var userId: Identifier?
     var isStatic: Bool
     
     init(request: Request) throws {
+        
         title = request.data[Post.titleKey]?.string ?? ""
         content = request.data[Post.contentKey]?.string ?? ""
         isPublish = request.data[Post.isPublishKey]?.bool ?? false
         categoryId = request.data[Post.categoryKey]?.int.map { Identifier($0) }
         userId = try request.auth.assertAuthenticated(User.self).id
         isStatic = request.data[Post.isStaticKey]?.bool ?? false
+        
+        htmlContent = try HtmlHelper.html(from: content) ?? ""
+        partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentSize)
+        
         try validate()
     }
 
     init(row: Row) throws {
         title = try row.get(Post.titleKey)
         content = try row.get(Post.contentKey)
+        htmlContent = try row.get(Post.htmlContentKey)
+        partOfContent = try row.get(Post.partOfContentKey)
         isPublish = try row.get(Post.isPublishKey)
         categoryId = try row.get(Category.foreignIdKey)
         userId = try row.get(User.foreignIdKey)
@@ -55,14 +66,17 @@ final class Post: Model {
     }
     
     func validate() throws {
-        try title.validated(by: Count.containedIn(low: 1, high: 128))
-        try content.validated(by: Count.containedIn(low: 1, high: 8192))
+        try title.validated(by: Count.containedIn(low: 1, high: Post.titleSize))
+        try content.validated(by: Count.containedIn(low: 1, high: Post.contentSize))
+        try htmlContent.validated(by:  Count.containedIn(low: 1, high: Post.contentSize))
     }
 
     func makeRow() throws -> Row {
         var row = Row()
         try row.set(Post.titleKey, title)
         try row.set(Post.contentKey, content)
+        try row.set(Post.htmlContentKey, htmlContent)
+        try row.set(Post.partOfContentKey, partOfContent)
         try row.set(Post.isPublishKey, isPublish)
         try row.set(Category.foreignIdKey, categoryId)
         try row.set(User.foreignIdKey, userId)
@@ -115,19 +129,7 @@ extension Post: JSONRepresentable {
         try row.set(Post.updatedAtKey, updatedAt)
         try row.set(Post.formattedCreatedAtKey, formattedCreatedAt)
         try row.set(Post.formattedUpdatedAtKey, formattedUpdatedAt)
-        try row.set(Post.htmlContentKey, try HtmlHelper.html(from: content))
         return JSON(row)
-    }
-    
-    func makePageJSON() throws -> JSON {
-        
-        let cleanHtml = try HtmlHelper.html(from: content)
-        let doc = try SwiftSoup.parse(cleanHtml ?? "")
-        
-        var json = try makeJSON()
-        try json.set(Post.partOfContentKey, doc.text().take(n: Post.partOfContentSize))
-        
-        return json
     }
 }
 
@@ -168,33 +170,14 @@ extension Post: Updateable {
         categoryId = req.data[Post.categoryKey]?.int.map { Identifier($0) }
         isStatic = req.data[Post.isStaticKey]?.bool ?? false
         
+        htmlContent = try HtmlHelper.html(from: content) ?? ""
+        partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentSize)
+        
         try validate()
     }
     
     static var updateableKeys: [UpdateableKey<Post>] {
         return []
-    }
-}
-
-// MARK: - Page + Post
-extension Page where E: Post {
-    
-    func makePageJSON() throws -> JSON {
-        var json = try makeJSON()
-        try json.set("data", data.makePageJSON())
-        return json
-    }
-}
-
-extension Sequence where Iterator.Element: Post {
-    
-    func makePageJSON() throws -> JSON {
-        
-        let json: [StructuredData] = try map {
-            try $0.makePageJSON().wrapped
-        }
-        
-        return JSON(.array(json))
     }
 }
 
