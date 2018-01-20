@@ -62,7 +62,8 @@ extension Config {
             ChangeContentLengthTo8192.self,
             TwitterAuth.self,
             Image.self,
-            SupportStaticContent.self
+            SupportStaticContent.self,
+            AddHtmlToPost.self
         ]
     }
 }

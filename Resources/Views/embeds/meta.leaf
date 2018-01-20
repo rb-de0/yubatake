@@ -1,2 +1,22 @@
+#if(meta) {
+  <meta property="og:title" content="#(page_title)">
+  <meta property="og:url" content="#(page_url)">
+  <meta property="og:description" content="#(meta.page_description)">
+  <meta property="og:image" content="#(meta.page_image)">
+  <meta property="og:site_name" content="#(site_info.name)">
+
+  #if(title) {
+    <meta property="og:type" content="artcle">
+  } ##else() {
+    <meta property="og:type" content="website">
+  }
+
+  #if(meta.twitter) {
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:image:alt" content="#(meta.twitter.image_alt)">
+    <meta name="twitter:site" content="#(meta.twitter.username)">
+  }
+}
+
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
