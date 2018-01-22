@@ -10,6 +10,7 @@ final class HtmlHelper: ApplicationHelper {
         return try Whitelist.relaxed()
             .removeProtocols("img", "src", "http", "https")
             .removeProtocols("a", "href", "ftp", "http", "https", "mailto")
+            .addAttributes("blockquote", "class", "data-lang")
     }
     
     class func html(from markdown: String) throws -> String? {

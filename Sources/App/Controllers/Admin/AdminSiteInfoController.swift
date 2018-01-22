@@ -7,7 +7,7 @@ final class AdminSiteInfoController: ResourceRepresentable {
     struct ContextMaker {
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-siteInfo", menuType: .siteInfo)
+            return AdminViewContext(path: "admin/edit-siteInfo", menuType: .siteInfo, formDataDeliverer: SiteInfo.self)
         }
     }
     
@@ -33,7 +33,7 @@ final class AdminSiteInfoController: ResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/siteinfo/edit", withError: error, for: request)
+            return Response(redirect: "/admin/siteinfo/edit",with: FormError(error: error, deliverer: SiteInfo.self), for: request)
         }
     }
 }

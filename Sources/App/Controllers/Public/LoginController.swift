@@ -27,7 +27,7 @@ final class LoginController: ResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "login", withError: error, for: request)
+            return Response(redirect: "login", with: FormError(error: error), for: request)
         }
     }
 }

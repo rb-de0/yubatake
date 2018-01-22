@@ -62,6 +62,7 @@ $(document).on('click', '#admin-content-preview-button', function (e) {
   $.post(makeRequestURL("/api/converted_markdown"), $("form").serialize())
     .done(function(response) {
       $("#post-content-body").html(response["html"])
+      twttr.widgets.load()
     })
 })
 

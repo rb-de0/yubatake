@@ -1,9 +1,9 @@
 #extend("base/admin-base")
 
 #export("content") {
-  <div id="admin-page-title">#if(post) {Edit Post} ##else() {New Post}</div>
+  <div id="admin-page-title">#if(post.id) {Edit Post} ##else() {New Post}</div>
 
-  <form class="pure-form" action="/admin/posts#if(post) {/#(post.id)/edit}" method="post">
+  <form class="pure-form" action="/admin/posts#if(post.id) {/#(post.id)/edit}" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
     <div class="field-error">#(request.storage.error_message)</div>
@@ -67,7 +67,7 @@
       </div>
 
       <fieldset class="pure-group">
-        #if(post) {} ##else() {
+        #if(post.id) {} ##else() {
           <div class="admin-option-item">
             <label for="admin-post-should-tweet" class="pure-form-item-inline">
               <input id="admin-post-should-tweet" name="should-tweet" type="checkbox"/> Share to Twitter
@@ -91,15 +91,13 @@
     </fieldset>
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
-      #if(post) {Update} ##else() {Post}
+      #if(post.id) {Update} ##else() {Post}
     </button>
   </form>
 
   <div id="admin-content-preview">
     <button id="admin-content-preview-close-button" class="pure-button pure-button-primary">Close</button>
-    <div id="post-content-body">
-      #raw(html_content)
-    </div>
+    <div id="post-content-body"></div>
   </div>
 
 }

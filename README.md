@@ -6,7 +6,7 @@ A simple CMS using Vapor(Server Side Swift Framework)
 
 ### Swift
 
-- 4.0.2
+- 4.0.3
 
 ### OS
 
@@ -25,7 +25,7 @@ If you are using Ubuntu, it is easy to install using swiftenv.
 Example(swiftenv)
 
 ```bash
-$ swiftenv install 4.0.2
+$ swiftenv install 4.0.3
 ```
 
 #### 2. Install MySQL

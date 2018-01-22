@@ -10,7 +10,7 @@ final class AdminCategoryController: EditableResourceRepresentable {
         }
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/new-category", menuType: .categories)
+            return AdminViewContext(path: "admin/new-category", menuType: .categories, formDataDeliverer: Category.self)
         }
     }
     
@@ -55,7 +55,7 @@ final class AdminCategoryController: EditableResourceRepresentable {
 
         } catch {
             
-            return Response(redirect: "/admin/categories/create", withError: error, for: request)
+            return Response(redirect: "/admin/categories/create", with: FormError(error: error, deliverer: Category.self), for: request)
         }
     }
     
@@ -77,7 +77,7 @@ final class AdminCategoryController: EditableResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/categories/\(id)/edit", withError: error, for: request)
+            return Response(redirect: "/admin/categories/\(id)/edit", with: FormError(error: error, deliverer: Category.self), for: request)
         }
         
     }

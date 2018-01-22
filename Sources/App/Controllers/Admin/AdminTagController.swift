@@ -11,7 +11,7 @@ final class AdminTagController: EditableResourceRepresentable {
         }
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/new-tag", menuType: .tags)
+            return AdminViewContext(path: "admin/new-tag", menuType: .tags, formDataDeliverer: Tag.self)
         }
     }
     
@@ -56,7 +56,7 @@ final class AdminTagController: EditableResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/tags/create", withError: error, for: request)
+            return Response(redirect: "/admin/tags/create", with: FormError(error: error, deliverer: Tag.self), for: request)
         }
     }
     
@@ -79,7 +79,7 @@ final class AdminTagController: EditableResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/tags/\(id)/edit", withError: error, for: request)
+            return Response(redirect: "/admin/tags/\(id)/edit", with: FormError(error: error, deliverer: Tag.self), for: request)
         }
     }
     
