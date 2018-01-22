@@ -68,7 +68,7 @@ final class AdminImageViewController: EditableResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/images/\(id)/edit", withError: error, for: request)
+            return Response(redirect: "/admin/images/\(id)/edit", with: FormError(error: error), for: request)
         }
     }
     

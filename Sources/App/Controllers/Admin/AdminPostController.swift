@@ -12,7 +12,7 @@ final class AdminPostController: EditableResourceRepresentable {
         }
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/new-post", menuType: .posts)
+            return AdminViewContext(path: "admin/new-post", menuType: .posts, formDataDeliverer: Post.self)
         }
     }
     
@@ -80,7 +80,7 @@ final class AdminPostController: EditableResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/posts/create", withError: error, for: request)
+            return Response(redirect: "/admin/posts/create", with: FormError(error: error, deliverer: Post.self), for: request)
         }
     }
     
@@ -122,7 +122,7 @@ final class AdminPostController: EditableResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/posts/\(id)/edit", withError: error, for: request)
+            return Response(redirect: "/admin/posts/\(id)/edit", with: FormError(error: error, deliverer: Post.self), for: request)
         }
     }
     

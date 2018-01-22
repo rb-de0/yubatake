@@ -14,14 +14,16 @@ final class AdminViewContext: ApplicationHelper {
     // MARK: - Instance
     
     private let path: String
+    private let formDataDeliverer: FormDataDeliverable.Type
     
     private var menuType: AdminMenuType?
     private var title: String?
     
-    init(path: String, menuType: AdminMenuType? = nil, title: String? = nil) {
+    init(path: String, menuType: AdminMenuType? = nil, title: String? = nil, formDataDeliverer: FormDataDeliverable.Type = NoDerivery.self) {
         self.path = path
         self.menuType = menuType
         self.title = title
+        self.formDataDeliverer = formDataDeliverer
     }
     
     func addTitle(_ title: String) -> Self {
@@ -42,6 +44,10 @@ final class AdminViewContext: ApplicationHelper {
         try node.set("csrf_token", try CSRF().createToken(from: request))
         try node.set("menu_type", menuType?.rawValue)
         try node.set("page_title", title ?? siteInfo.name)
+        
+        if let redirectFormData = (request.storage[formDataDeliverer.formDataKey] as? Node)?.object {
+            try formDataDeliverer.override(node: &node, with: redirectFormData)
+        }
         
         return try type(of: self).viewRenderer.make(path, node, for: request)
     }
