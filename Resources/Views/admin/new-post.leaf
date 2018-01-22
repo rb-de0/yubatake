@@ -97,9 +97,7 @@
 
   <div id="admin-content-preview">
     <button id="admin-content-preview-close-button" class="pure-button pure-button-primary">Close</button>
-    <div id="post-content-body">
-      #raw(html_content)
-    </div>
+    <div id="post-content-body"></div>
   </div>
 
 }
