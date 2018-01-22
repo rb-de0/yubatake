@@ -7,7 +7,7 @@ final class AdminUserController: ResourceRepresentable {
     struct ContextMaker {
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-user", menuType: .userSettings)
+            return AdminViewContext(path: "admin/edit-user", menuType: .userSettings, formDataDeliverer: User.self)
         }
     }
     
@@ -33,7 +33,7 @@ final class AdminUserController: ResourceRepresentable {
             
         } catch {
             
-            return Response(redirect: "/admin/user/edit", withError: error, for: request)
+            return Response(redirect: "/admin/user/edit", with: FormError(error: error, deliverer: User.self), for: request)
         }
     }
 }
