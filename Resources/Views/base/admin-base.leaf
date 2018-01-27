@@ -47,6 +47,9 @@
         <li class="pure-menu-item #equal(menu_type, "site_info") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/siteinfo/edit">SiteInfo</a>
         </li>
+        <li class="pure-menu-item #equal(menu_type, "edit_file") { pure-menu-selected }">
+          <a class="pure-menu-link" href="/admin/files">EditFile</a>
+        </li>
         <li class="pure-menu-item #equal(menu_type, "user") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/user/edit">UserSetting</a>
         </li>
@@ -56,6 +59,8 @@
       </ul>
     </div>
   </div>
+
+  #import("script")
 
 </body>
 

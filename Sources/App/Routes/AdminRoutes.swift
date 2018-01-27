@@ -27,6 +27,7 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
         admin.editableResource("images", AdminImageViewController())
         admin.resource("siteinfo/edit", AdminSiteInfoController())
         admin.resource("user/edit", AdminUserController())
+        admin.resource("files", AdminFileController())
         admin.get("static-contents", handler: adminPostController.indexStaticContent)
     }
 }

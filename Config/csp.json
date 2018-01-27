@@ -19,6 +19,9 @@
         "https://cdnjs.cloudflare.com",
         "https://*.twitter.com",
         "https://*.twimg.com",
+        "https://*.jsdelivr.net",
+        "https://*.githubusercontent.com",
+        "'unsafe-eval'",
         "'unsafe-inline'"
       ]
     },
@@ -36,5 +39,4 @@
         "data:"
       ]
     }
-  ]
-  
+]

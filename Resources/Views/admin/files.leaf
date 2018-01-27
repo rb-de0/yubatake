@@ -1,0 +1,11 @@
+#extend("base/admin-base")
+
+#export("content") {
+  <div id="app">
+    {{ message }}
+  </div>
+}
+
+#export("script") {
+  <script src="/js/file-editor.js"></script>
+}
