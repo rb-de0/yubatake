@@ -1,11 +1,50 @@
 #extend("base/admin-base")
 
-#export("content") {
-  <div id="app">
-    {{ message }}
-  </div>
+#export("additional-resources") {
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
 }
 
-#export("script") {
-  <script src="/js/file-editor.js"></script>
-}
+#export("content") {
+
+  <div id="admin-page-title">File Editor</div>
+  
+  <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
+
+  <div id="file-editor-app">
+    <div class="pure-g">
+
+      <div id="file-list" class="pure-u-1 pure-u-lg-1-5">
+        <div class="pure-menu">
+          <ul class="pure-menu-list">
+            <div v-for="group in grouplist">
+              <div class="file-list-group">{{ group.name }}</div>
+              <div v-for="file in group.files" class="pure-menu-item">
+                <a v-on:click="selectFile(file)" class="pure-menu-link file-list-item">{{ file.name }}</a>
+              </div>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pure-u-1 pure-u-lg-4-5">
+          <div v-show="isFileSelected" id="file-editor-container">
+            <div id="file-editor-header">
+              <div v-if="isFileSelected" id="file-name">{{ selectedFile.name }}</div>
+              <button v-on:click="save" class="pure-button pure-button-primary">Save</button>
+            </div>
+            <div class="pure-g">
+              <div v-for="(body, index) in bodies" class="pure-u-1-2 file-body-tab" v-bind:class="{ selected: index === selectedBodyIndex }" v-on:click="selectBodyIndex(index)">
+                <div v-if=body.customized>User</div>
+                <div v-if=!body.customized>Original</div>
+              </div>
+            </div>
+            <div id="file-editor"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  #export("script") {
+    <script src="/js/file-editor.js"></script>
+  }

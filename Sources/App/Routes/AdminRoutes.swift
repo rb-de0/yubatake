@@ -18,16 +18,14 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
             RedirectMiddleware.login(),
             PasswordAuthenticationMiddleware<User>()
         ]).grouped("admin")
-        
-        let adminPostController = AdminPostController()
-        
+
         admin.editableResource("tags", AdminTagController())
         admin.editableResource("categories", AdminCategoryController())
-        admin.editableResource("posts", adminPostController)
+        admin.editableResource("posts",  AdminPostController())
         admin.editableResource("images", AdminImageViewController())
         admin.resource("siteinfo/edit", AdminSiteInfoController())
         admin.resource("user/edit", AdminUserController())
         admin.resource("files", AdminFileController())
-        admin.get("static-contents", handler: adminPostController.indexStaticContent)
+        admin.get("static-contents", handler:  AdminPostController().indexStaticContent)
     }
 }

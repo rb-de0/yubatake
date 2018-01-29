@@ -15,4 +15,9 @@ DerivedData/
 ### Public ###
 favicon.ico
 Public/documents/
+
+### User Files ###
+Public/user
+Resources/Views/user
+
 # End of https://www.gitignore.io/api/vapor

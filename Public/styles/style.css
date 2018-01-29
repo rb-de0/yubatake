@@ -524,6 +524,7 @@ ol {
 .admin-option-item {
   padding: 2px 0px;
 }
+
 .admin-form-group-title {
   margin-top: 16px;
   font-size: 24px;
@@ -551,6 +552,62 @@ ol {
 .admin-image-card-img {
   width: 100%;
   height: 100%;
+}
+
+/* --------------------------
+* Editor
+* --------------------------
+*/
+
+#file-editor-app {
+  margin-top: 16px;
+}
+
+#file-list {
+  margin-bottom: 32px;
+}
+
+#file-editor-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+#file-name {
+  display: flex;
+  align-items: flex-end;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#file-editor-container {
+  padding: 0px 8px;
+  height: 100%;
+}
+
+#file-editor {
+  height: 90%;
+  min-height: 540px;
+}
+
+.file-list-group {
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 16px;
+  margin-bottom: 4px;
+}
+
+.file-list-item {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.file-body-tab {
+  background-color: #ddd;
+}
+
+.file-body-tab.selected {
+  background-color: #fff;
 }
 
 /* --------------------------
@@ -612,6 +669,10 @@ ol {
   .post-content-header-text {
     margin-right: 0px;
     margin-left: 16px;
+  }
+
+  #file-list {
+    margin-bottom: 0px;
   }
 }
 
