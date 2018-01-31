@@ -580,14 +580,23 @@ ol {
   font-weight: bold;
 }
 
+#file-save-button-container {
+  display: flex;
+  align-items: flex-end;
+}
+
+#file-save-button-container .field-error {
+  margin-right: 8px;
+}
+
 #file-editor-container {
   padding: 0px 8px;
   height: 100%;
 }
 
 #file-editor {
-  height: 90%;
-  min-height: 540px;
+  height: 540px;
+  margin-bottom: 16px;
 }
 
 .file-list-group {
@@ -603,7 +612,13 @@ ol {
 }
 
 .file-body-tab {
-  background-color: #ddd;
+  font-weight: bold;
+  background-color: #ccc;
+  cursor: pointer;
+}
+
+.file-body-tab-inner {
+  margin: 4px 12px;
 }
 
 .file-body-tab.selected {
@@ -669,6 +684,11 @@ ol {
   .post-content-header-text {
     margin-right: 0px;
     margin-left: 16px;
+  }
+
+  #file-editor {
+    height: 90%;
+    margin-bottom: 0px;
   }
 
   #file-list {

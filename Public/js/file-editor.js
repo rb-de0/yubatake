@@ -19,7 +19,8 @@ var viewModel = new Vue({
     grouplist: null,
     selectedFile: null,
     bodies: null,
-    selectedBodyIndex: 0
+    selectedBodyIndex: 0,
+    hasError: false
   },
   computed: {
     isFileSelected: function () {
@@ -72,11 +73,12 @@ var viewModel = new Vue({
         }
       })
       .then(function (response) {
+        receiver.hasError = false
         receiver.bodies = response.data.bodies
         receiver.updateEditor()
       })
       .catch(function (error) {
-        console.log(error)
+        receiver.hasError = true
       })
     },
     updateEditor: function () {
@@ -131,11 +133,11 @@ var viewModel = new Vue({
         'csrf-token': csrfToken
       })
       .then(function (response) {
+        receiver.hasError = false
         receiver.fetchFileBody()
-        console.log(response)
       })
       .catch(function (error) {
-        console.log(error)
+        receiver.hasError = true
       })
 
     }
