@@ -46,7 +46,11 @@ extension Config {
         // Redis Session Store
         let redisCache = try RedisCache(config: self)
         let sessions = CacheSessions(redisCache, defaultExpiration: 86400)
-        addConfigurable(middleware: { _ in SessionsMiddleware(sessions) }, name: "redis-sessions")
+        addConfigurable(middleware: SessionsMiddleware(sessions), name: "redis-sessions")
+        
+        // User Public File
+        let userFileMiddleware = UserFileMiddleware(userPublicDir: publicDir + FileHelper.userRelativePath)
+        addConfigurable(middleware: userFileMiddleware, name: "userfile")
     }
     
     private func setupPreparations() throws {

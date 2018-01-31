@@ -33,6 +33,7 @@
         "error",
         "date",
         "file",
+        "userfile",
         "redis-sessions",
         "security-headers",
         "csrf"

@@ -118,9 +118,10 @@ var viewModel = new Vue({
 
       this.bodies[this.selectedBodyIndex].body = this.editor.getValue()
 
-      var body = this.bodies.find(function(elem, _, _) {
+      var bodyObj = this.bodies.find(function(elem, _, _) {
         return elem.customized === true
-      }).body
+      })
+      var body = bodyObj === undefined ? this.bodies[0].body : bodyObj.body
       var type = this.selectedFile.type
       var path = this.selectedFile.path
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
