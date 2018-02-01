@@ -107,7 +107,7 @@ extension FileHelper {
         if fileManager.fileExists(atPath: url.absoluteString) {
             try data.write(to: url)
         } else {
-            let dir = (path as NSString).deletingLastPathComponent
+            let dir = path.deletingLastPathComponent
             if !fileManager.fileExists(atPath: dir) {
                 try fileManager.createDirectory(atPath: dir, withIntermediateDirectories: true, attributes: nil)
             }

@@ -51,7 +51,7 @@ extension Config {
         addConfigurable(middleware: userFileMiddleware, name: "userfile")
         
         // leaf
-        addConfigurable(view: { config in UserLeafRenderder(viewsDir: config.viewsDir, userDir: config.userPublicDir) }, name: "userleaf")
+        addConfigurable(view: { config in UserLeafRenderder(viewsDir: config.viewsDir, userDir: config.userViewDir.finished(with: "/")) }, name: "userleaf")
     }
     
     private func setupPreparations() throws {

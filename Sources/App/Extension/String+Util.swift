@@ -19,4 +19,8 @@ extension String {
     func normalized() -> String {
         return NSString(string: string).standardizingPath
     }
+    
+    var deletingLastPathComponent: String {
+        return String(components(separatedBy: "/").dropLast().joined(separator: "/"))
+    }
 }
