@@ -49,6 +49,17 @@ final class AdminViewContext: ApplicationHelper {
             try formDataDeliverer.override(node: &node, with: redirectFormData)
         }
         
-        return try type(of: self).viewRenderer.make(path, node, for: request)
+        do {
+            let view = try type(of: self).viewRenderer.make(FileHelper.userDirectoryName.finished(with: "/") + path, node, for: request)
+            return view
+        } catch let error as DataFileError {
+            if case .load(_) = error {
+                return try type(of: self).viewRenderer.make(path, node, for: request)
+            } else {
+                throw error
+            }
+        } catch {
+            throw error
+        }
     }
 }

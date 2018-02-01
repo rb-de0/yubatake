@@ -9,6 +9,7 @@
       "https://unpkg.com",
       "https://cdnjs.cloudflare.com",
       "https://*.twitter.com",
+      "https://*.twimg.com",
       "'unsafe-inline'"
     ]
   },
