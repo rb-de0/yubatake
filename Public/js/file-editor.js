@@ -25,6 +25,17 @@ var viewModel = new Vue({
   computed: {
     isFileSelected: function () {
       return this.selectedFile !== null
+    },
+    hasUserFile: function() {
+
+      if (this.bodies === null) {
+        return false
+      }
+
+      var bodyObj = this.bodies.find(function(elem, _, _) {
+        return elem.customized === true
+      })
+      return bodyObj !== undefined
     }
   },
   watch: {
@@ -140,7 +151,30 @@ var viewModel = new Vue({
       .catch(function (error) {
         receiver.hasError = true
       })
+    },
+    destroy: function() {
 
+      if (this.selectedFile === null) {
+        return
+      }
+
+      var type = this.selectedFile.type
+      var path = this.selectedFile.path
+      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
+      var receiver = this
+
+      axios.post(makeRequestURL("/api/filebody/delete"), {
+        path: path,
+        type: type,
+        'csrf-token': csrfToken
+      })
+      .then(function (response) {
+        receiver.hasError = false
+        receiver.fetchFileBody()
+      })
+      .catch(function (error) {
+        receiver.hasError = true
+      })
     }
   },
   mounted: function() {

@@ -15,4 +15,8 @@ extension String {
         guard !self.hasPrefix(start) else { return self }
         return start + self
     }
+    
+    func normalized() -> String {
+        return NSString(string: string).standardizingPath
+    }
 }

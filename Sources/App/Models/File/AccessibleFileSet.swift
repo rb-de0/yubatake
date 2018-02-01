@@ -66,6 +66,10 @@ final class AccessibleFileSet: JSONRepresentable {
         try FileHelper.writeUserFileData(at: path, type: type, data: body)
     }
     
+    func delete() throws {
+        try FileHelper.deleteUserFileData(at: path, type: type)
+    }
+    
     func makeJSON() throws -> JSON {
         var json = JSON()
         try json.set(AccessibleFileSet.pathKey, path)

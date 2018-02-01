@@ -31,5 +31,11 @@ extension API {
             let set = try AccessibleFileSet(request: request)
             return try set.makeJSON()
         }
+        
+        func destroy(request: Request) throws -> ResponseRepresentable {
+            let set = try AccessibleFileSet(request: request)
+            try set.delete()
+            return Response(status: .ok)
+        }
     }
 }

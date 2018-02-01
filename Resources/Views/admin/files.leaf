@@ -33,6 +33,7 @@
               <div id="file-save-button-container">
                 <div v-if="hasError" class="field-error">An error occurred.</div>
                 <button v-on:click="save" class="pure-button pure-button-primary">Save</button>
+                <button v-if="hasUserFile" v-on:click="destroy" class="button-delete pure-button pure-button-primary">Delete</button>
               </div>
             </div>
             <div class="pure-g">

@@ -3,27 +3,33 @@ import Vapor
 
 final class FileHelper: ApplicationHelper {
     
-    static let imageRelativePath = "/documents/imgs"
-    static let userRelativePath = "/user"
-    static let userDirectoryName = "user"
+    private static var publicDir: String!
+    private static var viewDir: String!
+    private static var userViewDir: String!
+    private static var userPublicDir: String!
+    private static var imageDir: String!
     
-    static let styleRelativePath = "/styles"
-    static let styleExtension = "css"
-    static let styleGroupName = "CSS"
+    private static var scriptConfig: FileConfig!
+    private static var styleConfig: FileConfig!
+    private static var viewConfig: FileConfig!
     
-    static let scriptRelativePath = "/js"
-    static let scriptExtension = "js"
-    static let scriptGroupName = "JavaScript"
-    
-    static let viewExtension = "leaf"
-    static let viewGroupName = "View"
-    
-    static var publicDir: String!
-    static var viewDir: String!
+    static var userRelativePath: String!
+    static var imageRelativePath: String!
     
     static func setup(_ drop: Droplet) throws {
+        
         publicDir = drop.config.publicDir
         viewDir = drop.config.viewsDir
+        userViewDir = drop.config.userViewDir
+        userPublicDir = drop.config.userPublicDir
+        imageDir = drop.config.imageDir
+        
+        scriptConfig = drop.config.scriptConfig
+        styleConfig = drop.config.styleConfig
+        viewConfig = drop.config.viewConfig
+        
+        userRelativePath = drop.config.userRelativePath
+        imageRelativePath = drop.config.imageRelativePath
         
         try createImageDirIfNeeded()
     }
@@ -46,7 +52,7 @@ extension FileHelper {
     }
     
     private class func createImageDirIfNeeded() throws {
-        try FileManager.default.createDirectory(atPath: publicDir.finished(with: "/") + imageRelativePath, withIntermediateDirectories: true, attributes: nil)
+        try FileManager.default.createDirectory(atPath: imageDir, withIntermediateDirectories: true, attributes: nil)
     }
 }
 
@@ -56,27 +62,35 @@ extension FileHelper {
     class func accessibleFiles() -> [AccessibleFileGroup] {
         
         let scriptGroups = [
-            FileGroup(rootPath: publicDir, groupPath: "", searchPath: scriptRelativePath, ext: scriptExtension, customized: false),
-            FileGroup(rootPath: publicDir, groupPath: userRelativePath, searchPath: scriptRelativePath, ext: scriptExtension, customized: true)
+            FileGroup(config: scriptConfig),
+            FileGroup(config: scriptConfig, userPath: userRelativePath)
         ]
         
-        let scriptGroup = AccessibleFileGroup.make(from: scriptGroups, with: scriptGroupName, type: .publicResource)
+        let scriptGroup = AccessibleFileGroup.make(from: scriptGroups, with: scriptConfig.groupName, type: .publicResource)
 
         let styleGroups = [
-            FileGroup(rootPath: publicDir, groupPath: "", searchPath: styleRelativePath, ext: styleExtension, customized: false),
-            FileGroup(rootPath: publicDir, groupPath: userRelativePath, searchPath: styleRelativePath, ext: styleExtension, customized: true)
+            FileGroup(config: styleConfig),
+            FileGroup(config: styleConfig, userPath: userRelativePath)
         ]
         
-        let styleGroup = AccessibleFileGroup.make(from: styleGroups, with: styleGroupName, type: .publicResource)
+        let styleGroup = AccessibleFileGroup.make(from: styleGroups, with: styleConfig.groupName, type: .publicResource)
         
         let viewGroups = [
-            FileGroup(rootPath: viewDir, groupPath: "", searchPath: "", ext: viewExtension, customized: false, ignoring: userDirectoryName),
-            FileGroup(rootPath: viewDir, groupPath: userRelativePath, searchPath: "", ext: viewExtension, customized: true)
+            FileGroup(config: viewConfig),
+            FileGroup(config: viewConfig, userPath: userRelativePath)
         ]
         
-        let viewGroup = AccessibleFileGroup.make(from: viewGroups, with: viewGroupName, type: .view)
+        let viewGroup = AccessibleFileGroup.make(from: viewGroups, with: styleConfig.groupName, type: .view)
         
         return [scriptGroup, styleGroup, viewGroup]
+    }
+}
+
+// MARK: I/O
+extension FileHelper {
+    
+    private class func userDir(at type: FileType) -> String {
+        return type == .view ? userViewDir : userPublicDir
     }
     
     class func writeUserFileData(at path: String, type: FileType, data: String) throws {
@@ -85,8 +99,7 @@ extension FileHelper {
             throw Abort(.badRequest)
         }
         
-        let userDirectoryPath = type == .view ? viewDir + userRelativePath : publicDir + userRelativePath
-        let path = NSString(string: userDirectoryPath.finished(with: "/") + path).standardizingPath
+        let path = (userDir(at: type).finished(with: "/") + path).normalized()
         let url = URL(fileURLWithPath: path)
         
         let fileManager = FileManager.default
@@ -102,14 +115,19 @@ extension FileHelper {
         }
     }
     
+    class func deleteUserFileData(at path: String, type: FileType) throws {
+        let path = (userDir(at: type).finished(with: "/") + path).normalized()
+        try FileManager.default.removeItem(atPath: path)
+    }
+    
     class func readFileData(at path: String, type: FileType) throws -> String {
         
         let path = type == .view ? viewDir.finished(with: "/") + path : publicDir.finished(with: "/") + path
         
         guard let fileData = FileManager.default.contents(atPath: path),
             let fileString = String(data: fileData, encoding: .utf8) else {
-
-            throw Abort(.notFound)
+                
+                throw Abort(.notFound)
         }
         
         return fileString

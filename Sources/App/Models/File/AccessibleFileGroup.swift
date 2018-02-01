@@ -28,8 +28,8 @@ final class AccessibleFileGroup: JSONRepresentable {
             
             for file in group.files {
                 
-                let relativePath = String(file.fullPath.dropFirst(group.groupPath.count)).started(with: "/")
-                let relativePathToRoot = String(file.fullPath.dropFirst(group.rootPath.count)).started(with: "/")
+                let relativePath = String(file.fullPath.dropFirst(group.groupDir.count)).started(with: "/")
+                let relativePathToRoot = String(file.fullPath.dropFirst(group.rootDir.count)).started(with: "/")
                 
                 if let existFile = accessibleFiles.first(where: { $0.relativePath == relativePath  }) {
                     if group.customized {

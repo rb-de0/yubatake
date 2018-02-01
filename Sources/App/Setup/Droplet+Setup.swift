@@ -35,7 +35,7 @@ extension Droplet {
     }
     
     private func registerTags() {
-        (view as? LeafRenderer)?.stem.register(Escape())
+        (view as? UserLeafRenderder)?.stem.register(Escape())
     }
     
     private func createRootUserIfNeeded() throws {

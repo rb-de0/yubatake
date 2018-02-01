@@ -32,7 +32,6 @@
     "middleware": [
         "error",
         "date",
-        "file",
         "userfile",
         "redis-sessions",
         "security-headers",
@@ -45,5 +44,5 @@
         "prepare"
     ],
     
-    "view": "leaf"
+    "view": "userleaf"
 }

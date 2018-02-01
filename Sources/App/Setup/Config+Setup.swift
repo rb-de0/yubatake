@@ -26,8 +26,6 @@ extension Config {
     
     private func setupProviders() throws {
         try addProvider(FluentProvider.Provider.self)
-        try addProvider(LeafProvider.Provider.self)
-        try addProvider(MarkdownProvider.Provider.self)
         try addProvider(MySQLProvider.Provider.self)
     }
     
@@ -49,8 +47,11 @@ extension Config {
         addConfigurable(middleware: SessionsMiddleware(sessions), name: "redis-sessions")
         
         // User Public File
-        let userFileMiddleware = UserFileMiddleware(userPublicDir: publicDir + FileHelper.userRelativePath)
+        let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: userPublicDir)
         addConfigurable(middleware: userFileMiddleware, name: "userfile")
+        
+        // leaf
+        addConfigurable(view: { config in UserLeafRenderder(viewsDir: config.viewsDir, userDir: config.userPublicDir) }, name: "userleaf")
     }
     
     private func setupPreparations() throws {

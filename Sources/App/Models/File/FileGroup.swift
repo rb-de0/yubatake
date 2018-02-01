@@ -2,21 +2,41 @@ import Foundation
 
 struct FileGroup {
     
-    let rootPath: String
-    let groupPath: String
-    let searchPath: String
-    let ext: String
+    struct File {
+        let fullPath: String
+        let name: String
+        
+        init(fullPath: String, name: String) {
+            self.fullPath = fullPath.normalized()
+            self.name = name
+        }
+        
+        var isDir: Bool {
+            var isDir = ObjCBool(false)
+            FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDir)
+            
+            #if os(Linux)
+                return isDir
+            #else
+                return isDir.boolValue
+            #endif
+        }
+    }
+    
+    let rootDir: String
+    let groupDir: String
     let customized: Bool
     
     private(set) var files = [File]()
     
-    init(rootPath: String, groupPath: String, searchPath: String, ext: String, customized: Bool, ignoring ignoreDirectory: String? = nil) {
-        self.rootPath = rootPath
-        self.groupPath = NSString(string: rootPath.finished(with: "/") + groupPath).standardizingPath
-        self.searchPath = NSString(string: self.groupPath.finished(with: "/") + searchPath).standardizingPath
-        self.ext = ext
-        self.customized = customized
-        self.files = searchFiles(in: self.searchPath, ext: ext, ignoring: ignoreDirectory)
+    init(config: FileConfig, userPath: String = "") {
+        
+        rootDir = config.rootDir
+        groupDir = (rootDir.finished(with: "/") + userPath).normalized()
+        customized = !userPath.isEmpty
+        
+        let searchPath = (groupDir.finished(with: "/") + config.relativePath).normalized()
+        files = searchFiles(in: searchPath, ext: config.fileExtension, ignoring: config.ignoreDirectory)
     }
     
     private func searchFiles(in directory: String, ext: String, ignoring ignoreDirectory: String?) -> [File] {
@@ -30,3 +50,10 @@ struct FileGroup {
     }
 }
 
+extension FileManager {
+    
+    func contents(in directory: String) -> [FileGroup.File] {
+        let contents = (try? contentsOfDirectory(atPath: directory)) ?? []
+        return contents.map { FileGroup.File(fullPath: directory.finished(with: "/") + $0, name: $0) }
+    }
+}

@@ -16,5 +16,6 @@ final class APIRoutes: RouteCollection, EmptyInitializable {
         api.resource("files", API.FileController())
         api.get("filebody", handler: API.FileController().show)
         api.post("filebody", handler: API.FileController().store)
+        api.post("filebody/delete", handler: API.FileController().destroy)
     }
 }
