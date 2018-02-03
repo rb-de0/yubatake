@@ -1,5 +1,11 @@
 #extend("base/base")
 
+#export("additional-resources") {
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js"></script>
+}
+
 #export("content") {
   <div id="post-content-header" class="pure-group">
     <div id="post-content-header-left" class="pure-u-1">
@@ -40,7 +46,6 @@
   <div id="post-content-body">
     #raw(html_content)
   </div>
-
 
   <script>hljs.initHighlightingOnLoad()</script>
 }

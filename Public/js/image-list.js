@@ -1,5 +1,5 @@
 var viewModel = new Vue({
-  el: '#admin-selectable-form',
+  el: '#content',
   methods: {
     upload: function (e) {
       var fileName = e.target.value.split('/').pop().split('\\').pop()

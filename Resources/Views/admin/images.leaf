@@ -1,7 +1,7 @@
 #extend("base/admin-base")
 
-#export("additional-resources") {
-  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+#export("script") {
+  <script src="/js/image-list.js"></script>
 }
 
 #export("content") {
@@ -49,8 +49,4 @@
       </div>
     </div>
   </form>
-}
-
-#export("script") {
-  <script src="/js/images.js"></script>
 }

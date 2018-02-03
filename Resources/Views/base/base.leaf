@@ -4,6 +4,7 @@
 <head>
   <title>#(page_title)</title>
   #embed("embeds/resources")
+  #import("additional-resources")
   #embed("embeds/meta")
 </head>
 
@@ -13,7 +14,7 @@
     #import("content")
   </div>
 
-  <div id="toggle-menu">
+  <div id="toggle-menu" v-on:click="toggleMenu">
     <div id="toggle-menu-container">
       <span></span>
       <span></span>
@@ -51,6 +52,7 @@
     </div>
   </div>
 
+  <script src="/js/menu.js"></script>
 </body>
 
 </html>
