@@ -48,6 +48,8 @@ final class AccessibleFileGroup: JSONRepresentable {
             }
         }
         
+        accessibleFiles.sort(by: { $0.name < $1.name })
+        
         return AccessibleFileGroup(name: name, files: accessibleFiles)
     }
 }

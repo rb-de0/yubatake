@@ -34,6 +34,10 @@ ol {
   -webkit-padding-start: 24px;
 }
 
+[v-cloak] {
+  display: none;
+}
+
 .pure-form .pure-group li input {
   display: inline;
 }
@@ -559,10 +563,6 @@ ol {
 * --------------------------
 */
 
-#file-editor-app {
-  margin-top: 16px;
-}
-
 #file-list {
   margin-bottom: 32px;
 }
@@ -575,9 +575,14 @@ ol {
 
 #file-name {
   display: flex;
-  align-items: flex-end;
+  margin-right: 8px;
   font-size: 18px;
   font-weight: bold;
+}
+
+#file-name-container {
+  display: flex;
+  align-items: flex-end;
 }
 
 #file-save-button-container {
@@ -585,8 +590,8 @@ ol {
   align-items: flex-end;
 }
 
-#file-save-button-container .field-error {
-  margin-right: 8px;
+#file-save-button-container .button-delete {
+  margin-left: 8px;
 }
 
 #file-editor-container {
@@ -612,6 +617,7 @@ ol {
 }
 
 .file-body-tab {
+  font-size: 12px;
   font-weight: bold;
   background-color: #ccc;
   cursor: pointer;
@@ -687,7 +693,7 @@ ol {
   }
 
   #file-editor {
-    height: 90%;
+    height: 95%;
     margin-bottom: 0px;
   }
 
@@ -717,5 +723,4 @@ ol {
   #login-form {
     width: 480px;
   }
-
 }

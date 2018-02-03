@@ -80,7 +80,7 @@ extension FileHelper {
             FileGroup(config: viewConfig, userPath: userRelativePath)
         ]
         
-        let viewGroup = AccessibleFileGroup.make(from: viewGroups, with: styleConfig.groupName, type: .view)
+        let viewGroup = AccessibleFileGroup.make(from: viewGroups, with: viewConfig.groupName, type: .view)
         
         return [scriptGroup, styleGroup, viewGroup]
     }

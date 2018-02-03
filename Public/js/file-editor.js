@@ -2,13 +2,13 @@ function getModeFromFileName(filename) {
   var extension = filename.split('.').pop()
   switch (extension) {
     case 'js':
-      return 'ace/mode/javascript'
+    return 'ace/mode/javascript'
     case 'css':
-      return "ace/mode/css"
+    return "ace/mode/css"
     case 'leaf':
-      return 'ace/mode/html'
+    return 'ace/mode/html'
     default:
-      return 'ace/mode/javascript'
+    return 'ace/mode/javascript'
   }
 }
 
@@ -39,52 +39,39 @@ var viewModel = new Vue({
     }
   },
   watch: {
-    selectedFile: function (file) {
-
-      if (file !== null && this.editor === null) {
-        this.editor = ace.edit("file-editor")
-        this.editor.$blockScrolling = Infinity
-        this.editor.setTheme("ace/theme/xcode")
-      }
-
-      this.fetchFileBody()
-    },
     selectedBodyIndex: function (index) {
       this.updateEditor()
     }
   },
   methods: {
     selectFile: function (file) {
-      this.selectedFile = file
+      this.fetchFileBody(file)
     },
     selectBodyIndex: function (index) {
-
-      if (this.editor === null) {
-        return
-      }
-
       this.bodies[this.selectedBodyIndex].body = this.editor.getValue()
       this.selectedBodyIndex = index
     },
-    fetchFileBody: function() {
+    fetchFileBody: function(file) {
 
-      this.bodies = null
-      this.selectedBodyIndex = 0
-
-      if (this.selectedFile === null) {
-        return
+      if (file === null) {
+        if (this.selectedFile === null) {
+          return
+        }
+        file = this.selectedFile
       }
 
       var receiver = this
 
       axios.get(makeRequestURL("/api/filebody"), {
         params: {
-          path: this.selectedFile.path,
-          type: this.selectedFile.type
+          path: file.path,
+          type: file.type
         }
       })
       .then(function (response) {
         receiver.hasError = false
+        receiver.selectedFile = file
+        receiver.selectedBodyIndex = 0
         receiver.bodies = response.data.bodies
         receiver.updateEditor()
       })
@@ -95,7 +82,10 @@ var viewModel = new Vue({
     updateEditor: function () {
 
       if (this.editor === null) {
-        return
+        this.editor = ace.edit("file-editor")
+        this.editor.$blockScrolling = Infinity
+        this.editor.setTheme("ace/theme/xcode")
+        this.editor.session.setUseWorker(false)
       }
 
       if (this.bodies === null || this.bodies.length === 0) {
@@ -146,7 +136,7 @@ var viewModel = new Vue({
       })
       .then(function (response) {
         receiver.hasError = false
-        receiver.fetchFileBody()
+        receiver.fetchFileBody(null)
       })
       .catch(function (error) {
         receiver.hasError = true
@@ -170,7 +160,7 @@ var viewModel = new Vue({
       })
       .then(function (response) {
         receiver.hasError = false
-        receiver.fetchFileBody()
+        receiver.fetchFileBody(null)
       })
       .catch(function (error) {
         receiver.hasError = true
