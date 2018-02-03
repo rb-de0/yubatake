@@ -32,7 +32,9 @@ final class AdminImageViewController: EditableResourceRepresentable {
     }
     
     func index(request: Request) throws -> ResponseRepresentable {
-        let page = try Image.makeQuery().paginate(for: request).makeJSON()
+        var page = try Image.makeQuery().paginate(for: request).makeJSON()
+        let hasNotFound = try Image.all().filter { image in !FileHelper.isExist(path: image.path) }.count > 0
+        try page.set("has_not_found", hasNotFound)
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
     }
     
@@ -82,6 +84,15 @@ final class AdminImageViewController: EditableResourceRepresentable {
             }
         }
 
+        return Response(redirect: "/admin/images")
+    }
+    
+    func cleanup(request: Request) throws -> ResponseRepresentable {
+        
+        try Image.all()
+            .filter { image in !FileHelper.isExist(path: image.path) }
+            .forEach { try $0.delete() }
+        
         return Response(redirect: "/admin/images")
     }
 }

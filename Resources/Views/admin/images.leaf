@@ -1,9 +1,13 @@
 #extend("base/admin-base")
 
+#export("additional-resources") {
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+}
+
 #export("content") {
   <div id="admin-page-title">All Images</div>
 
-  <form id="admin-selectable-form" action="/admin/images" method="post" enctype="multipart/form-data">
+  <form id="admin-selectable-form" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
 
@@ -28,8 +32,11 @@
       <div id="admin-edit-button-container">
         <input id="image-file-name" type="hidden" name="image_file_name"/>
         <label class="pure-button" for="image-file-data">New
-          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png"/>
+          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
         </label>
+        #if(has_not_found) {
+          <button class="pure-button pure-button-primary" formaction="/admin/images/cleanup" formmethod="post">Cleanup</button>
+        }
       </div>
 
       <div id="page-navigator">
@@ -42,4 +49,8 @@
       </div>
     </div>
   </form>
+}
+
+#export("script") {
+  <script src="/js/images.js"></script>
 }

@@ -45,14 +45,6 @@ $(document).on('click', '#all-checkbox', function (e) {
   })
 })
 
-// -- Images
-
-$(document).on('change', '#image-file-data', function (e) {
-  var fileName = $(this).val().split('/').pop().split('\\').pop()
-  $('#image-file-name').val(fileName)
-  $('#admin-selectable-form').submit()
-})
-
 // -- Preview
 
 $(document).on('click', '#admin-content-preview-button', function (e) {
