@@ -590,7 +590,6 @@ ol {
 
 #file-editor-container {
   padding: 0px 8px;
-  height: 100%;
 }
 
 #file-editor {
@@ -687,7 +686,7 @@ ol {
   }
 
   #file-editor {
-    height: 95%;
+    height: 780px;
     margin-bottom: 0px;
   }
 
