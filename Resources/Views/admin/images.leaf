@@ -1,9 +1,13 @@
 #extend("base/admin-base")
 
+#export("script") {
+  <script src="/js/image-list.js"></script>
+}
+
 #export("content") {
   <div id="admin-page-title">All Images</div>
 
-  <form id="admin-selectable-form" action="/admin/images" method="post" enctype="multipart/form-data">
+  <form id="admin-selectable-form" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
 
@@ -12,11 +16,9 @@
       #loop(data, "image") {
         <div class="pure-u-1-3 pure-u-lg-1-8 pure-u-xl-1-12">
           <div class="admin-image-card-container">
-            <div class="admin-image-card">
-              <a href="/admin/images/#(image.id)/edit">
-                <img class="admin-image-card-img" src="#(image.path)" alt="#(image.alt_description)"/>
-              </a>
-            </div>
+            <a class="admin-image-card" href="/admin/images/#(image.id)/edit">
+              <img class="admin-image-card-img" src="#(image.path)" alt="#(image.alt_description)"/>
+            </a>
           </div>
         </div>
       }
@@ -28,8 +30,11 @@
       <div id="admin-edit-button-container">
         <input id="image-file-name" type="hidden" name="image_file_name"/>
         <label class="pure-button" for="image-file-data">New
-          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png"/>
+          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
         </label>
+        #if(has_not_found) {
+          <button class="pure-button pure-button-primary" formaction="/admin/images/cleanup" formmethod="post">Cleanup</button>
+        }
       </div>
 
       <div id="page-navigator">

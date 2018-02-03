@@ -1,16 +1,20 @@
 #extend("base/admin-base")
 
+#export("script") {
+  <script src="/js/admin-table.js"></script>
+}
+
 #export("content") {
   <div id="admin-page-title">All Categories</div>
 
   <form id="admin-selectable-form" action="/admin/categories/delete" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
-    
+
     <table id="admin-table" class="pure-table pure-table-horizontal">
       <thead id="admin-table-header">
         <tr>
-          <th id="categories-table-head-checkbox"><input id="all-checkbox" type="checkbox"/></th>
+          <th id="categories-table-head-checkbox"><input id="all-checkbox" type="checkbox" v-on:click="selectAll"/></th>
           <th id="categories-table-head-name">Name</th>
         </tr>
       </thead>
@@ -19,7 +23,7 @@
         #loop(data, "category") {
           <tr>
             <td class="tags-table-checkbox">
-              <input class="one-checkbox" type="checkbox" name="categories[]" value="#(category.id)"/>
+              <input class="one-checkbox" type="checkbox" name="categories[]" value="#(category.id)" v-on:click="selectOne"/>
             </td>
             <td class="tags-table-name"><a href="/admin/categories/#(category.id)/edit">#(category.name)</a></td>
           </tr>

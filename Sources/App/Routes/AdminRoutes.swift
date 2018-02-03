@@ -23,6 +23,7 @@ final class AdminRoutes: RouteCollection, EmptyInitializable {
         admin.editableResource("categories", AdminCategoryController())
         admin.editableResource("posts",  AdminPostController())
         admin.editableResource("images", AdminImageViewController())
+        admin.post("images/cleanup", handler: AdminImageViewController().cleanup)
         admin.resource("siteinfo/edit", AdminSiteInfoController())
         admin.resource("user/edit", AdminUserController())
         admin.resource("files", AdminFileController())

@@ -1,11 +1,23 @@
 #extend("base/admin-base")
 
+#export("additional-resources") {
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+}
+
+#export("script") {
+  <script src="/js/post-editor.js"></script>
+}
+
 #export("content") {
+
   <div id="admin-page-title">#if(post.id) {Edit Post} ##else() {New Post}</div>
 
   <form class="pure-form" action="/admin/posts#if(post.id) {/#(post.id)/edit}" method="post">
 
-    <input type="hidden" name="csrf-token" value="#(csrf_token)">
+    <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
     <div class="field-error">#(request.storage.error_message)</div>
 
     <fieldset class="pure-group">
@@ -53,7 +65,7 @@
           <div class="admin-supplement-list-container">
             <ul class="admin-supplement-list">
               #loop(tags, "tag") {
-                <li class="admin-supplement-tag-item">#(tag.name)</li>
+                <li class="admin-supplement-tag-item" v-on:click="selectedTag">#(tag.name)</li>
               }
             </ul>
           </div>
@@ -85,7 +97,7 @@
     <fieldset class="pure-group">
       <div id="admin-content-input-header">
         <label for="admin-post-contents">Contents</label>
-        <button id="admin-content-preview-button" class="pure-button pure-button-primary">Preview</button>
+        <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPreview">Preview</button>
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
@@ -96,8 +108,7 @@
   </form>
 
   <div id="admin-content-preview">
-    <button id="admin-content-preview-close-button" class="pure-button pure-button-primary">Close</button>
+    <button id="admin-content-preview-close-button" class="pure-button pure-button-primary" v-on:click="closePreview">Close</button>
     <div id="post-content-body"></div>
   </div>
-
 }

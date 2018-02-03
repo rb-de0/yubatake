@@ -33,6 +33,10 @@ final class FileHelper: ApplicationHelper {
         
         try createImageDirIfNeeded()
     }
+    
+    class func isExist(path: String) -> Bool {
+        return FileManager.default.fileExists(atPath: publicDir.finished(with: "/") + path)
+    }
 }
 
 // MARK: - Image
