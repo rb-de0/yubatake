@@ -174,8 +174,5 @@ var viewModel = new Vue({
     .then(function (response) {
       viewModel.grouplist = response.data
     })
-    .catch(function (error) {
-      console.log(error)
-    })
   }
 })
