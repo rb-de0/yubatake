@@ -23,7 +23,7 @@ final class ImageData {
         
         self.data = data
         self.name = name
-        self.path = FileHelper.imageRelativePath.finished(with: "/").appending(name)
+        self.path = FileHelper.imageRelativePath.started(with: "/").finished(with: "/").appending(name)
     }
     
     func save() throws {

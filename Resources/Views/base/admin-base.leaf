@@ -5,6 +5,7 @@
   <title>#(page_title)</title>
   #embed("embeds/resources")
   #embed("embeds/meta")
+  #import("additional-resources")
 </head>
 
 <body>
@@ -50,12 +51,17 @@
         <li class="pure-menu-item #equal(menu_type, "user") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/user/edit">UserSetting</a>
         </li>
+        <li class="pure-menu-item #equal(menu_type, "edit_file") { pure-menu-selected }">
+          <a class="pure-menu-link" href="/admin/files">EditFile</a>
+        </li>
         <li class="pure-menu-item">
           <a class="pure-menu-link" href="/logout">Logout</a>
         </li>
       </ul>
     </div>
   </div>
+
+  #import("script")
 
 </body>
 

@@ -26,8 +26,6 @@ extension Config {
     
     private func setupProviders() throws {
         try addProvider(FluentProvider.Provider.self)
-        try addProvider(LeafProvider.Provider.self)
-        try addProvider(MarkdownProvider.Provider.self)
         try addProvider(MySQLProvider.Provider.self)
     }
     
@@ -46,7 +44,14 @@ extension Config {
         // Redis Session Store
         let redisCache = try RedisCache(config: self)
         let sessions = CacheSessions(redisCache, defaultExpiration: 86400)
-        addConfigurable(middleware: { _ in SessionsMiddleware(sessions) }, name: "redis-sessions")
+        addConfigurable(middleware: SessionsMiddleware(sessions), name: "redis-sessions")
+        
+        // User Public File
+        let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: userPublicDir)
+        addConfigurable(middleware: userFileMiddleware, name: "userfile")
+        
+        // leaf
+        addConfigurable(view: { config in UserLeafRenderder(viewsDir: config.viewsDir, userDir: config.userViewDir.finished(with: "/")) }, name: "userleaf")
     }
     
     private func setupPreparations() throws {

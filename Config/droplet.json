@@ -32,7 +32,7 @@
     "middleware": [
         "error",
         "date",
-        "file",
+        "userfile",
         "redis-sessions",
         "security-headers",
         "csrf"
@@ -44,5 +44,5 @@
         "prepare"
     ],
     
-    "view": "leaf"
+    "view": "userleaf"
 }
