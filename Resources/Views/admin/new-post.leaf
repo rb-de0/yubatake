@@ -97,7 +97,10 @@
     <fieldset class="pure-group">
       <div id="admin-content-input-header">
         <label for="admin-post-contents">Contents</label>
-        <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPreview">Preview</button>
+        <div>
+          <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
+          <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPreview">Preview</button>
+        </div>
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
@@ -108,7 +111,32 @@
   </form>
 
   <div id="admin-content-preview">
-    <button id="admin-content-preview-close-button" class="pure-button pure-button-primary" v-on:click="closePreview">Close</button>
+    <button class="pure-button pure-button-primary admin-content-overlay-close-button" v-on:click="closePreview">Close</button>
     <div id="post-content-body"></div>
+  </div>
+
+  <div id="admin-image-picker">
+    <button class="pure-button pure-button-primary admin-content-overlay-close-button" v-on:click="closePickerView">Close</button>
+    <div id="admin-image-picker-content">
+
+      <div id="admin-image-picker-header">
+        <div id="admin-image-picker-title">Image Picker</div>
+        <div>
+          <button v-if="hasPrevious" class="pure-button" v-on:click="requestPrevious">Previous</button>
+          <button v-if="hasNext" class="pure-button" v-on:click="requestNext">Next</button>
+        </div>
+      </div>
+
+      <div id="admin-image-picker-items" class="pure-g">
+        <div v-for="image in images" class="pure-u-1-4 pure-u-md-1-8">
+          <div class="admin-image-card-container">
+            <div class="admin-image-card" v-on:click="selectImage(image)">
+              <img class="admin-image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 }

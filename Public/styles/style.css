@@ -465,21 +465,55 @@ ol {
   position: absolute;
   top: 0px;
   left: 0px;
+  right: 0px;
+  background-color: #f1f1f1;
+  overflow: scroll;
+}
+
+#admin-image-picker {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0px;
+  left: 0px;
   bottom: 0px;
   right: 0px;
-  width: 100%;
-  height: 100%;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#admin-image-picker-content {
+  width: 75%;
+  height: 60%;
   background-color: #f1f1f1;
+}
+
+#admin-image-picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px 8px;
+  background-color: #bbbbbb;
+}
+
+#admin-image-picker-header .pure-button {
+  margin-right: 4px;
+  background-color: #222222;
+  color: #fff;
+}
+
+#admin-image-picker-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#admin-image-picker-items {
+  padding: 8px 16px 16px;
 }
 
 #admin-content-preview #post-content-body {
   padding: 16px 32px 16px;
-}
-
-#admin-content-preview-close-button {
-  position: absolute;
-  top: 16px;
-  right: 16px;
 }
 
 .admin-supplement-title {
@@ -525,6 +559,12 @@ ol {
 .admin-form-group-title {
   margin-top: 16px;
   font-size: 24px;
+}
+
+.admin-content-overlay-close-button {
+  position: fixed;
+  top: 16px;
+  right: 16px;
 }
 
 .admin-image-card-container {
@@ -585,7 +625,7 @@ ol {
 }
 
 #file-save-button-container .button-delete {
-  margin-left: 8px;
+  margin-left: 4px;
 }
 
 #file-editor-container {
