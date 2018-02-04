@@ -55,6 +55,10 @@ extension FileHelper {
         try FileManager.default.removeItem(atPath: publicDir.finished(with: "/") + path)
     }
     
+    class func renameImage(at path: String, to afterPath: String) throws {
+        try FileManager.default.moveItem(atPath: publicDir.finished(with: "/") + path, toPath: publicDir.finished(with: "/") + afterPath)
+    }
+    
     private class func createImageDirIfNeeded() throws {
         try FileManager.default.createDirectory(atPath: imageDir, withIntermediateDirectories: true, attributes: nil)
     }

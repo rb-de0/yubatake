@@ -3,6 +3,8 @@
 #export("content") {
   <div id="admin-page-title">Edit Image</div>
 
+  <div class="field-error">#(request.storage.error_message)</div>
+
   <div id="admin-preview-image-container">
     <img id="admin-preview-image" src="#(path)" alt="#(alt_description)"/>
   </div>
@@ -11,8 +13,6 @@
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
     <input type="hidden" name="images[]" value="#(id)"/>
-
-    <div class="field-error">#(request.storage.error_message)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -26,6 +26,12 @@
     </fieldset>
 
     <fieldset class="pure-group">
+
+      <div class="form-label">
+        <label for="admin-image-title">Image Path</label>
+      </div>
+      <input id="admin-image-title" class="pure-input-1" name="path" value="#(path)" type="text">
+
       <div class="form-label">
         <label for="admin-alt-title">Alt Description</label>
       </div>
