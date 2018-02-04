@@ -63,8 +63,13 @@ final class AdminImageViewController: EditableResourceRepresentable {
         
         do {
             
-            try image.update(for: request)
-            try image.save()
+            let beforePath = image.path
+            
+            try Image.database?.transaction { conn in
+                try image.update(for: request)
+                try image.makeQuery(conn).save()
+                try FileHelper.renameImage(at: beforePath, to: image.path)
+            }
             
             return Response(redirect: "/admin/images/\(id)/edit")
             

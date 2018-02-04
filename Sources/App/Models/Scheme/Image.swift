@@ -82,6 +82,7 @@ extension Image: Paginatable {
 extension Image: Updateable {
     
     func update(for req: Request) throws {
+        path = req.data[Image.pathKey]?.string ?? ""
         altDescription = req.data[Image.altDescriptionKey]?.string ?? ""
     }
     
