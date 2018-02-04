@@ -97,7 +97,12 @@ ol {
   top: 0;
   bottom: 0;
   padding-top: 8px;
-  overflow: scroll;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+}
+
+#menu::-webkit-scrollbar{
+  display: none;
 }
 
 #menu.open-menu {
@@ -236,14 +241,35 @@ ol {
   height: 72px;
 }
 
+/* ref: https://qiita.com/BYODKM/items/83442749a985cb81448e */
 .post-card-part-of-content {
   font-size: 16px;
   word-break: break-word;
+  line-height: 1.5;
+  height: 4.5em;
+  background-color: #fff;
+  position: relative;
+  padding-right: 1em;
   overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+}
+
+.post-card-part-of-content:before {
+  content: "...";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: inline-block;
+  width: 1em;
+}
+
+.post-card-part-of-content:after {
+  content: "";
+  position: relative;
+  right: -1em;
+  float: right;
+  width: 1em;
+  height: 100%;
+  background-color: inherit;
 }
 
 .post-card-category {
@@ -256,7 +282,13 @@ ol {
   padding: 4px 8px;
   height: 24px;
   white-space: nowrap;
-  overflow: scroll;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  -ms-overflow-style: none;
+}
+
+.post-card-tags::-webkit-scrollbar {
+  display: none;
 }
 
 #public-page-footer #page-navigator {
