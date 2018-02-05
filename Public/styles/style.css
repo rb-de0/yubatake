@@ -10,7 +10,7 @@ html {
 
 body {
   font-family: sans-serif;
-  background-color: #f1f1f1;
+  background-color: #fbf9f8;
   height: 100%;
 }
 
@@ -45,6 +45,10 @@ ol {
 
 .pure-form .pure-group .pure-form-item-inline input  {
   display: inline;
+}
+
+.pure-menu-heading {
+  text-transform: none;
 }
 
 .form-label {
@@ -232,7 +236,7 @@ ol {
 }
 
 .post-card-title {
-  padding: 0.5rem;
+  padding: .5rem 1rem .5rem .5rem;
   height: 1.5rem;
   font-size: 1.25rem;
   font-weight: bold;
@@ -240,7 +244,7 @@ ol {
 }
 
 .post-card-part-of-content-container {
-  padding: 0.5rem;
+  padding: .5rem;
   height: 72px;
 }
 
@@ -292,6 +296,12 @@ ol {
 
 .post-card-tags::-webkit-scrollbar {
   display: none;
+}
+
+.post-card-created-at {
+  padding: 0 .5rem;
+  font-size: .7rem;
+  color: #aaa;
 }
 
 #public-page-footer #page-navigator {
@@ -554,6 +564,7 @@ ol {
   height: 160px;
   overflow: auto;
   background-color: #fff;
+  border: solid 1px #ddd;
 }
 
 .admin-supplement-list {
