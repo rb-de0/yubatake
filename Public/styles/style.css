@@ -523,17 +523,17 @@ ol {
 }
 
 #admin-image-picker-content {
-  width: 75%;
-  height: 60%;
+  width: 80%;
+  height: 80%;
   background-color: #f1f1f1;
+  overflow: scroll;
 }
 
 #admin-image-picker-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1rem 1rem;
-  background-color: #bbbbbb;
+  padding: 0.5rem 1rem 0;
 }
 
 #admin-image-picker-header .pure-button {
@@ -782,5 +782,10 @@ ol {
 
   #admin-preview-image {
     max-width: 480px;
+  }
+
+  #admin-image-picker-content {
+    width: 70%;
+    height: 60%;
   }
 }
