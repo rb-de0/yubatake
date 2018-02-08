@@ -115,7 +115,7 @@
     <div id="post-content-body"></div>
   </div>
 
-  <div id="admin-image-picker">
+  <div id="admin-image-picker" v-on:click="closePickerView">
     <button class="pure-button pure-button-primary admin-content-overlay-close-button" v-on:click="closePickerView">Close</button>
     <div id="admin-image-picker-content">
 
@@ -128,7 +128,7 @@
       </div>
 
       <div id="admin-image-picker-items" class="pure-g">
-        <div v-for="image in images" class="pure-u-1-4 pure-u-md-1-8">
+        <div v-for="image in images" class="pure-u-1-2 pure-u-md-1-8">
           <div class="admin-image-card-container">
             <div class="admin-image-card" v-on:click="selectImage(image)">
               <img class="admin-image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>

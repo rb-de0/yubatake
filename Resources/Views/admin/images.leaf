@@ -26,7 +26,6 @@
     </div>
 
     <div id="admin-table-footer">
-
       <div id="admin-edit-button-container">
         <input id="image-file-name" type="hidden" name="image_file_name"/>
         <label class="pure-button" for="image-file-data">New
@@ -45,6 +44,7 @@
           <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
         }
       </div>
+      <div class="clearfix"></div>
     </div>
   </form>
 }

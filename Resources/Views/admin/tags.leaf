@@ -45,6 +45,7 @@
           <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
         }
       </div>
+      <div class="clearfix"></div>
     </div>
   </form>
 }
