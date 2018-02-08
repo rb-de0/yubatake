@@ -1,29 +1,27 @@
 import Vapor
 import Foundation
 
-final class TwitterHelper: ApplicationHelper {
+final class TwitterRepositoryImpl: TwitterRepository {
     
-    private static var messageFormat: String!
-    private static var hostName: String!
+    private let messageFormat: String
+    private let hostName: String
     
-    static func setup(_ drop: Droplet) throws {
+    init() {
+        
+        let config = Configs.resolve(ApplicationConfig.self)
         
         #if os(Linux)
-        self.messageFormat = ConfigProvider.app.messageFormat.replacingOccurrences(of: "$@", with: "$s")
+        self.messageFormat = config.messageFormat.replacingOccurrences(of: "$@", with: "$s")
         #else
-        self.messageFormat = ConfigProvider.app.messageFormat
+        self.messageFormat = config.messageFormat
         #endif
         
-        self.hostName = ConfigProvider.app.hostName
+        self.hostName = config.hostName
     }
     
-    static func tweetNewPost(_ post: Post, from user: User, on request: Request) throws {
-        
+    func tweetNewPost(_ post: Post, from user: User, on request: Request) throws {
+
         guard let id = post.id?.int else {
-            throw Abort.serverError
-        }
-        
-        guard let hostName = hostName else {
             throw Abort.serverError
         }
         

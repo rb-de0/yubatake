@@ -2,10 +2,10 @@ import Vapor
 
 final class UserDataFile: FileProtocol {
     
-    private let file: DataFile
-    private let userFile: DataFile
+    private let file: FileProtocol
+    private let userFile: FileProtocol
     
-    init(file: DataFile, userFile: DataFile) {
+    init(file: FileProtocol, userFile: FileProtocol) {
         self.file = file
         self.userFile = userFile
     }

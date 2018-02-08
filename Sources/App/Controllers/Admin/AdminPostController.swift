@@ -33,6 +33,8 @@ final class AdminPostController: EditableResourceRepresentable {
         )
     }
     
+    private lazy var repository = resolve(TwitterRepository.self)
+    
     func index(request: Request) throws -> ResponseRepresentable {
         let page = try Post.makeQuery().publicAll().paginate(for: request).makeJSON()
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
@@ -73,7 +75,7 @@ final class AdminPostController: EditableResourceRepresentable {
             
             if let _ = request.data["should-tweet"]?.string {
                 let user = try request.auth.assertAuthenticated(User.self)
-                try TwitterHelper.tweetNewPost(post, from: user, on: request)
+                try repository.tweetNewPost(post, from: user, on: request)
             }
             
             return Response(redirect: "/admin/posts/\(id)/edit")

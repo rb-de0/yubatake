@@ -48,7 +48,7 @@ final class Post: Model {
         userId = try request.auth.assertAuthenticated(User.self).id
         isStatic = request.data[Post.isStaticKey]?.bool ?? false
         
-        htmlContent = try HtmlHelper.html(from: content) ?? ""
+        htmlContent = content.htmlFromMarkdown ?? ""
         partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentSize)
         
         try validate()
@@ -117,6 +117,7 @@ extension Post: Preparation {
 extension Post: JSONRepresentable {
     
     func makeJSON() throws -> JSON {
+        let dateFormat = Configs.resolve(ApplicationConfig.self).dateFormat
         var row = try makeRow()
         let relatedTags = try tags.all()
         try row.set(Post.idKey, id)
@@ -127,8 +128,8 @@ extension Post: JSONRepresentable {
         try row.set(Post.isStaticKey, isStatic)
         try row.set(Post.createdAtKey, createdAt)
         try row.set(Post.updatedAtKey, updatedAt)
-        try row.set(Post.formattedCreatedAtKey, formattedCreatedAt)
-        try row.set(Post.formattedUpdatedAtKey, formattedUpdatedAt)
+        try row.set(Post.formattedCreatedAtKey, formattedCreatedAt(dateFormat: dateFormat))
+        try row.set(Post.formattedUpdatedAtKey, formattedUpdatedAt(dateFormat: dateFormat))
         return JSON(row)
     }
 }
@@ -170,7 +171,7 @@ extension Post: Updateable {
         categoryId = req.data[Post.categoryKey]?.int.map { Identifier($0) }
         isStatic = req.data[Post.isStaticKey]?.bool ?? false
         
-        htmlContent = try HtmlHelper.html(from: content) ?? ""
+        htmlContent = content.htmlFromMarkdown ?? ""
         partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentSize)
         
         try validate()

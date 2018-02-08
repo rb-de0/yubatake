@@ -12,16 +12,16 @@ extension Config {
         
         Node.fuzzy = [Row.self, JSON.self, Node.self]
 
-        setupApplicationConfig()
-        
+        try setupApplicationConfig()
         try setupProviders()
         try setupConfigurable()
         try setupPreparations()
     }
     
-    private func setupApplicationConfig() {
-        ConfigProvider.app = ApplicationConfig(config: self)
-        ConfigProvider.csp = CSPConfig(config: self)
+    private func setupApplicationConfig() throws {
+        try Configs.register(config: ApplicationConfig(config: self))
+        try Configs.register(config: CSPConfig(config: self))
+        try Configs.register(config: FileConfig(config: self))
     }
     
     private func setupProviders() throws {
@@ -31,10 +31,13 @@ extension Config {
     
     private func setupConfigurable() throws {
         
+        // resolve configs
+        let cspConfig = Configs.resolve(CSPConfig.self)
+        let fileConfig = Configs.resolve(FileConfig.self)
+        
         // Security Headers
         let securityHeadersFactory = SecurityHeadersFactory()
-        let cspConfig = ContentSecurityPolicyConfiguration(value: ConfigProvider.csp.makeConfigirationString())
-        securityHeadersFactory.with(contentSecurityPolicy: cspConfig)
+        securityHeadersFactory.with(contentSecurityPolicy: ContentSecurityPolicyConfiguration(value: cspConfig.makeConfigirationString()))
         addConfigurable(middleware: securityHeadersFactory.builder(), name: "security-headers")
         
         // CSRF
@@ -47,11 +50,8 @@ extension Config {
         addConfigurable(middleware: SessionsMiddleware(sessions), name: "redis-sessions")
         
         // User Public File
-        let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: userPublicDir)
+        let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: fileConfig.userPublicDir)
         addConfigurable(middleware: userFileMiddleware, name: "userfile")
-        
-        // leaf
-        addConfigurable(view: { config in UserLeafRenderder(viewsDir: config.viewsDir, userDir: config.userViewDir.finished(with: "/")) }, name: "userleaf")
     }
     
     private func setupPreparations() throws {

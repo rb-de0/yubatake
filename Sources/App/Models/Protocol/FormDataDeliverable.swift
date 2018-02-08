@@ -5,8 +5,6 @@ protocol FormDataDeliverable {
     static func override(node: inout Node, with formData: [String: Node]) throws
 }
 
-struct TestError: Error {}
-
 extension FormDataDeliverable {
     
     static var formDataKey: String {

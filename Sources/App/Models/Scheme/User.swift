@@ -112,7 +112,7 @@ extension User: Updateable {
         let rawPassword = req.data[User.passwordKey]?.string ?? ""
         
         name = req.data[User.nameKey]?.string ?? ""
-        password = try HashHelper.hash.make(rawPassword).makeString()
+        password = try resolve(HashProtocol.self).make(rawPassword).makeString()
         apiKey = req.data[User.apiKeyKey]?.string ?? ""
         apiSecret = req.data[User.apiSecretKey]?.string ?? ""
         accessToken = req.data[User.accessTokenKey]?.string ?? ""
@@ -142,7 +142,7 @@ extension User {
     
     static func makeRootUser() throws -> (user: User, rawPassword: String) {
         let rawPassword = try Crypto.Random.bytes(count: 16).base64Encoded.makeString()
-        let password = try HashHelper.hash.make(rawPassword).makeString()
+        let password = try resolve(HashProtocol.self).make(rawPassword).makeString()
         return (User(name: "root", password: password), rawPassword)
     }
 }
@@ -157,7 +157,7 @@ extension Request {
             throw Abort(.badRequest)
         }
         
-        let hassedPassword = try HashHelper.hash.make(password).makeString()
+        let hassedPassword = try resolve(HashProtocol.self).make(password).makeString()
         return Password(username: userName, password: hassedPassword)
     }
 }
