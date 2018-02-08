@@ -13,7 +13,7 @@ struct AddHtmlToPost: Preparation {
         try database.modify(Post.self) { _ in
             
             try Post.all().forEach { post in
-                post.htmlContent = try HtmlHelper.html(from: post.content) ?? ""
+                post.htmlContent = post.content.htmlFromMarkdown ?? ""
                 post.partOfContent = try SwiftSoup.parse(post.htmlContent).text().take(n: Post.partOfContentSize)
                 
                 try post.save()

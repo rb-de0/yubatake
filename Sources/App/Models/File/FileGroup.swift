@@ -29,14 +29,14 @@ struct FileGroup {
     
     private(set) var files = [File]()
     
-    init(config: FileConfig, userPath: String = "") {
+    init(group: FileConfig.ResourceGroup, userPath: String = "") {
         
-        rootDir = config.rootDir
+        rootDir = group.rootDir
         groupDir = (rootDir.finished(with: "/") + userPath).normalized()
         customized = !userPath.isEmpty
         
-        let searchPath = (groupDir.finished(with: "/") + config.relativePath).normalized()
-        files = searchFiles(in: searchPath, ext: config.fileExtension, ignoring: config.ignoreDirectory)
+        let searchPath = (groupDir.finished(with: "/") + group.relativePath).normalized()
+        files = searchFiles(in: searchPath, ext: group.fileExtension, ignoring: group.ignoreDirectory)
     }
     
     private func searchFiles(in directory: String, ext: String, ignoring ignoreDirectory: String?) -> [File] {

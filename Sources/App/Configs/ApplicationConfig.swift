@@ -1,7 +1,7 @@
 import Configs
 import Vapor
 
-struct ApplicationConfig {
+struct ApplicationConfig: ConfigInitializable {
     
     let messageFormat: String
     let hostName: String
@@ -59,7 +59,7 @@ struct ApplicationConfig {
         }
     }
     
-    init(config: Config) {
+    init(config: Config) throws {
         
         guard let messageFormat = config["note", "tweetFormat"]?.string,
             let hostName = config["note", "hostname"]?.string,

@@ -10,6 +10,8 @@ final class Image: Model {
     static let pathKey = "path"
     static let altDescriptionKey = "alt_description"
     
+    private lazy var repository = resolve(FileRepository.self)
+    
     let storage = Storage()
     
     var path: String
@@ -33,7 +35,7 @@ final class Image: Model {
     }
     
     func deleteImageData() throws {
-        try FileHelper.deleteImage(at: path)
+        try repository.deleteImage(at: path)
     }
 }
 

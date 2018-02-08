@@ -13,7 +13,7 @@ final class Html: JSONRepresentable {
             throw Abort(.badRequest)
         }
         
-        guard let html = try HtmlHelper.html(from: content) else {
+        guard let html = content.htmlFromMarkdown else {
             throw Abort(.badRequest)
         }
         

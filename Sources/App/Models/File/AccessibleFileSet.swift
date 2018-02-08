@@ -18,9 +18,10 @@ final class AccessibleFileSet: JSONRepresentable {
         }
     }
     
-   
     static let pathKey = "path"
     static let bodiesKey = "bodies"
+    
+    private lazy var repository = resolve(FileRepository.self)
     
     let path: String
     let type: FileType
@@ -28,6 +29,7 @@ final class AccessibleFileSet: JSONRepresentable {
     
     init(request: Request) throws {
         
+        let repository = resolve(FileRepository.self)
         let path = request.data[AccessibleFileSet.pathKey]?.string
         let type = request.data[AccessibleFile.typeKey]?.string.flatMap { FileType(rawValue: $0) }
         
@@ -38,7 +40,7 @@ final class AccessibleFileSet: JSONRepresentable {
         self.path = _path
         self.type = _type
         
-        let targetFile = FileHelper.accessibleFiles()
+        let targetFile = repository.accessibleFiles()
             .flatMap { $0.files }
             .first(where: {  $0.relativePath == _path && $0.type == _type })
         
@@ -50,12 +52,12 @@ final class AccessibleFileSet: JSONRepresentable {
         var bodies = [Body]()
         
         if let originalFilePath = _targetFile.originalPathToRoot {
-            let originalData = try FileHelper.readFileData(at: originalFilePath, type: _type)
+            let originalData = try repository.readFileData(at: originalFilePath, type: _type)
             bodies.append(Body(body: originalData, customized: false))
         }
         
         if let userFilePath = _targetFile.userPathToRoot {
-            let userData = try FileHelper.readFileData(at: userFilePath, type: _type)
+            let userData = try repository.readFileData(at: userFilePath, type: _type)
             bodies.append(Body(body: userData, customized: true))
         }
         
@@ -63,11 +65,11 @@ final class AccessibleFileSet: JSONRepresentable {
     }
     
     func update(body: String) throws {
-        try FileHelper.writeUserFileData(at: path, type: type, data: body)
+        try repository.writeUserFileData(at: path, type: type, data: body)
     }
     
     func delete() throws {
-        try FileHelper.deleteUserFileData(at: path, type: type)
+        try repository.deleteUserFileData(at: path, type: type)
     }
     
     func makeJSON() throws -> JSON {

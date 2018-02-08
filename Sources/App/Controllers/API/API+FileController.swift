@@ -11,8 +11,10 @@ extension API {
             )
         }
         
+        private lazy var repository = resolve(FileRepository.self)
+        
         func index(request: Request) throws -> ResponseRepresentable {
-            return try FileHelper.accessibleFiles().makeJSON()
+            return try repository.accessibleFiles().makeJSON()
         }
         
         func store(request: Request) throws -> ResponseRepresentable {

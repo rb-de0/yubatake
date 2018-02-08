@@ -1,17 +1,7 @@
 import CSRF
 import Vapor
 
-final class PublicViewContext: ApplicationHelper {
-    
-    // MARK: - Class
-    
-    private static var viewRenderer: ViewRenderer!
-    
-    static func setup(_ drop: Droplet) {
-        viewRenderer = drop.view
-    }
-    
-    // MARK: - Instance
+final class PublicViewContext {
     
     private var title: String?
     private let path: String
@@ -38,11 +28,11 @@ final class PublicViewContext: ApplicationHelper {
         try node.set("static_contents", try Post.staticContents().makeJSON())
         
         // page informations
-        let config = ConfigProvider.app
+        let config = Configs.resolve(ApplicationConfig.self)
         try node.set("page_title", title ?? siteInfo.name)
         try node.set("page_url", request.uri.makeFoundationURL().absoluteString)
-        try node.set("meta", config?.meta?.makeJSON())
+        try node.set("meta", config.meta?.makeJSON())
         
-        return try type(of: self).viewRenderer.make(path, node, for: request)
+        return try resolve(ViewRenderer.self).make(path, node, for: request)
     }
 }

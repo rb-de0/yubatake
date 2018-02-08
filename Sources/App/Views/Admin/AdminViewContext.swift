@@ -1,17 +1,7 @@
 import CSRF
 import Vapor
 
-final class AdminViewContext: ApplicationHelper {
-    
-    // MARK: - Class
-    
-    private static var viewRenderer: ViewRenderer!
-    
-    static func setup(_ drop: Droplet) {
-        viewRenderer = drop.view
-    }
-    
-    // MARK: - Instance
+final class AdminViewContext {
     
     private let path: String
     private let formDataDeliverer: FormDataDeliverable.Type
@@ -49,6 +39,6 @@ final class AdminViewContext: ApplicationHelper {
             try formDataDeliverer.override(node: &node, with: redirectFormData)
         }
         
-        return try type(of: self).viewRenderer.make(path, node, for: request)
+        return try resolve(ViewRenderer.self).make(path, node, for: request)
     }
 }

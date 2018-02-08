@@ -1,6 +1,6 @@
 import Configs
 
-struct CSPConfig {
+struct CSPConfig: ConfigInitializable {
     
     struct Value {
         let key: String
@@ -9,7 +9,7 @@ struct CSPConfig {
     
     let values: [Value]
     
-    init(config: Config) {
+    init(config: Config) throws {
         
         if let array = config["csp"]?.array {
             values = array.flatMap { settings -> Value? in
