@@ -38,9 +38,7 @@ final class UserLeafRenderder: ViewRenderer {
         }
     }
     
-    public init(viewsDir: String, userDir: String) {
-        let file = DataFile(workDir: viewsDir)
-        let userFile = DataFile(workDir: userDir)
+    public init(file: FileProtocol, userFile: FileProtocol) {
         stem = Stem(UserDataFile(file: file, userFile: userFile))
         shouldCache = false
         self.cacheSize = 8

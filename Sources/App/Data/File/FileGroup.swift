@@ -16,9 +16,9 @@ struct FileGroup {
             FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDir)
             
             #if os(Linux)
-                return isDir
+            return isDir
             #else
-                return isDir.boolValue
+            return isDir.boolValue
             #endif
         }
     }

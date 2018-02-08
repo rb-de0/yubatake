@@ -52,10 +52,6 @@ extension Config {
         // User Public File
         let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: fileConfig.userPublicDir)
         addConfigurable(middleware: userFileMiddleware, name: "userfile")
-        
-        // leaf
-        let userLeafRenderer = UserLeafRenderder(viewsDir: viewsDir, userDir: fileConfig.userViewDir.finished(with: "/"))
-        addConfigurable(view: { _ in userLeafRenderer }, name: "userleaf")
     }
     
     private func setupPreparations() throws {
