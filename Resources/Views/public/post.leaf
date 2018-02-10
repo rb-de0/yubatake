@@ -1,16 +1,21 @@
 #extend("base/base")
 
+#export("additional-resources") {
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js"></script>
+}
+
 #export("content") {
-  <div id="post-content-header" class="pure-group">
-    <div id="post-content-header-left" class="pure-u-1">
+
+  <div id="post-content">
+    <div id="post-content-header">
       <div id="post-content-title">#(title)</div>
-    </div>
-    <div id="post-content-header-right" class="pure-u-1">
 
       #if(is_static) {} ##else() {
         <div id="post-content-header-content-container">
-          <div class="post-content-header-content">
-            Category: #if(category) {
+          <div id="post-content-header-content">
+            #if(category) {
               <span>
                 <a class="category-link" href="/categories/#(category.id)/posts">#(category.name)</a>
               </span>
@@ -19,10 +24,8 @@
                 <a class="category-link" href="/categories/noncategorized/posts">NonCategorized</a>
               </span>
             }
-          </div>
-          <div class="post-content-header-content">
             #if(tags) {
-              Tag: #loop(tags, "tag") {<span><a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a></span>}
+              #loop(tags, "tag") {<span><a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a></span>}
             }
           </div>
         </div>
@@ -34,13 +37,13 @@
       </div>
 
     </div>
-  </div>
-  <div class="clearfix"></div>
-  <hr id="post-content-border"></hr>
-  <div id="post-content-body">
-    #raw(html_content)
-  </div>
 
+    <hr id="post-content-border"></hr>
+    <div id="post-content-body">
+      #raw(html_content)
+    </div>
+
+  </div>
 
   <script>hljs.initHighlightingOnLoad()</script>
 }

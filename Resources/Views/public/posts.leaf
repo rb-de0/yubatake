@@ -15,6 +15,7 @@
         <div class="post-card">
           <div class="post-card-content">
             <a class="title-link" href="/posts/#(post.id)"><div class="post-card-title">#(post.title)</div></a>
+            <div class="post-card-created-at">#(post.formatted_created_at)</div>
             <div class="post-card-part-of-content-container">
               <div class="post-card-part-of-content">
                 #(post.part_of_content)

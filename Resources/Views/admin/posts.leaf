@@ -1,5 +1,9 @@
 #extend("base/admin-base")
 
+#export("script") {
+  <script src="/js/admin-table.js"></script>
+}
+
 #export("content") {
   <div id="admin-page-title">All #if(is_static) {StaticContents} ##else() {Posts}</div>
 
@@ -10,7 +14,7 @@
     <table id="admin-table" class="pure-table pure-table-horizontal">
       <thead id="admin-table-header">
         <tr>
-          <th id="posts-table-head-checkbox"><input id="all-checkbox" type="checkbox"/></th>
+          <th id="posts-table-head-checkbox"><input id="all-checkbox" type="checkbox" v-on:click="selectAll"/></th>
           <th id="posts-table-head-title">Title</th>
           <th id="posts-table-head-user">User</th>
           <th id="posts-table-head-category">Category</th>
@@ -22,7 +26,7 @@
         #loop(data, "post") {
           <tr>
             <td class="posts-table-checkbox">
-              <input class="one-checkbox" type="checkbox" name="posts[]" value="#(post.id)"/>
+              <input class="one-checkbox" type="checkbox" name="posts[]" value="#(post.id)" v-on:click="selectOne"/>
             </td>
             <td class="posts-table-title"><a href="/admin/posts/#(post.id)/edit">#(post.title)</a></td>
             <td class="posts-table-user">#(post.user.name)</td>
@@ -48,6 +52,7 @@
           <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
         }
       </div>
+      <div class="clearfix"></div>
     </div>
   </div>
 }

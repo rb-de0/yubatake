@@ -3,11 +3,7 @@ import FluentProvider
 
 extension Timestampable {
     
-    private var dateFormat: String {
-        return ConfigProvider.app.dateFormat
-    }
-    
-    var formattedCreatedAt: String? {
+    func formattedCreatedAt(dateFormat: String) -> String? {
 
         let formatter = DateFormatter()
         formatter.dateFormat = dateFormat
@@ -15,7 +11,7 @@ extension Timestampable {
         return createdAt.map { formatter.string(from: $0) }
     }
     
-    var formattedUpdatedAt: String? {
+    func formattedUpdatedAt(dateFormat: String) -> String? {
         
         let formatter = DateFormatter()
         formatter.dateFormat = dateFormat

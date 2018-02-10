@@ -31,8 +31,12 @@ final class AdminImageViewController: EditableResourceRepresentable {
         )
     }
     
+    private lazy var repository = resolve(FileRepository.self)
+    
     func index(request: Request) throws -> ResponseRepresentable {
-        let page = try Image.makeQuery().paginate(for: request).makeJSON()
+        var page = try Image.makeQuery().paginate(for: request).makeJSON()
+        let hasNotFound = try Image.all().filter { image in !repository.isExist(path: image.path) }.count > 0
+        try page.set("has_not_found", hasNotFound)
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
     }
     
@@ -61,8 +65,13 @@ final class AdminImageViewController: EditableResourceRepresentable {
         
         do {
             
-            try image.update(for: request)
-            try image.save()
+            let beforePath = image.path
+            
+            try Image.database?.transaction { conn in
+                try image.update(for: request)
+                try image.makeQuery(conn).save()
+                try repository.renameImage(at: beforePath, to: image.path)
+            }
             
             return Response(redirect: "/admin/images/\(id)/edit")
             
@@ -82,6 +91,15 @@ final class AdminImageViewController: EditableResourceRepresentable {
             }
         }
 
+        return Response(redirect: "/admin/images")
+    }
+    
+    func cleanup(request: Request) throws -> ResponseRepresentable {
+        
+        try Image.all()
+            .filter { image in !repository.isExist(path: image.path) }
+            .forEach { try $0.delete() }
+        
         return Response(redirect: "/admin/images")
     }
 }

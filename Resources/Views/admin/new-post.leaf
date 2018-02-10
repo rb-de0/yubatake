@@ -1,11 +1,23 @@
 #extend("base/admin-base")
 
+#export("additional-resources") {
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+}
+
+#export("script") {
+  <script src="/js/post-editor.js"></script>
+}
+
 #export("content") {
+
   <div id="admin-page-title">#if(post.id) {Edit Post} ##else() {New Post}</div>
 
   <form class="pure-form" action="/admin/posts#if(post.id) {/#(post.id)/edit}" method="post">
 
-    <input type="hidden" name="csrf-token" value="#(csrf_token)">
+    <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
     <div class="field-error">#(request.storage.error_message)</div>
 
     <fieldset class="pure-group">
@@ -53,7 +65,7 @@
           <div class="admin-supplement-list-container">
             <ul class="admin-supplement-list">
               #loop(tags, "tag") {
-                <li class="admin-supplement-tag-item">#(tag.name)</li>
+                <li class="admin-supplement-tag-item" v-on:click="selectedTag">#(tag.name)</li>
               }
             </ul>
           </div>
@@ -85,7 +97,10 @@
     <fieldset class="pure-group">
       <div id="admin-content-input-header">
         <label for="admin-post-contents">Contents</label>
-        <button id="admin-content-preview-button" class="pure-button pure-button-primary">Preview</button>
+        <div>
+          <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
+          <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPreview">Preview</button>
+        </div>
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
     </fieldset>
@@ -96,8 +111,32 @@
   </form>
 
   <div id="admin-content-preview">
-    <button id="admin-content-preview-close-button" class="pure-button pure-button-primary">Close</button>
+    <button class="pure-button pure-button-primary admin-content-overlay-close-button" v-on:click="closePreview">Close</button>
     <div id="post-content-body"></div>
   </div>
 
+  <div id="admin-image-picker" v-on:click="closePickerView">
+    <button class="pure-button pure-button-primary admin-content-overlay-close-button" v-on:click="closePickerView">Close</button>
+    <div id="admin-image-picker-content">
+
+      <div id="admin-image-picker-header">
+        <div id="admin-image-picker-title">Image Picker</div>
+        <div>
+          <button v-if="hasPrevious" class="pure-button" v-on:click="requestPrevious">Previous</button>
+          <button v-if="hasNext" class="pure-button" v-on:click="requestNext">Next</button>
+        </div>
+      </div>
+
+      <div id="admin-image-picker-items" class="pure-g">
+        <div v-for="image in images" class="pure-u-1-2 pure-u-md-1-8">
+          <div class="admin-image-card-container">
+            <div class="admin-image-card" v-on:click="selectImage(image)">
+              <img class="admin-image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 }

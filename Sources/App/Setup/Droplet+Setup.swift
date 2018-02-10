@@ -4,16 +4,9 @@ import LeafProvider
 extension Droplet {
     
     public func setup() throws {
-        
-        // setup application helper
-        try setupHalpers([
-            AdminViewContext.self,
-            PublicViewContext.self,
-            HashHelper.self,
-            TwitterHelper.self,
-            FileHelper.self,
-            HtmlHelper.self
-        ])
+
+        App.register(assembly: RepositoryAssembly())
+        App.register(assembly: DropletAssembly(drop: self))
         
         // register leaf tags
         registerTags()
@@ -28,14 +21,8 @@ extension Droplet {
         try setupRoutes()
     }
     
-    private func setupHalpers(_ helpers: [ApplicationHelper.Type]) throws {
-        try helpers.forEach {
-            try $0.setup(self)
-        }
-    }
-    
     private func registerTags() {
-        (view as? LeafRenderer)?.stem.register(Escape())
+        (view as? UserLeafRenderder)?.stem.register(Escape())
     }
     
     private func createRootUserIfNeeded() throws {
