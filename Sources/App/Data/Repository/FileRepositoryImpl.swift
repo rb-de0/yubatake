@@ -52,22 +52,22 @@ extension FileRepositoryImpl {
     func accessibleFiles() -> [AccessibleFileGroup] {
         
         let scriptGroups = [
-            FileGroup(group: config.scriptConfig),
-            FileGroup(group: config.scriptConfig, userPath: config.userRelativePath)
+            FileFinder.find(group: config.scriptConfig),
+            FileFinder.find(group: config.scriptConfig, userPath: config.userRelativePath)
         ]
         
         let scriptGroup = AccessibleFileGroup.make(from: scriptGroups, with: config.scriptConfig.groupName, type: .publicResource)
 
         let styleGroups = [
-            FileGroup(group: config.styleConfig),
-            FileGroup(group: config.styleConfig, userPath: config.userRelativePath)
+            FileFinder.find(group: config.styleConfig),
+            FileFinder.find(group: config.styleConfig, userPath: config.userRelativePath)
         ]
         
         let styleGroup = AccessibleFileGroup.make(from: styleGroups, with: config.styleConfig.groupName, type: .publicResource)
         
         let viewGroups = [
-            FileGroup(group: config.viewConfig),
-            FileGroup(group: config.viewConfig, userPath: config.userRelativePath)
+            FileFinder.find(group: config.viewConfig),
+            FileFinder.find(group: config.viewConfig, userPath: config.userRelativePath)
         ]
         
         let viewGroup = AccessibleFileGroup.make(from: viewGroups, with: config.viewConfig.groupName, type: .view)

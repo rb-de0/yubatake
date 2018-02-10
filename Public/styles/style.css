@@ -10,7 +10,7 @@ html {
 
 body {
   font-family: sans-serif;
-  background-color: #fbf9f8;
+  background-color: #f1f1f1;
   height: 100%;
 }
 
@@ -214,6 +214,14 @@ ol {
   margin-top: 16px;
   margin-bottom: 16px;
   font-size: 1.75rem;
+}
+
+#content #post-content {
+  position: relative;
+  margin: -8px -24px -8px;
+  padding: 8px 24px 8px;
+  color: #222222;
+  background-color: white;
 }
 
 /* --------------------------
@@ -505,8 +513,15 @@ ol {
   top: 0px;
   left: 0px;
   right: 0px;
-  background-color: #fbf9f8;
+  background-color: #f1f1f1;
   overflow: scroll;
+}
+
+#admin-content-preview #post-content-body {
+  margin: 8px;
+  padding: 16px 32px 16px;
+  color: #222222;
+  background-color: white;
 }
 
 #admin-image-picker {
@@ -549,10 +564,6 @@ ol {
 
 #admin-image-picker-items {
   padding: .5rem 1rem 1rem;
-}
-
-#admin-content-preview #post-content-body {
-  padding: 16px 32px 16px;
 }
 
 .admin-supplement-title {
