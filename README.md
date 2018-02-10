@@ -96,18 +96,6 @@ For details, refer to the official Vapor 's document.
 
 Below are examples of several Config settings.
 
-#### fluent.json
-
-If you want to use In Memory Database of SQLite as the database of your application, please change driver of ```fluent.json``` to ```memory```.
-
-```
-{
-    "driver": "memory",
-    ...,
-    ...
-}
-```
-
 #### droplet.json
 
 If you want to use In Memory Database as a store of sessions, change middleware of droplet.json from ```redis-sessions``` to ```sessions```.
