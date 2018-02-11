@@ -1,6 +1,5 @@
 import CSRF
 import FluentProvider
-import LeafProvider
 import MarkdownProvider
 import MySQLProvider
 import RedisProvider
@@ -14,26 +13,50 @@ extension Config {
 
         try setupApplicationConfig()
         try setupProviders()
-        try setupConfigurable()
+        try setupServices()
+        try setupMiddlewares()
         try setupPreparations()
     }
     
     private func setupApplicationConfig() throws {
+        
         try Configs.register(config: ApplicationConfig(config: self))
         try Configs.register(config: CSPConfig(config: self))
         try Configs.register(config: FileConfig(config: self))
     }
     
     private func setupProviders() throws {
+        
         try addProvider(FluentProvider.Provider.self)
         try addProvider(MySQLProvider.Provider.self)
     }
     
-    private func setupConfigurable() throws {
+    private func setupServices() throws {
+        
+        let fileConfig = Configs.resolve(FileConfig.self)
+        
+        // User Leaf Renderer
+        let defaultDataFile = DataFile(workDir: viewsDir)
+        let userDataFile = DataFile(workDir: fileConfig.userViewDir.finished(with: "/"))
+        let userLeafRenderer = UserLeafRenderder(file: defaultDataFile, userFile: userDataFile)
+        userLeafRenderer.stem.register(Escape())
+        addConfigurable(view: { _ in userLeafRenderer } , name: "userleaf")
+    }
+    
+    private func setupMiddlewares() throws {
         
         // resolve configs
         let cspConfig = Configs.resolve(CSPConfig.self)
         let fileConfig = Configs.resolve(FileConfig.self)
+        
+        // User Public File
+        let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: fileConfig.userPublicDir)
+        addConfigurable(middleware: userFileMiddleware, name: "userfile")
+        
+        // Redis Session Store
+        let redisCache = try RedisCache(config: self)
+        let sessions = CacheSessions(redisCache, defaultExpiration: 86400)
+        addConfigurable(middleware: SessionsMiddleware(sessions), name: "redis-sessions")
         
         // Security Headers
         let securityHeadersFactory = SecurityHeadersFactory()
@@ -41,23 +64,11 @@ extension Config {
         addConfigurable(middleware: securityHeadersFactory.builder(), name: "security-headers")
         
         // CSRF
-        let csrf = CSRF { request in request.data["csrf-token"]?.string ?? "" }
-        addConfigurable(middleware: csrf, name: "csrf")
+        let tokenRetrieval: TokenRetrievalHandler = { request in request.data["csrf-token"]?.string ?? "" }
+        addConfigurable(middleware: { config in CSRF(config: config, tokenRetrieval: tokenRetrieval) }, name: "csrf")
         
-        // Redis Session Store
-        let redisCache = try RedisCache(config: self)
-        let sessions = CacheSessions(redisCache, defaultExpiration: 86400)
-        addConfigurable(middleware: SessionsMiddleware(sessions), name: "redis-sessions")
-        
-        // User Public File
-        let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: fileConfig.userPublicDir)
-        addConfigurable(middleware: userFileMiddleware, name: "userfile")
-        
-        // User Leaf Renderer
-        let defaultDataFile = DataFile(workDir: viewsDir)
-        let userDataFile = DataFile(workDir: fileConfig.userViewDir.finished(with: "/"))
-        let userLeafRenderer = UserLeafRenderder(file: defaultDataFile, userFile: userDataFile)
-        addConfigurable(view: { _ in userLeafRenderer } , name: "userleaf")
+        // Message Deliver
+        addConfigurable(middleware: { config in MessageDeliveryMiddleware(config: config) } , name: "message")
     }
     
     private func setupPreparations() throws {

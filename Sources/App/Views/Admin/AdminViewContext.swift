@@ -31,14 +31,9 @@ final class AdminViewContext {
         var node = try context.makeNode(in: ViewContext.shared)
         
         let siteInfo = try SiteInfo.shared()
-        try node.set("csrf_token", try CSRF().createToken(from: request))
         try node.set("menu_type", menuType?.rawValue)
         try node.set("page_title", title ?? siteInfo.name)
-        
-        if let redirectFormData = (request.storage[formDataDeliverer.formDataKey] as? Node)?.object {
-            try formDataDeliverer.override(node: &node, with: redirectFormData)
-        }
-        
-        return try resolve(ViewRenderer.self).make(path, node, for: request)
+
+        return try resolve(ViewCreator.self).make(path, node, for: request, formDataDeliverer: formDataDeliverer)
     }
 }
