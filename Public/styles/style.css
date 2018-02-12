@@ -335,8 +335,9 @@ ol {
 #post-content-header-date {
   margin-top: .4rem;
   margin-bottom: .4rem;
-  font-size: .9rem;
+  font-size: .75rem;
   display: block;
+  color: #888;
 }
 
 #post-content-header-content {
