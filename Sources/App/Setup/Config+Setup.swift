@@ -1,5 +1,6 @@
 import CSRF
 import FluentProvider
+import LeafProvider
 import MarkdownProvider
 import MySQLProvider
 import RedisProvider
@@ -19,16 +20,15 @@ extension Config {
     }
     
     private func setupApplicationConfig() throws {
-        
         try Configs.register(config: ApplicationConfig(config: self))
         try Configs.register(config: CSPConfig(config: self))
         try Configs.register(config: FileConfig(config: self))
     }
     
     private func setupProviders() throws {
-        
         try addProvider(FluentProvider.Provider.self)
         try addProvider(MySQLProvider.Provider.self)
+        try addProvider(LeafProvider.Provider.self)
     }
     
     private func setupServices() throws {
@@ -50,13 +50,18 @@ extension Config {
         let fileConfig = Configs.resolve(FileConfig.self)
         
         // User Public File
-        let userFileMiddleware = UserFileMiddleware(publicDir: publicDir, userPublicDir: fileConfig.userPublicDir)
-        addConfigurable(middleware: userFileMiddleware, name: "userfile")
+        let userFileBuilder: (Config) -> UserFileMiddleware = { config in
+            UserFileMiddleware(publicDir: config.publicDir, userPublicDir: fileConfig.userPublicDir)
+        }
+        addConfigurable(middleware: { config in userFileBuilder(config) }, name: "userfile")
         
         // Redis Session Store
-        let redisCache = try RedisCache(config: self)
-        let sessions = CacheSessions(redisCache, defaultExpiration: 86400)
-        addConfigurable(middleware: SessionsMiddleware(sessions), name: "redis-sessions")
+        let redisSessionBuilder: (Config) throws -> SessionsMiddleware = { config in
+            let redisCache = try RedisCache(config: config)
+            let sessions = CacheSessions(redisCache, defaultExpiration: 86400)
+            return SessionsMiddleware(sessions)
+        }
+        addConfigurable(middleware: { config in try redisSessionBuilder(config) }, name: "redis-sessions")
         
         // Security Headers
         let securityHeadersFactory = SecurityHeadersFactory()

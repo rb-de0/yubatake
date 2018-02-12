@@ -7,6 +7,7 @@ final class Tag: Model {
     
     static let idKey = "id"
     static let nameKey = "name"
+    static let tagsKey = "tags"
     static let separator = ","
     
     let storage = Storage()
@@ -20,12 +21,12 @@ final class Tag: Model {
         try validate()
     }
     
-    init(name: String) {
+    private init(name: String) {
         self.name = name
     }
 
     init(row: Row) throws {
-        name = try row.get(Category.nameKey)
+        name = try row.get(Tag.nameKey)
     }
     
     func validate() throws {
@@ -34,14 +35,14 @@ final class Tag: Model {
     
     func makeRow() throws -> Row {
         var row = Row()
-        try row.set(Category.nameKey, name)
+        try row.set(Tag.nameKey, name)
         return row
     }
     
     // MARK: - Helper
     
     static func tags(from request: Request) throws -> [Tag] {
-        guard let tagString = request.data["tags"]?.string else {
+        guard let tagString = request.data[Tag.tagsKey]?.string else {
             return []
         }
         
@@ -50,11 +51,11 @@ final class Tag: Model {
     }
     
     static func notInsertedTags(in tags: [Tag]) throws -> [Tag] {
-        return try tags.filter { try Tag.makeQuery().filter("name" == $0.name).count() == 0 }
+        return try tags.filter { try Tag.makeQuery().filter(Tag.nameKey == $0.name).count() == 0 }
     }
     
     static func insertedTags(in tags: [Tag]) throws -> [Tag] {
-        return try tags.flatMap { try Tag.makeQuery().filter("name" == $0.name).first() }
+        return try tags.flatMap { try Tag.makeQuery().filter(Tag.nameKey == $0.name).first() }
     }
 }
 

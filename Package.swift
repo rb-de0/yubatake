@@ -37,6 +37,7 @@ let package = Package(
             "SwiftSoup",
             "Swinject"
         ]),
-        .target(name: "Run", dependencies: ["App"])
+        .target(name: "Run", dependencies: ["App"]),
+        .testTarget(name: "NoteTests", dependencies: ["App"])
     ]
 )
