@@ -8,6 +8,11 @@ dist: trusty
 services:
   - mysql
 
+env:
+  global:
+    - MYSQL_PASSWORD=''
+    - MYSQL_PORT=3306
+
 osx_image: xcode9.2
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
@@ -26,3 +31,4 @@ before_install:
 script:
   - swift build
   - swift build -c release
+  - swift test
