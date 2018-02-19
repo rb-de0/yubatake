@@ -6,15 +6,13 @@ sudo: required
 dist: trusty
 
 services:
-  - mysql
-
-env:
-  global:
-    - MYSQL_PASSWORD=''
-    - MYSQL_PORT=3306
+  - docker
 
 osx_image: xcode9.2
 before_install:
+  docker pull mysql
+  docker run --name mysql -e MYSQL_ROOT_PASSWORD=root -d -p 3307:3306 mysql
+
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       brew update;
       brew tap vapor/tap;
@@ -29,6 +27,4 @@ before_install:
     fi
 
 script:
-  - swift build
-  - swift build -c release
   - swift test
