@@ -21,7 +21,7 @@ before_install:
       brew update;
       brew install vapor;
       brew install cmysql;
-      mysql.server start
+      mysql.server start;
     else
       eval "$(curl -sL https://apt.vapor.sh)";
       sudo apt-get install vapor;
