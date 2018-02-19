@@ -6,19 +6,22 @@ sudo: required
 dist: trusty
 
 services:
-  - docker
+  - mysql
+
+env:
+  global:
+    - MYSQL_PASSWORD=''
+    - MYSQL_PORT=3306
 
 osx_image: xcode9.2
 before_install:
-  docker pull mysql
-  docker run --name mysql -e MYSQL_ROOT_PASSWORD=root -d -p 3307:3306 mysql
-
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       brew update;
       brew tap vapor/tap;
       brew update;
       brew install vapor;
       brew install cmysql;
+      mysql.server start
     else
       eval "$(curl -sL https://apt.vapor.sh)";
       sudo apt-get install vapor;
