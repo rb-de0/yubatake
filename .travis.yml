@@ -32,9 +32,9 @@ before_install:
 
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      swift build
-      swift test
+      swift build;
+      swift test;
     else
-      swift build -Xswiftc -DNOJSON
-      swift test -Xswiftc -DNOJSON
+      swift build -Xswiftc -DNOJSON;
+      swift test -Xswiftc -DNOJSON;
     fi
