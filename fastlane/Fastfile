@@ -1,0 +1,21 @@
+fastlane_version "2.81.0"
+
+default_platform :mac
+
+platform :mac do
+
+  lane :send_coverage do
+    scan(
+      scheme: "note-Package",
+      code_coverage: true,
+      destination: 'arch=x86_64'
+    )
+    slather(
+      proj: "note.xcodeproj",
+      scheme: "note-Package",
+      ignore: [".build/*", "Tests/*"],
+      coveralls: true
+    )
+  end
+
+end

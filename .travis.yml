@@ -16,6 +16,7 @@ env:
 osx_image: xcode9.2
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      bundle install --path vendor/bundle
       brew update;
       brew tap vapor/tap;
       brew update;
@@ -37,4 +38,9 @@ script:
     else
       swift build -Xswiftc -DNOJSON;
       swift test -Xswiftc -DNOJSON;
+    fi
+
+after_success:
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      bundle exec fastlane send_coverage;
     fi
