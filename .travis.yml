@@ -42,5 +42,6 @@ script:
 
 after_success:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      swift package generate-xcodeproj;
       bundle exec fastlane send_coverage;
     fi
