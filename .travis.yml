@@ -16,10 +16,10 @@ env:
 osx_image: xcode9.2
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      bundle install --path vendor/bundle
       brew update;
       brew tap vapor/tap;
       brew update;
+      bundle install --path vendor/bundle;
       brew install vapor;
       brew install cmysql;
       mysql.server start;
