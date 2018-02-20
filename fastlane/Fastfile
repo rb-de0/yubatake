@@ -13,9 +13,11 @@ platform :mac do
     slather(
       proj: "note.xcodeproj",
       scheme: "note-Package",
-      ignore: [".build/*", "Tests/*"],
-      coveralls: true
+      travis: true,
+      source_directory: "Sources",
+      output_directory: "report",
+      ignore: [".build/*", "Tests/*"]
     )
   end
-
+  
 end
