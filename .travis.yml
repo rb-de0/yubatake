@@ -31,4 +31,10 @@ before_install:
   - mysql -u root -e "set global max_connections = 1000";
 
 script:
-  - swift test
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      swift build
+      swift test
+    else
+      swift build -Xswiftc -DNOJSON
+      swift test -Xswiftc -DNOJSON
+    fi

@@ -4,20 +4,24 @@ import MySQLDriver
 
 final class DB {
     
+    private class var processInfo: ProcessInfo {
+        return ProcessInfo.processInfo
+    }
+    
     class var hostName: String {
-        return ProcessInfo().environment["MYSQL_HOSTNAME"] ?? "127.0.0.1"
+        return processInfo.environment["MYSQL_HOSTNAME"] ?? "127.0.0.1"
     }
     
     class var user: String {
-        return ProcessInfo().environment["MYSQL_USER"] ?? "root"
+        return processInfo.environment["MYSQL_USER"] ?? "root"
     }
     
     class var password: String {
-        return ProcessInfo().environment["MYSQL_PASSWORD"] ?? "root"
+        return processInfo.environment["MYSQL_PASSWORD"] ?? "root"
     }
     
     class var port: UInt {
-        return ProcessInfo().environment["MYSQL_PORT"]?.uint ?? 3307
+        return processInfo.environment["MYSQL_PORT"]?.uint ?? 3307
     }
     
     private class func driver() throws -> MySQLDriver.Driver {

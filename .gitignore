@@ -20,4 +20,6 @@ Public/documents/
 Public/user
 Resources/Views/user
 
+### Dev ###
+.vagrant
 # End of https://www.gitignore.io/api/vapor
