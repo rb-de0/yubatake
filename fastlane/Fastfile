@@ -14,10 +14,9 @@ platform :mac do
       proj: "note.xcodeproj",
       scheme: "note-Package",
       travis: true,
-      source_directory: "Sources",
-      output_directory: "report",
+      binary_basename: "App",
       ignore: [".build/*", "Tests/*"]
     )
   end
-  
+
 end
