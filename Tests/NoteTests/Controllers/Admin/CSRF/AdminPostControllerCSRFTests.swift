@@ -66,3 +66,12 @@ final class AdminPostControllerCSRFTests: ControllerTestCase {
         XCTAssertEqual(try Post.find(1)?.title, "beforeUpdate")
     }
 }
+
+extension AdminPostControllerCSRFTests {
+    
+	public static var allTests = [
+		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate),
+		("testCanPreventCSRFOnDestroy", testCanPreventCSRFOnDestroy),
+		("testCanPreventCSRFOnStore", testCanPreventCSRFOnStore)
+    ]
+}

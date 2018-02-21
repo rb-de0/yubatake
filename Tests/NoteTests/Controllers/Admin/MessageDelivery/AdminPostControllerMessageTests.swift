@@ -62,3 +62,11 @@ final class AdminPostControllerMessageTests: ControllerTestCase {
         XCTAssertNotNil(view.get("request.storage.error_message") as String?)
     }
 }
+
+extension AdminPostControllerMessageTests {
+    
+	public static var allTests = [
+		("testCanViewValidateErrorOnStore", testCanViewValidateErrorOnStore),
+		("testCanViewValidateErrorOnUpdate", testCanViewValidateErrorOnUpdate)
+    ]
+}

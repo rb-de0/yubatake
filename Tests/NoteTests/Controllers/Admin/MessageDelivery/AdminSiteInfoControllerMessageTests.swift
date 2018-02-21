@@ -40,3 +40,10 @@ final class AdminSiteInfoControllerMessageTests: ControllerTestCase {
         XCTAssertNotNil(view.get("request.storage.error_message") as String?)
     }
 }
+
+extension AdminSiteInfoControllerMessageTests {
+    
+	public static var allTests = [
+		("testCanViewValidateErrorOnUpdate", testCanViewValidateErrorOnUpdate)
+    ]
+}
