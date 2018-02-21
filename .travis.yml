@@ -1,0 +1,47 @@
+os:
+  - linux
+  - osx
+language: generic
+sudo: required
+dist: trusty
+
+services:
+  - mysql
+
+env:
+  global:
+    - MYSQL_PASSWORD=''
+    - MYSQL_PORT=3306
+
+osx_image: xcode9.2
+before_install:
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      brew update;
+      brew tap vapor/tap;
+      brew update;
+      bundle install --path vendor/bundle;
+      brew install vapor;
+      brew install cmysql;
+      mysql.server start;
+    else
+      eval "$(curl -sL https://apt.vapor.sh)";
+      sudo apt-get install vapor;
+      sudo apt-get install cmysql;
+      sudo chmod -R a+rx /usr/;
+    fi
+  - mysql -u root -e "set global max_connections = 1000";
+
+script:
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      swift build;
+      swift test;
+    else
+      swift build -Xswiftc -DNOJSON;
+      swift test -Xswiftc -DNOJSON;
+    fi
+
+after_success:
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      swift package generate-xcodeproj;
+      bundle exec fastlane send_coverage;
+    fi

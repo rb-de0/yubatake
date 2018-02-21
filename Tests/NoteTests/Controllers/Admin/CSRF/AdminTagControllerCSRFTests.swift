@@ -64,3 +64,12 @@ final class AdminTagControllerCSRFTests: ControllerTestCase {
         XCTAssertEqual(try Tag.find(1)?.name, "Swift")
     }
 }
+
+extension AdminTagControllerCSRFTests {
+    
+	public static var allTests = [
+		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate),
+		("testCanPreventCSRFOnDestroy", testCanPreventCSRFOnDestroy),
+		("testCanPreventCSRFOnStore", testCanPreventCSRFOnStore)
+    ]
+}

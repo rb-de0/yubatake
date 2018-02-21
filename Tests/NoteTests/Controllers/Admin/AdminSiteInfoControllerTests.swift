@@ -57,3 +57,12 @@ final class AdminSiteInfoControllerTests: ControllerTestCase {
         XCTAssertEqual(sharedSiteInfo?.description, "UpdateTest")
     }
 }
+
+extension AdminSiteInfoControllerTests {
+    
+	public static var allTests = [
+		("testCreateSharedSiteInfo", testCreateSharedSiteInfo),
+		("testCanViewCreateView", testCanViewCreateView),
+		("testCanUpdateASiteInfo", testCanUpdateASiteInfo)
+    ]
+}

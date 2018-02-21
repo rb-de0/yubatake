@@ -19,3 +19,10 @@ final class AdminFileControllerTests: ControllerTestCase {
         XCTAssertEqual(response.status, .ok)
     }
 }
+
+extension AdminFileControllerTests {
+    
+	public static var allTests = [
+		("testCanViewIndex", testCanViewIndex)
+    ]
+}

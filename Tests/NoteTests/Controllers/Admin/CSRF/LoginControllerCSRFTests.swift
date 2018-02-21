@@ -23,3 +23,10 @@ final class LoginControllerCSRFTests: ControllerTestCase {
         XCTAssertNil(response.headers[HeaderKey.setCookie])
     }
 }
+
+extension LoginControllerCSRFTests {
+    
+	public static var allTests = [
+		("testCanPreventCSRFOnLogin", testCanPreventCSRFOnLogin)
+    ]
+}

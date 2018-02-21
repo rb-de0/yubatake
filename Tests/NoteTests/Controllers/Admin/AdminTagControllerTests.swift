@@ -262,3 +262,19 @@ final class AdminTagControllerTests: ControllerTestCase {
         XCTAssertEqual(view.get("name"), "Kotlin")
     }
 }
+
+extension AdminTagControllerTests {
+    
+	public static var allTests = [
+		("testCanViewCreateView", testCanViewCreateView),
+		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+		("testCanViewEditView", testCanViewEditView),
+		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+		("testCanDestroyATag", testCanDestroyATag),
+		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+		("testCanStoreATag", testCanStoreATag),
+		("testCanViewIndex", testCanViewIndex),
+		("testCannotCreateTagAtAlreadyExist", testCannotCreateTagAtAlreadyExist),
+		("testCanUpdateATag", testCanUpdateATag)
+    ]
+}

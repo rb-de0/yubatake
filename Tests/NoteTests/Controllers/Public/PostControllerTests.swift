@@ -170,3 +170,18 @@ final class PostControllerTests: ControllerTestCase {
         XCTAssertEqual(response.status, .ok)
     }
 }
+
+extension PostControllerTests {
+    
+	public static var allTests = [
+		("testCanViewPostsInTags", testCanViewPostsInTags),
+		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+		("testCanViewPostsNoCategory", testCanViewPostsNoCategory),
+		("testCanViewAPost", testCanViewAPost),
+		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+		("testCanViewStaticContent", testCanViewStaticContent),
+		("testCanViewIndex", testCanViewIndex),
+		("testCanViewPostsInACategory", testCanViewPostsInACategory)
+    ]
+}
