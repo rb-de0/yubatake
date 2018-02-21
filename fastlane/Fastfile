@@ -15,7 +15,8 @@ platform :mac do
       scheme: "note-Package",
       travis: true,
       binary_basename: "App",
-      ignore: [".build/*", "Tests/*"]
+      ignore: [".build/*", "Tests/*"],
+      coveralls: true
     )
   end
 
