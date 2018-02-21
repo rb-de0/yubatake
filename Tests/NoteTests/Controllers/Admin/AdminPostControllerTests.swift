@@ -378,3 +378,23 @@ final class AdminPostControllerTests: ControllerTestCase {
         XCTAssertEqual(try Tag.count(), 2)
     }
 }
+
+extension AdminPostControllerTests {
+    
+	public static var allTests = [
+		("testCanDestroyPosts", testCanDestroyPosts),
+		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+		("testCanDestroyStaticContents", testCanDestroyStaticContents),
+		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+		("testCanViewStaticContent", testCanViewStaticContent),
+		("testCanViewIndex", testCanViewIndex),
+		("testCannotStoreAPostHasInvalidCategory", testCannotStoreAPostHasInvalidCategory),
+		("testCanStoreAPostHasNotInsertedTags", testCanStoreAPostHasNotInsertedTags),
+		("testCanViewCreateView", testCanViewCreateView),
+		("testCanViewEditView", testCanViewEditView),
+		("testCanStoreAPost", testCanStoreAPost),
+		("testCanUpdateAPost", testCanUpdateAPost),
+		("testCanAddTagsOnUpdate", testCanAddTagsOnUpdate)
+    ]
+}

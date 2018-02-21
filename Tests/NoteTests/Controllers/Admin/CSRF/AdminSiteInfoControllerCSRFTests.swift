@@ -26,3 +26,10 @@ final class AdminSiteInfoControllerCSRFTests: ControllerTestCase {
         XCTAssertEqual(try SiteInfo.find(1)?.name, "SiteTitle")
     }
 }
+
+extension AdminSiteInfoControllerCSRFTests {
+    
+	public static var allTests = [
+		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate)
+    ]
+}

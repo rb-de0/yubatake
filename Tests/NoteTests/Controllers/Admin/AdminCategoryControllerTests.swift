@@ -262,3 +262,19 @@ final class AdminCategoryControllerTests: ControllerTestCase {
         XCTAssertEqual(view.get("name"), "FX")
     }
 }
+
+extension AdminCategoryControllerTests {
+    
+	public static var allTests = [
+		("testCanViewCreateView", testCanViewCreateView),
+		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+		("testCanViewEditView", testCanViewEditView),
+		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+		("testCanDestroyCategories", testCanDestroyCategories),
+		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+		("testCanStoreACategory", testCanStoreACategory),
+		("testCanViewIndex", testCanViewIndex),
+		("testCannotCreateCategoryAtAlreadyExist", testCannotCreateCategoryAtAlreadyExist),
+		("testCanUpdateACategory", testCanUpdateACategory)
+    ]
+}

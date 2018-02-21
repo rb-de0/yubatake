@@ -76,3 +76,12 @@ final class AdminCategoryControllerCSRFTests: ControllerTestCase {
         XCTAssertEqual(view.get("name"), "Programming")
     }
 }
+
+extension AdminCategoryControllerCSRFTests {
+    
+	public static var allTests = [
+		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate),
+		("testCanPreventCSRFOnDestroy", testCanPreventCSRFOnDestroy),
+		("testCanPreventCSRFOnStore", testCanPreventCSRFOnStore)
+    ]
+}

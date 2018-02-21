@@ -47,3 +47,11 @@ final class AdminUserControllerTests: ControllerTestCase {
         XCTAssertEqual(user?.password, try resolve(HashProtocol.self).make("123456789").makeString())
     }
 }
+
+extension AdminUserControllerTests {
+    
+	public static var allTests = [
+		("testCanViewCreateView", testCanViewCreateView),
+		("testCanUpdateAUser", testCanUpdateAUser),
+    ]
+}

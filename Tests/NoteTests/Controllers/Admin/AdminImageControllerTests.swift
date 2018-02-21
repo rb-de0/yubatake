@@ -188,3 +188,16 @@ final class AdminImageControllerTests: ControllerTestCase {
         XCTAssertTrue(resolve(FileRepository.self).isExist(path: "/documents/imgs/sample"))
     }
 }
+
+extension AdminImageControllerTests {
+    
+	public static var allTests = [
+		("testCanUpdateAImage", testCanUpdateAImage),
+		("testCanStoreAImage", testCanStoreAImage),
+		("testCanViewEditView", testCanViewEditView),
+		("testCanDestroyAImage", testCanDestroyAImage),
+		("testCanCleanUp", testCanCleanUp),
+		("testCanViewIndex", testCanViewIndex),
+		("testCanViewCleanButtonWhenHasNotFound", testCanViewCleanButtonWhenHasNotFound)
+    ]
+}

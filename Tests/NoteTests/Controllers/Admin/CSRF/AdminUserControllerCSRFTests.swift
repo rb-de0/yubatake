@@ -32,3 +32,10 @@ final class AdminUserControllerCSRFTests: ControllerTestCase {
         XCTAssertEqual(user?.password, try resolve(HashProtocol.self).make("passwd").makeString())
     }
 }
+
+extension AdminUserControllerCSRFTests {
+    
+	public static var allTests = [
+		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate)
+    ]
+}

@@ -93,3 +93,13 @@ final class LoginControllerTests: ControllerTestCase {
         XCTAssertEqual(response.headers[HeaderKey.location], "login")
     }
 }
+
+extension LoginControllerTests {
+    
+	public static var allTests = [
+		("testCreateRootUser", testCreateRootUser),
+		("testCanViewIndex", testCanViewIndex),
+		("testCannotLoginNoPassword", testCannotLoginNoPassword),
+		("testCanLogin", testCanLogin)
+    ]
+}
