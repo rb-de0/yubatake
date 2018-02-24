@@ -64,9 +64,8 @@ final class AdminPostControllerMessageTests: ControllerTestCase {
 }
 
 extension AdminPostControllerMessageTests {
-    
-	public static var allTests = [
-		("testCanViewValidateErrorOnStore", testCanViewValidateErrorOnStore),
-		("testCanViewValidateErrorOnUpdate", testCanViewValidateErrorOnUpdate)
+    public static let allTests = [
+        ("testCanViewValidateErrorOnStore", testCanViewValidateErrorOnStore),
+        ("testCanViewValidateErrorOnUpdate", testCanViewValidateErrorOnUpdate)
     ]
 }

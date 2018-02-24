@@ -190,14 +190,13 @@ final class AdminImageControllerTests: ControllerTestCase {
 }
 
 extension AdminImageControllerTests {
-    
-	public static var allTests = [
-		("testCanUpdateAImage", testCanUpdateAImage),
-		("testCanStoreAImage", testCanStoreAImage),
-		("testCanViewEditView", testCanViewEditView),
-		("testCanDestroyAImage", testCanDestroyAImage),
-		("testCanCleanUp", testCanCleanUp),
-		("testCanViewIndex", testCanViewIndex),
-		("testCanViewCleanButtonWhenHasNotFound", testCanViewCleanButtonWhenHasNotFound)
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewCleanButtonWhenHasNotFound", testCanViewCleanButtonWhenHasNotFound),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanCleanUp", testCanCleanUp),
+        ("testCanDestroyAImage", testCanDestroyAImage),
+        ("testCanStoreAImage", testCanStoreAImage),
+        ("testCanUpdateAImage", testCanUpdateAImage)
     ]
 }

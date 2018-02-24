@@ -25,8 +25,7 @@ final class LoginControllerCSRFTests: ControllerTestCase {
 }
 
 extension LoginControllerCSRFTests {
-    
-	public static var allTests = [
-		("testCanPreventCSRFOnLogin", testCanPreventCSRFOnLogin)
+    public static let allTests = [
+        ("testCanPreventCSRFOnLogin", testCanPreventCSRFOnLogin)
     ]
 }

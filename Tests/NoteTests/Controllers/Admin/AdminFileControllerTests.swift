@@ -21,8 +21,7 @@ final class AdminFileControllerTests: ControllerTestCase {
 }
 
 extension AdminFileControllerTests {
-    
-	public static var allTests = [
-		("testCanViewIndex", testCanViewIndex)
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex)
     ]
 }

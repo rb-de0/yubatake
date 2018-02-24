@@ -78,10 +78,9 @@ final class AdminCategoryControllerCSRFTests: ControllerTestCase {
 }
 
 extension AdminCategoryControllerCSRFTests {
-    
-	public static var allTests = [
-		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate),
-		("testCanPreventCSRFOnDestroy", testCanPreventCSRFOnDestroy),
-		("testCanPreventCSRFOnStore", testCanPreventCSRFOnStore)
+    public static let allTests = [
+        ("testCanPreventCSRFOnDestroy", testCanPreventCSRFOnDestroy),
+        ("testCanPreventCSRFOnStore", testCanPreventCSRFOnStore),
+        ("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate)
     ]
 }

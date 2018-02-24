@@ -264,17 +264,16 @@ final class AdminCategoryControllerTests: ControllerTestCase {
 }
 
 extension AdminCategoryControllerTests {
-    
-	public static var allTests = [
-		("testCanViewCreateView", testCanViewCreateView),
-		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
-		("testCanViewEditView", testCanViewEditView),
-		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
-		("testCanDestroyCategories", testCanDestroyCategories),
-		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
-		("testCanStoreACategory", testCanStoreACategory),
-		("testCanViewIndex", testCanViewIndex),
-		("testCannotCreateCategoryAtAlreadyExist", testCannotCreateCategoryAtAlreadyExist),
-		("testCanUpdateACategory", testCanUpdateACategory)
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanDestroyCategories", testCanDestroyCategories),
+        ("testCanStoreACategory", testCanStoreACategory),
+        ("testCannotCreateCategoryAtAlreadyExist", testCannotCreateCategoryAtAlreadyExist),
+        ("testCanUpdateACategory", testCanUpdateACategory)
     ]
 }

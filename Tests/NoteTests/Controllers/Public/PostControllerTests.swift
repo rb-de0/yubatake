@@ -172,16 +172,15 @@ final class PostControllerTests: ControllerTestCase {
 }
 
 extension PostControllerTests {
-    
-	public static var allTests = [
-		("testCanViewPostsInTags", testCanViewPostsInTags),
-		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
-		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
-		("testCanViewPostsNoCategory", testCanViewPostsNoCategory),
-		("testCanViewAPost", testCanViewAPost),
-		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
-		("testCanViewStaticContent", testCanViewStaticContent),
-		("testCanViewIndex", testCanViewIndex),
-		("testCanViewPostsInACategory", testCanViewPostsInACategory)
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+        ("testCanViewStaticContent", testCanViewStaticContent),
+        ("testCanViewPostsInTags", testCanViewPostsInTags),
+        ("testCanViewPostsInACategory", testCanViewPostsInACategory),
+        ("testCanViewPostsNoCategory", testCanViewPostsNoCategory),
+        ("testCanViewAPost", testCanViewAPost)
     ]
 }

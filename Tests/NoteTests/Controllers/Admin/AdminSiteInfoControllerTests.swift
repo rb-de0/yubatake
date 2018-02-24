@@ -59,10 +59,9 @@ final class AdminSiteInfoControllerTests: ControllerTestCase {
 }
 
 extension AdminSiteInfoControllerTests {
-    
-	public static var allTests = [
-		("testCreateSharedSiteInfo", testCreateSharedSiteInfo),
-		("testCanViewCreateView", testCanViewCreateView),
-		("testCanUpdateASiteInfo", testCanUpdateASiteInfo)
+    public static let allTests = [
+        ("testCreateSharedSiteInfo", testCreateSharedSiteInfo),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanUpdateASiteInfo", testCanUpdateASiteInfo)
     ]
 }

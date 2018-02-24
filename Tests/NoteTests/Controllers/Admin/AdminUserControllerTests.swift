@@ -49,9 +49,8 @@ final class AdminUserControllerTests: ControllerTestCase {
 }
 
 extension AdminUserControllerTests {
-    
-	public static var allTests = [
-		("testCanViewCreateView", testCanViewCreateView),
-		("testCanUpdateAUser", testCanUpdateAUser),
+    public static let allTests = [
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanUpdateAUser", testCanUpdateAUser)
     ]
 }

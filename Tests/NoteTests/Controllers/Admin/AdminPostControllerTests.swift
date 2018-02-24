@@ -380,21 +380,20 @@ final class AdminPostControllerTests: ControllerTestCase {
 }
 
 extension AdminPostControllerTests {
-    
-	public static var allTests = [
-		("testCanDestroyPosts", testCanDestroyPosts),
-		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
-		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
-		("testCanDestroyStaticContents", testCanDestroyStaticContents),
-		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
-		("testCanViewStaticContent", testCanViewStaticContent),
-		("testCanViewIndex", testCanViewIndex),
-		("testCannotStoreAPostHasInvalidCategory", testCannotStoreAPostHasInvalidCategory),
-		("testCanStoreAPostHasNotInsertedTags", testCanStoreAPostHasNotInsertedTags),
-		("testCanViewCreateView", testCanViewCreateView),
-		("testCanViewEditView", testCanViewEditView),
-		("testCanStoreAPost", testCanStoreAPost),
-		("testCanUpdateAPost", testCanUpdateAPost),
-		("testCanAddTagsOnUpdate", testCanAddTagsOnUpdate)
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+        ("testCanViewStaticContent", testCanViewStaticContent),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanDestroyPosts", testCanDestroyPosts),
+        ("testCanDestroyStaticContents", testCanDestroyStaticContents),
+        ("testCanStoreAPost", testCanStoreAPost),
+        ("testCannotStoreAPostHasInvalidCategory", testCannotStoreAPostHasInvalidCategory),
+        ("testCanStoreAPostHasNotInsertedTags", testCanStoreAPostHasNotInsertedTags),
+        ("testCanUpdateAPost", testCanUpdateAPost),
+        ("testCanAddTagsOnUpdate", testCanAddTagsOnUpdate)
     ]
 }

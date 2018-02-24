@@ -264,17 +264,16 @@ final class AdminTagControllerTests: ControllerTestCase {
 }
 
 extension AdminTagControllerTests {
-    
-	public static var allTests = [
-		("testCanViewCreateView", testCanViewCreateView),
-		("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
-		("testCanViewEditView", testCanViewEditView),
-		("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
-		("testCanDestroyATag", testCanDestroyATag),
-		("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
-		("testCanStoreATag", testCanStoreATag),
-		("testCanViewIndex", testCanViewIndex),
-		("testCannotCreateTagAtAlreadyExist", testCannotCreateTagAtAlreadyExist),
-		("testCanUpdateATag", testCanUpdateATag)
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanDestroyATag", testCanDestroyATag),
+        ("testCanStoreATag", testCanStoreATag),
+        ("testCannotCreateTagAtAlreadyExist", testCannotCreateTagAtAlreadyExist),
+        ("testCanUpdateATag", testCanUpdateATag)
     ]
 }

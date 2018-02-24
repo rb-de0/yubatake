@@ -95,11 +95,10 @@ final class LoginControllerTests: ControllerTestCase {
 }
 
 extension LoginControllerTests {
-    
-	public static var allTests = [
-		("testCreateRootUser", testCreateRootUser),
-		("testCanViewIndex", testCanViewIndex),
-		("testCannotLoginNoPassword", testCannotLoginNoPassword),
-		("testCanLogin", testCanLogin)
+    public static let allTests = [
+        ("testCreateRootUser", testCreateRootUser),
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanLogin", testCanLogin),
+        ("testCannotLoginNoPassword", testCannotLoginNoPassword)
     ]
 }

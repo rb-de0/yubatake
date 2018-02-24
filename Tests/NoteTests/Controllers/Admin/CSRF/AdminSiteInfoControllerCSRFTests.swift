@@ -28,8 +28,7 @@ final class AdminSiteInfoControllerCSRFTests: ControllerTestCase {
 }
 
 extension AdminSiteInfoControllerCSRFTests {
-    
-	public static var allTests = [
-		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate)
+    public static let allTests = [
+        ("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate)
     ]
 }

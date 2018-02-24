@@ -68,10 +68,9 @@ final class AdminPostControllerCSRFTests: ControllerTestCase {
 }
 
 extension AdminPostControllerCSRFTests {
-    
-	public static var allTests = [
-		("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate),
-		("testCanPreventCSRFOnDestroy", testCanPreventCSRFOnDestroy),
-		("testCanPreventCSRFOnStore", testCanPreventCSRFOnStore)
+    public static let allTests = [
+        ("testCanPreventCSRFOnDestroy", testCanPreventCSRFOnDestroy),
+        ("testCanPreventCSRFOnStore", testCanPreventCSRFOnStore),
+        ("testCanPreventCSRFOnUpdate", testCanPreventCSRFOnUpdate)
     ]
 }
