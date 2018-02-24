@@ -69,9 +69,7 @@ final class AdminPostController: EditableResourceRepresentable {
                 try post.tags.add($0)
             }
             
-            guard let id = post.id?.int else {
-                throw Abort.serverError
-            }
+            let id = try post.assertId()
             
             if let _ = request.data["should-tweet"]?.string {
                 let user = try request.auth.assertAuthenticated(User.self)
@@ -94,9 +92,7 @@ final class AdminPostController: EditableResourceRepresentable {
     
     func update(request: Request, post: Post) throws -> ResponseRepresentable {
         
-        guard let id = post.id?.int else {
-            throw Abort.serverError
-        }
+        let id = try post.assertId()
         
         do {
             

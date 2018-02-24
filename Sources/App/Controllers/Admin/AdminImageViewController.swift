@@ -59,9 +59,7 @@ final class AdminImageViewController: EditableResourceRepresentable {
     
     func update(request: Request, image: Image) throws -> ResponseRepresentable {
         
-        guard let id = image.id?.int else {
-            throw Abort.serverError
-        }
+        let id = try image.assertId()
         
         do {
             
