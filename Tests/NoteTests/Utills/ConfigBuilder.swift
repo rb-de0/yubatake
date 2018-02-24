@@ -4,7 +4,7 @@ import XCTest
 
 final class ConfigBuilder {
     
-    class func defaultDrop<T: XCTestCase>(with testCase: T) throws -> Droplet {
+    class func defaultDrop<T: XCTestCase>(with testCase: T, build: ((Config) -> ())? = nil) throws -> Droplet {
         
         var config = Config([:])
         config.addConfigurable(view: { _ in TestViewRenderer() }, name: "test")
@@ -17,6 +17,8 @@ final class ConfigBuilder {
         try! config.set("mysql.hostname", DB.hostName)
         try! config.set("mysql.database", type(of: testCase).dbName)
         try! config.set("mysql.port", DB.port)
+        build?(config)
+        
         try! config.setup()
         
         let drop = try! Droplet(config)
