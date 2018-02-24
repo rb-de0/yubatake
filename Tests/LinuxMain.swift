@@ -6,6 +6,7 @@ let tests: [XCTestCaseEntry] = [
     testCase(APIFileControllerTests.allTests),
     testCase(APIHtmlControllerTests.allTests),
     testCase(APIImageControllerTests.allTests),
+    testCase(RoutingSecureGuardTests.allTests),
     testCase(AdminCategoryControllerTests.allTests),
     testCase(AdminFileControllerTests.allTests),
     testCase(AdminImageControllerTests.allTests),
