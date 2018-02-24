@@ -8,20 +8,36 @@ import XCTest
 final class DataMaker {
     
     class func makePost(title: String = "title", content: String = "content", isStatic: Bool = false, categoryId: Int? = nil) throws -> Post {
-        return try Post(request: makeAuthorizedRequest(json: makePostJSON(title: title, content: content, isStatic: isStatic, categoryId: categoryId)))
+        return try Post(request: makePostRequest(title: title, content: content, isStatic: isStatic, categoryId: categoryId))
+    }
+    
+    class func makePostRequest(title: String = "title", content: String = "content", isStatic: Bool = false, categoryId: Int? = nil) throws -> Request {
+        return makeAuthorizedRequest(json: makePostJSON(title: title, content: content, isStatic: isStatic, categoryId: categoryId))
     }
     
     class func makeTag(_ name: String) throws -> Tag {
-        return try Tag(request: makeAuthorizedRequest(json: makeTagJSON(name: name)))
+        return try Tag(request: makeTagRequest(name))
+    }
+    
+    class func makeTagRequest(_ name: String) throws -> Request {
+        return makeAuthorizedRequest(json: makeTagJSON(name: name))
     }
     
     class func makeCategory(_ name: String) throws -> App.Category {
-        return try Category(request: makeAuthorizedRequest(json: makeCategoryJSON(name: name)))
+        return try Category(request: makeCategoryRequest(name))
+    }
+    
+    class func makeCategoryRequest(_ name: String) throws -> Request {
+        return makeAuthorizedRequest(json: makeCategoryJSON(name: name))
     }
     
     class func makeImage(_ name: String) throws -> (ImageData, Image) {
         let data = try ImageData(request: makeAuthorizedRequest(json: makeImageDataJSON(name: name)))
         return (data, try Image(data: data))
+    }
+    
+    class func makeSiteInfoRequest(name: String, description: String) throws -> Request {
+        return makeAuthorizedRequest(json: ["name": .init(name), "description": .init(description)])
     }
     
     class func makePostJSON(title: String = "title", content: String = "content", isStatic: Bool = false, categoryId: Int? = nil) -> JSON {

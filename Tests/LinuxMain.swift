@@ -25,7 +25,8 @@ let tests: [XCTestCaseEntry] = [
     testCase(AdminPostControllerMessageTests.allTests),
     testCase(AdminSiteInfoControllerMessageTests.allTests),
     testCase(AdminTagControllerMessageTests.allTests),
-    testCase(AdminUserControllerMessageTests.allTests)
+    testCase(AdminUserControllerMessageTests.allTests),
+    testCase(ValidationTests.allTests)
 ]
 
 XCTMain(tests)
