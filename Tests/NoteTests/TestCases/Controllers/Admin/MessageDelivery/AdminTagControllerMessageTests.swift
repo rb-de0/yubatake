@@ -58,11 +58,59 @@ final class AdminTagControllerMessageTests: ControllerTestCase {
         
         XCTAssertNotNil(view.get("request.storage.error_message") as String?)
     }
+    
+    // MARK: - FormData
+    
+    func testCanDeliveryFormDataOnStore() throws {
+        
+        let requestData = try login()
+        
+        var request: Request!
+        var json: JSON!
+        
+        json = DataMaker.makeTagJSON(name: String(repeating: "1", count: 17))
+        
+        request = Request(method: .post, uri: "/admin/tags")
+        request.cookies.insert(requestData.cookie)
+        try request.setFormData(json, requestData.csrfToken)
+        _ = try drop.respond(to: request)
+        
+        request = Request(method: .get, uri: "/admin/tags/create")
+        request.cookies.insert(requestData.cookie)
+        _ = try drop.respond(to: request)
+        
+        XCTAssertEqual(view.get("name"), String(repeating: "1", count: 17))
+    }
+    
+    func testCanDelieryFormDataOnUpdate() throws {
+        
+        let requestData = try login()
+        
+        var request: Request!
+        var json: JSON!
+        
+        try DataMaker.makeTag("iOS").save()
+        
+        json = DataMaker.makeTagJSON(name: String(repeating: "1", count: 17))
+        
+        request = Request(method: .post, uri: "/admin/tags/1/edit")
+        request.cookies.insert(requestData.cookie)
+        try request.setFormData(json, requestData.csrfToken)
+        _ = try drop.respond(to: request)
+        
+        request = Request(method: .get, uri: "/admin/tags/1/edit")
+        request.cookies.insert(requestData.cookie)
+        _ = try drop.respond(to: request)
+        
+        XCTAssertEqual(view.get("name"), String(repeating: "1", count: 17))
+    }
 }
 
 extension AdminTagControllerMessageTests {
     public static let allTests = [
         ("testCanViewValidateErrorOnStore", testCanViewValidateErrorOnStore),
-        ("testCanViewValidateErrorOnUpdate", testCanViewValidateErrorOnUpdate)
+        ("testCanViewValidateErrorOnUpdate", testCanViewValidateErrorOnUpdate),
+        ("testCanDeliveryFormDataOnStore", testCanDeliveryFormDataOnStore),
+        ("testCanDelieryFormDataOnUpdate", testCanDelieryFormDataOnUpdate)
     ]
 }
