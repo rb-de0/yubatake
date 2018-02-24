@@ -1,10 +1,3 @@
-//
-//  TestImageFileRepository.swift
-//  NoteTests
-//
-//  Created by rb_de0 on 2018/02/18.
-//
-
 @testable import App
 import Foundation
 
