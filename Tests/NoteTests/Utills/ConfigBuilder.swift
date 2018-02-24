@@ -9,7 +9,7 @@ final class ConfigBuilder {
         var config = Config([:])
         config.addConfigurable(view: { _ in TestViewRenderer() }, name: "test")
         
-        try! config.set("droplet.middleware", ["error", "date", "file", "sessions", "security-headers", "csrf", "message"])
+        try! config.set("droplet.middleware", ["error", "date", "userfile", "sessions", "security-headers", "csrf", "message"])
         try! config.set("droplet.view", "test")
         try! config.set("fluent.driver", "mysql")
         try! config.set("mysql.user", DB.user)

@@ -1,71 +1,9 @@
 @testable import App
-import Cookies
-import HTTP
 import Vapor
 import XCTest
 import Foundation
 
-final class FileRepositoryTests: XCTestCase {
-    
-    private(set) var drop: Droplet!
-    
-    private var testDir: String {
-        return drop.config.workDir.finished(with: "/") + ".test"
-    }
-    
-    private var cssDir: String {
-        return testDir + "/Public/styles"
-    }
-    
-    private var jsDir: String {
-        return testDir + "/Public/js"
-    }
-    
-    private var viewsDir: String {
-        return testDir + "/Resources/Views"
-    }
-    
-    private var testViewsDir: String {
-        return viewsDir + "/test"
-    }
-    
-    private var fm: FileManager {
-        return FileManager.default
-    }
-    
-    override class func setUp() {
-        try! dropDB()
-    }
-    
-    override func setUp() {
-        try! createDB()
-        
-        drop = try! ConfigBuilder.defaultDrop(with: self) { (c: Config) in
-            var config = c
-            try! config.set("droplet.resourcesDir", ".test/Resources")
-            try! config.set("droplet.publicDir", ".test/Public")
-        }
-
-        if fm.fileExists(atPath: testDir) {
-            try! fm.removeItem(atPath: testDir)
-        }
-        try! fm.createDirectory(atPath: testDir, withIntermediateDirectories: true, attributes: nil)
-        try! fm.createDirectory(atPath: jsDir, withIntermediateDirectories: true, attributes: nil)
-        try! fm.createDirectory(atPath: cssDir, withIntermediateDirectories: true, attributes: nil)
-        try! fm.createDirectory(atPath: testViewsDir, withIntermediateDirectories: true, attributes: nil)
-        
-        fm.createFile(atPath: jsDir + "/test.js", contents: "JavaScriptTestCode".data(using: .utf8), attributes: nil)
-        fm.createFile(atPath: cssDir + "/test.css", contents: "CSSTestStyle".data(using: .utf8), attributes: nil)
-        fm.createFile(atPath: testViewsDir + "/test.leaf", contents: "LeafTestTemplate".data(using: .utf8), attributes: nil)
-    }
-    
-    override func tearDown() {
-        try! dropDB()
-        
-        if fm.fileExists(atPath: testDir) {
-            try! fm.removeItem(atPath: testDir)
-        }
-    }
+final class FileRepositoryTests: FileHandleTestCase {
     
     func testCanSaveAndDeleteImage() throws {
         
