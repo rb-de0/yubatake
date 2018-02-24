@@ -15,7 +15,7 @@ final class APIHtmlControllerTests: ControllerTestCase {
         
         request = Request(method: .post, uri: "/api/converted_markdown")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["content": "#hoge"], requestData.csrfToken)
+        try request.setJSONData(["content": "#hoge"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
@@ -30,7 +30,7 @@ final class APIHtmlControllerTests: ControllerTestCase {
         
         request = Request(method: .post, uri: "/api/converted_markdown")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData([:], requestData.csrfToken)
+        try request.setJSONData([:], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .badRequest)

@@ -44,14 +44,14 @@ final class APIFileControllerTests: ControllerTestCase {
         
         request = Request(method: .post, uri: "/api/filebody")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["body": "test", "path": "", "type": "public"], requestData.csrfToken)
+        try request.setJSONData(["body": "test", "path": "", "type": "public"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
         
         request = Request(method: .post, uri: "/api/filebody")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["body": "test", "path": "", "type": "view"], requestData.csrfToken)
+        try request.setJSONData(["body": "test", "path": "", "type": "view"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
@@ -66,21 +66,21 @@ final class APIFileControllerTests: ControllerTestCase {
         
         request = Request(method: .post, uri: "/api/filebody")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["path": "", "type": "public"], requestData.csrfToken)
+        try request.setJSONData(["path": "", "type": "public"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .badRequest)
         
         request = Request(method: .post, uri: "/api/filebody")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["body": "test", "type": "view"], requestData.csrfToken)
+        try request.setJSONData(["body": "test", "type": "view"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .badRequest)
         
         request = Request(method: .post, uri: "/api/filebody")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["body": "test", "path": "", "type": ""], requestData.csrfToken)
+        try request.setJSONData(["body": "test", "path": "", "type": ""], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .badRequest)
@@ -95,14 +95,14 @@ final class APIFileControllerTests: ControllerTestCase {
         
         request = Request(method: .get, uri: "/api/filebody")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["path": "", "type": "public"], requestData.csrfToken)
+        try request.setJSONData(["path": "", "type": "public"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
         
         request = Request(method: .get, uri: "/api/filebody")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["path": "", "type": "view"], requestData.csrfToken)
+        try request.setJSONData(["path": "", "type": "view"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
@@ -117,14 +117,14 @@ final class APIFileControllerTests: ControllerTestCase {
         
         request = Request(method: .post, uri: "/api/filebody/delete")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["path": "", "type": "public"], requestData.csrfToken)
+        try request.setJSONData(["path": "", "type": "public"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
         
         request = Request(method: .post, uri: "/api/filebody/delete")
         request.cookies.insert(requestData.cookie)
-        try request.setFormData(["path": "", "type": "view"], requestData.csrfToken)
+        try request.setJSONData(["path": "", "type": "view"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
