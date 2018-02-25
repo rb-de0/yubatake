@@ -24,8 +24,8 @@ final class DB {
         return processInfo.environment["MYSQL_PORT"]?.uint ?? 3307
     }
     
-    private class func driver() throws -> MySQLDriver.Driver {
-        let dataBase = try MySQL.Database(hostname: hostName, user: user, password: password, database: "", port: port)
+    class func driver(database: String = "") throws -> MySQLDriver.Driver {
+        let dataBase = try MySQL.Database(hostname: hostName, user: user, password: password, database: database, port: port)
         return MySQLDriver.Driver(master: dataBase)
     }
     
