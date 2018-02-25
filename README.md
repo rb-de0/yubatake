@@ -1,5 +1,8 @@
 # note
 
+[![Build Status](https://travis-ci.org/rb-de0/note.svg?branch=master)](https://travis-ci.org/rb-de0/note)
+[![Coverage Status](https://coveralls.io/repos/github/rb-de0/note/badge.svg?branch=master)](https://coveralls.io/github/rb-de0/note?branch=master)
+
 A simple CMS using Vapor(Server Side Swift Framework)
 
 # Prerequisites
