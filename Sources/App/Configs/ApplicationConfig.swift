@@ -65,7 +65,11 @@ struct ApplicationConfig: ConfigInitializable {
             let hostName = config["note", "hostname"]?.string,
             let dateFormat = config["note", "dateFormat"]?.string else {
                 
-            fatalError("Not found note.json or necessary key.")
+            self.messageFormat = ""
+            self.hostName = ""
+            self.dateFormat = ""
+            self.meta = nil
+            return
         }
         
         self.messageFormat = messageFormat

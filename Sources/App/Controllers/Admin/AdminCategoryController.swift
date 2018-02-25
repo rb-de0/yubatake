@@ -46,15 +46,12 @@ final class AdminCategoryController: EditableResourceRepresentable {
             
             let category = try Category(request: request)
             try category.save()
-        
-            guard let id = category.id?.int else {
-                throw Abort.serverError
-            }
+            let id = try category.assertId()
         
             return Response(redirect: "/admin/categories/\(id)/edit")
 
         } catch {
-            
+
             return Response(redirect: "/admin/categories/create", with: FormError(error: error, deliverer: Category.self), for: request)
         }
     }
@@ -65,9 +62,7 @@ final class AdminCategoryController: EditableResourceRepresentable {
     
     func update(request: Request, category: Category) throws -> ResponseRepresentable {
         
-        guard let id = category.id?.int else {
-            throw Abort.serverError
-        }
+        let id = try category.assertId()
         
         do {
             try category.update(for: request)

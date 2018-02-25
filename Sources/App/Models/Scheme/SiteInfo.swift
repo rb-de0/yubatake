@@ -14,14 +14,6 @@ final class SiteInfo: Model {
     var name: String
     var description: String
     
-    init(request: Request) throws {
-        
-        name = request.data[SiteInfo.nameKey]?.string ?? ""
-        description = request.data[SiteInfo.descriptionKey]?.string ?? ""
-        
-        try validate()
-    }
-    
     init(name: String, description: String) {
         self.name = name
         self.description = description

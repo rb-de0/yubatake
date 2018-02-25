@@ -47,10 +47,7 @@ final class AdminTagController: EditableResourceRepresentable {
             
             let tag = try Tag(request: request)
             try tag.save()
-            
-            guard let id = tag.id?.int else {
-                throw Abort.serverError
-            }
+            let id = try tag.assertId()
             
             return Response(redirect: "/admin/tags/\(id)/edit")
             
@@ -66,9 +63,7 @@ final class AdminTagController: EditableResourceRepresentable {
     
     func update(request: Request, tag: Tag) throws -> ResponseRepresentable {
         
-        guard let id = tag.id?.int else {
-            throw Abort.serverError
-        }
+        let id = try tag.assertId()
         
         do {
             

@@ -20,10 +20,8 @@ final class TwitterRepositoryImpl: TwitterRepository {
     }
     
     func tweetNewPost(_ post: Post, from user: User, on request: Request) throws {
-
-        guard let id = post.id?.int else {
-            throw Abort.serverError
-        }
+        
+        let id = try post.assertId()
         
         let poppo = user.makePoppo()
         let url = "\(request.uri.scheme)://\(hostName)/\(id)"

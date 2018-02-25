@@ -6,10 +6,8 @@ extension Droplet {
     public func setup() throws {
 
         App.register(assembly: RepositoryAssembly())
+        App.register(assembly: ViewAssembly(drop: self))
         App.register(assembly: DropletAssembly(drop: self))
-        
-        // register leaf tags
-        registerTags()
         
         // create root user at the first time
         try createRootUserIfNeeded()
@@ -19,10 +17,6 @@ extension Droplet {
         
         // setup routing
         try setupRoutes()
-    }
-    
-    private func registerTags() {
-        (view as? UserLeafRenderder)?.stem.register(Escape())
     }
     
     private func createRootUserIfNeeded() throws {

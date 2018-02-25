@@ -35,7 +35,8 @@
         "userfile",
         "redis-sessions",
         "security-headers",
-        "csrf"
+        "csrf",
+        "message"
     ],
 
     "//": "Choose which commands this application can run",
