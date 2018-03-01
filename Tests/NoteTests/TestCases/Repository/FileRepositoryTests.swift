@@ -72,4 +72,72 @@ final class FileRepositoryTests: FileHandleTestCase {
             XCTAssertTrue(true)
         }
     }
+    
+    // MARK: - Theme
+    
+    func testCanGetFilesInATheme() throws {
+        
+        let repository = FileRepositoryImpl()
+        let groups = repository.files(in: "Theme1")
+        
+        XCTAssertEqual(groups.count, 2)
+    }
+    
+    func testCanGetAllThemes() throws {
+        
+        let repository = FileRepositoryImpl()
+        let themes = try repository.getAllThemes()
+        
+        XCTAssertEqual(themes.count, 2)
+        XCTAssertTrue("Theme1-Theme2".contains(themes.joined(separator: "-")) || "Theme2-Theme1".contains(themes.joined(separator: "-")))
+    }
+    
+    func testCanSaveTheme() throws {
+        
+        let repository = FileRepositoryImpl()
+        try repository.writeUserFileData(at: "/js/test.js", type: .publicResource, data: "JavaScriptTestCodeForTheme3")
+        try repository.saveTheme(as: "Theme3")
+        
+        let themes = try repository.getAllThemes()
+        
+        XCTAssertEqual(themes.count, 3)
+        
+        let code = try repository.readThemeFileData(in: "Theme3", at: "/js/test.js", type: .publicResource)
+        XCTAssertEqual(code, "JavaScriptTestCodeForTheme3")
+    }
+    
+    func testCanCopyTheme() throws {
+        
+        let repository = FileRepositoryImpl()
+        try repository.copyTheme(name: "Theme1")
+        
+        let jsCode = try repository.readFileData(at: "/user/js/test.js", type: .publicResource)
+        XCTAssertEqual(jsCode, "JavaScriptTestCodeForTheme1")
+        
+        let leafCode = try repository.readFileData(at: "/user/test.leaf", type: .view)
+        XCTAssertEqual(leafCode, "LeafTestTemplateForTheme1")
+    }
+    
+    func testCanDeleteTheme() throws {
+        
+        let repository = FileRepositoryImpl()
+        try repository.deleteTheme(name: "Theme1")
+        
+        let themes = try repository.getAllThemes()
+        
+        XCTAssertEqual(themes.count, 1)
+        XCTAssertEqual(themes.joined(separator: ""), "Theme2")
+    }
+    
+    func testCanViewThemeNotFound() throws {
+        
+        let repository = FileRepositoryImpl()
+        
+        do {
+            _ = try repository.readThemeFileData(in: "Theme3", at: "/js/test.js", type: .publicResource)
+            XCTFail()
+        } catch let error as Abort where error.status == .notFound {
+            XCTAssertTrue(true)
+        }
+    }
 }

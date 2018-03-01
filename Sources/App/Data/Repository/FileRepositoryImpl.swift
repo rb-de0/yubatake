@@ -77,20 +77,6 @@ final class FileRepositoryImpl: FileRepository, FileHandlable {
         try fileManager.removeItemIfExist(atPath: config.userViewDir)
     }
     
-    
-    func readThemeFileData(in theme: String, at path: String, type: FileType) throws -> String {
-        
-        let path = themeFilePath(in: theme, at: path, type: type)
-        
-        guard let fileData = FileManager.default.contents(atPath: path),
-            let fileString = String(data: fileData, encoding: .utf8) else {
-                
-            throw Abort(.notFound)
-        }
-        
-        return fileString
-    }
-    
     // MARK: - Theme
     
     func files(in theme: String?) -> [AccessibleFileGroup] {
@@ -129,11 +115,25 @@ final class FileRepositoryImpl: FileRepository, FileHandlable {
             AccessibleFileGroup.make(from: scriptFiles, name: config.scriptGroupName, type: .publicResource, rootDir: publicDir),
             AccessibleFileGroup.make(from: styleFiles, name: config.styleGroupName, type: .publicResource, rootDir: publicDir),
             AccessibleFileGroup.make(from: viewFiles, name: config.viewGroupName, type: .view, rootDir: viewDir)
-            ].filter { !$0.files.isEmpty }
+        ].filter { !$0.files.isEmpty }
     }
     
     func getAllThemes() throws -> [String] {
         return FileManager.default.contents(in: config.themeDir).filter { $0.isDir }.flatMap { $0.name }
+    }
+    
+    
+    func readThemeFileData(in theme: String, at path: String, type: FileType) throws -> String {
+        
+        let path = themeFilePath(in: theme, at: path, type: type)
+        
+        guard let fileData = FileManager.default.contents(atPath: path),
+            let fileString = String(data: fileData, encoding: .utf8) else {
+                
+            throw Abort(.notFound)
+        }
+        
+        return fileString
     }
     
     func saveTheme(as name: String) throws {

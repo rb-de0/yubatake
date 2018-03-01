@@ -26,7 +26,5 @@ theme
 vendor/bundle
 .bundle
 
-### Test ###
-.test
 
 # End of https://www.gitignore.io/api/vapor
