@@ -152,7 +152,7 @@ final class AdminImageControllerTests: ControllerTestCase {
         XCTAssertEqual(response.status, .seeOther)
         XCTAssertEqual(response.headers[HeaderKey.location], "/admin/images")
         XCTAssertEqual(try Image.count(), 1)
-        XCTAssertTrue(resolve(FileRepository.self).isExist(path: "/documents/imgs/favicon"))
+        XCTAssertTrue(resolve(FileRepository.self).isExistPublicResource(path: "/documents/imgs/favicon"))
     }
     
     func testCanUpdateAImage() throws {
@@ -173,7 +173,7 @@ final class AdminImageControllerTests: ControllerTestCase {
         XCTAssertEqual(response.status, .ok)
         XCTAssertEqual(view.get("path"), "/documents/imgs/favicon")
         XCTAssertEqual(try Image.find(1)?.path, "/documents/imgs/favicon")
-        XCTAssertTrue(resolve(FileRepository.self).isExist(path: "/documents/imgs/favicon"))
+        XCTAssertTrue(resolve(FileRepository.self).isExistPublicResource(path: "/documents/imgs/favicon"))
         
         let json = DataMaker.makeImageJSON(path: "/documents/imgs/sample")
         
@@ -185,7 +185,7 @@ final class AdminImageControllerTests: ControllerTestCase {
         XCTAssertEqual(response.status, .seeOther)
         XCTAssertEqual(response.headers[HeaderKey.location], "/admin/images/1/edit")
         XCTAssertEqual(try Image.find(1)?.path, "/documents/imgs/sample")
-        XCTAssertTrue(resolve(FileRepository.self).isExist(path: "/documents/imgs/sample"))
+        XCTAssertTrue(resolve(FileRepository.self).isExistPublicResource(path: "/documents/imgs/sample"))
     }
 }
 

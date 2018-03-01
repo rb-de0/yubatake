@@ -19,6 +19,7 @@ Public/documents/
 ### User Files ###
 Public/user
 Resources/Views/user
+theme
 
 ### Dev ###
 .vagrant

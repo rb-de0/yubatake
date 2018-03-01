@@ -27,7 +27,7 @@ class TestFileRepository: FileRepository {
         return []
     }
     
-    func isExist(path: String) -> Bool {
+    func isExistPublicResource(path: String) -> Bool {
         return true
     }
 }

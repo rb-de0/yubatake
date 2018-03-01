@@ -20,32 +20,19 @@ final class AccessibleFileGroup: JSONRepresentable {
         return json
     }
     
-    class func make(from groups: [FileGroup], with name: String, type: FileType) -> AccessibleFileGroup {
+    class func make(from files: [File], name: String, type: FileType, rootDir: String) -> AccessibleFileGroup {
         
         var accessibleFiles = [AccessibleFile]()
         
-        for group in groups {
+        for file in files {
             
-            for file in group.files {
-                
-                let relativePath = String(file.fullPath.dropFirst(group.groupDir.count)).started(with: "/")
-                let relativePathToRoot = String(file.fullPath.dropFirst(group.rootDir.count)).started(with: "/")
-                
-                if let existFile = accessibleFiles.first(where: { $0.relativePath == relativePath  }) {
-                    if group.customized {
-                        existFile.userPathToRoot = relativePathToRoot
-                    } else {
-                        existFile.originalPathToRoot = relativePathToRoot
-                    }
-                    continue
-                }
-                
-                if group.customized {
-                    accessibleFiles.append(AccessibleFile(name: file.name, type: type, relativePath: relativePath, userPathToRoot: relativePathToRoot))
-                } else {
-                    accessibleFiles.append(AccessibleFile(name: file.name, type: type, relativePath: relativePath, originalPathToRoot: relativePathToRoot))
-                }
+            let relativePath = String(file.fullPath.dropFirst(rootDir.count)).started(with: "/")
+            
+            if accessibleFiles.contains(where: { $0.relativePath == relativePath }) {
+                continue
             }
+            
+            accessibleFiles.append(AccessibleFile(name: file.name, type: type, relativePath: relativePath))
         }
         
         accessibleFiles.sort(by: { $0.name < $1.name })

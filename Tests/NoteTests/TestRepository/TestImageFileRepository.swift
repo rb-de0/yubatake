@@ -34,7 +34,7 @@ class TestImageFileRepository: FileRepository {
         fatalError("Not Implemented")
     }
     
-    func isExist(path: String) -> Bool {
+    func isExistPublicResource(path: String) -> Bool {
         return TestImageFileRepository.imageFiles.contains(path)
     }
 }

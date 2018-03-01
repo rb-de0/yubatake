@@ -5,21 +5,15 @@ final class AccessibleFile: JSONRepresentable {
     static let nameKey = "name"
     static let typeKey = "type"
     static let pathKey = "path"
-    static let originalPathKey = "original_path"
-    static let userPathKey = "user_path"
 
     let name: String
     let type: FileType
     let relativePath: String
-    var originalPathToRoot: String?
-    var userPathToRoot: String?
     
-    init(name: String, type: FileType, relativePath: String, originalPathToRoot: String? = nil, userPathToRoot: String? = nil) {
+    init(name: String, type: FileType, relativePath: String) {
         self.name = name
         self.type = type
         self.relativePath = relativePath
-        self.originalPathToRoot = originalPathToRoot
-        self.userPathToRoot = userPathToRoot
     }
     
     func makeJSON() throws -> JSON {

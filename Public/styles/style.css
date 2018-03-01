@@ -649,8 +649,28 @@ ol {
 * --------------------------
 */
 
+#theme-list {
+  min-height: 0px;
+  background-color: #fff;
+}
+
 #file-list {
   margin-bottom: 2rem;
+}
+
+#theme-content {
+  margin: 0;
+  background-color: #fff;
+}
+
+#theme-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+  padding: .25rem;
+  height: 44px;
+  background-color: #fff;
 }
 
 #file-editor-header {
@@ -663,12 +683,11 @@ ol {
   display: flex;
   margin-right: .5rem;
   font-size: 1.1rem;
-  font-weight: bold;
 }
 
 #file-name-container {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
 
 #file-save-button-container {
@@ -681,7 +700,11 @@ ol {
 }
 
 #file-editor-container {
-  padding: 0px .5rem;
+  background-color: #f1f1f1;
+}
+
+#file-editor-container-inner {
+  padding: .5rem 0;
 }
 
 #file-editor {
@@ -689,16 +712,32 @@ ol {
   margin-bottom: 1rem;
 }
 
-.file-list-group {
+.theme-list-item {
+  font-size: .9rem;
+  padding: .5rem 1rem;
+}
+
+.theme-list-item-header {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 1rem 0 .25rem .75rem;
+}
+
+.selected-theme {
   font-size: 1.125rem;
   font-weight: bold;
-  margin-top: 1rem;
-  margin-bottom: .25rem;
+  margin-left: .5rem;
+}
+
+.file-list-group {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 1rem 0 .25rem .75rem;
 }
 
 .file-list-item {
-  font-size: .875rem;
-  cursor: pointer;
+  font-size: .75rem;
+  padding: .5rem 1rem;
 }
 
 .file-body-tab {
@@ -756,13 +795,29 @@ ol {
     display: flex;
   }
 
+  #theme-list {
+    min-height: 640px;
+  }
+
+  #theme-content {
+    margin: 1rem 1rem 0 1rem;
+  }
+
+  #theme-header {
+    margin: 0 1rem;
+  }
+
+  #file-editor-container-inner {
+    padding: 0 0 0 1rem;
+  }
+
   #file-editor {
     height: 780px;
     margin-bottom: 0px;
   }
 
   #file-list {
-    margin-bottom: 0px;
+    margin-bottom: 1rem;
   }
 }
 

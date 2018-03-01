@@ -20,18 +20,21 @@ final class AccessibleFileSet: JSONRepresentable {
     
     static let pathKey = "path"
     static let bodiesKey = "bodies"
+    static let themeKey = "theme"
     
-    private lazy var repository = resolve(FileRepository.self)
+    private lazy var fileRepository = resolve(FileRepository.self)
     
     let path: String
     let type: FileType
+    let theme: String?
     let bodies: [Body]
     
     init(request: Request) throws {
         
-        let repository = resolve(FileRepository.self)
+        let fileRepository = resolve(FileRepository.self)
         let path = request.data[AccessibleFileSet.pathKey]?.string
         let type = request.data[AccessibleFile.typeKey]?.string.flatMap { FileType(rawValue: $0) }
+        let theme = request.data[AccessibleFileSet.themeKey]?.string
         
         guard let _path = path, let _type = type else {
             throw Abort(.badRequest)
@@ -39,25 +42,20 @@ final class AccessibleFileSet: JSONRepresentable {
         
         self.path = _path
         self.type = _type
+        self.theme = theme
         
-        let targetFile = repository.accessibleFiles()
-            .flatMap { $0.files }
-            .first(where: {  $0.relativePath == _path && $0.type == _type })
-        
-        guard let _targetFile = targetFile else {
-            self.bodies = []
+        if let _theme = theme {
+            let data = try fileRepository.readThemeFileData(in: _theme, at: _path, type: _type)
+            self.bodies = [Body(body: data, customized: false)]
             return
         }
         
         var bodies = [Body]()
         
-        if let originalFilePath = _targetFile.originalPathToRoot {
-            let originalData = try repository.readFileData(at: originalFilePath, type: _type)
-            bodies.append(Body(body: originalData, customized: false))
-        }
+        let originalData = try fileRepository.readFileData(at: _path, type: _type)
+        bodies.append(Body(body: originalData, customized: false))
         
-        if let userFilePath = _targetFile.userPathToRoot {
-            let userData = try repository.readFileData(at: userFilePath, type: _type)
+        if let userData = try? fileRepository.readUserFileData(at: _path, type: _type) {
             bodies.append(Body(body: userData, customized: true))
         }
         
@@ -65,11 +63,21 @@ final class AccessibleFileSet: JSONRepresentable {
     }
     
     func update(body: String) throws {
-        try repository.writeUserFileData(at: path, type: type, data: body)
+        
+        if theme != nil {
+            throw Abort(.forbidden)
+        }
+        
+        try fileRepository.writeUserFileData(at: path, type: type, data: body)
     }
     
     func delete() throws {
-        try repository.deleteUserFileData(at: path, type: type)
+        
+        if theme != nil {
+            throw Abort(.forbidden)
+        }
+        
+        try fileRepository.deleteUserFileData(at: path, type: type)
     }
     
     func makeJSON() throws -> JSON {

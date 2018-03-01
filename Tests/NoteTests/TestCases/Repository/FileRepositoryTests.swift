@@ -10,10 +10,10 @@ final class FileRepositoryTests: FileHandleTestCase {
         let repository = FileRepositoryImpl()
         
         try repository.saveImage(data: "image".data(using: .utf8)!, at: "/documents/imgs/test.png")
-        XCTAssertTrue(repository.isExist(path: "/documents/imgs/test.png"))
+        XCTAssertTrue(repository.isExistPublicResource(path: "/documents/imgs/test.png"))
         
         try repository.deleteImage(at: "/documents/imgs/test.png")
-        XCTAssertFalse(repository.isExist(path: "/documents/imgs/test.png"))
+        XCTAssertFalse(repository.isExistPublicResource(path: "/documents/imgs/test.png"))
     }
     
     func testCanRenameImage() throws {
@@ -21,11 +21,11 @@ final class FileRepositoryTests: FileHandleTestCase {
         let repository = FileRepositoryImpl()
         
         try repository.saveImage(data: "image".data(using: .utf8)!, at: "/documents/imgs/test.png")
-        XCTAssertTrue(repository.isExist(path: "/documents/imgs/test.png"))
+        XCTAssertTrue(repository.isExistPublicResource(path: "/documents/imgs/test.png"))
         
         try repository.renameImage(at: "/documents/imgs/test.png", to: "/documents/imgs/renamed.png")
-        XCTAssertFalse(repository.isExist(path: "/documents/imgs/test.png"))
-        XCTAssertTrue(repository.isExist(path: "/documents/imgs/renamed.png"))
+        XCTAssertFalse(repository.isExistPublicResource(path: "/documents/imgs/test.png"))
+        XCTAssertTrue(repository.isExistPublicResource(path: "/documents/imgs/renamed.png"))
     }
     
     func testCanGetAccessibleFilesOriginalOnly() throws {

@@ -86,5 +86,3 @@ final class AdminCategoryController: EditableResourceRepresentable {
         return Response(redirect: "/admin/categories")
     }
 }
-
-
