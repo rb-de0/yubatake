@@ -1,7 +1,7 @@
 @testable import App
 import Foundation
 
-class TestImageFileRepository: FileRepository {
+class TestImageFileRepository: ImageRepository {
     
     static var imageFiles = Set<String>()
     
@@ -18,23 +18,7 @@ class TestImageFileRepository: FileRepository {
         TestImageFileRepository.imageFiles.insert(afterPath)
     }
     
-    func writeUserFileData(at path: String, type: FileType, data: String) throws {
-        fatalError("Not Implemented")
-    }
-    
-    func deleteUserFileData(at path: String, type: FileType) throws {
-        fatalError("Not Implemented")
-    }
-    
-    func readFileData(at path: String, type: FileType) throws -> String {
-        fatalError("Not Implemented")
-    }
-    
-    func accessibleFiles() -> [AccessibleFileGroup] {
-        fatalError("Not Implemented")
-    }
-    
-    func isExistPublicResource(path: String) -> Bool {
+    func isExist(at path: String) -> Bool {
         return TestImageFileRepository.imageFiles.contains(path)
     }
 }

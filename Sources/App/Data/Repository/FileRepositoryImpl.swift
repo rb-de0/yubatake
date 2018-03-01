@@ -38,7 +38,7 @@ final class FileRepositoryImpl: FileRepository, FileHandlable {
         guard let fileData = FileManager.default.contents(atPath: path),
             let fileString = String(data: fileData, encoding: .utf8) else {
                 
-                throw Abort(.notFound)
+            throw Abort(.notFound)
         }
         
         return fileString
@@ -85,7 +85,7 @@ final class FileRepositoryImpl: FileRepository, FileHandlable {
         guard let fileData = FileManager.default.contents(atPath: path),
             let fileString = String(data: fileData, encoding: .utf8) else {
                 
-                throw Abort(.notFound)
+            throw Abort(.notFound)
         }
         
         return fileString
