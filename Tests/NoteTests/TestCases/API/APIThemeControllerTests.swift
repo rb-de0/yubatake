@@ -126,3 +126,15 @@ final class APIThemeControllerTests: ControllerTestCase {
         XCTAssertEqual(response.status, .badRequest)
     }
 }
+
+extension APIThemeControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanRespondOnStore", testCanRespondOnStore),
+        ("testCannotContinueStoreOnInvalidParams", testCannotContinueStoreOnInvalidParams),
+        ("testCanRespondOnApply", testCanRespondOnApply),
+        ("testCannotContinueApplyOnInvalidParams", testCannotContinueApplyOnInvalidParams),
+        ("testCanRespondOnDelete", testCanRespondOnDelete),
+        ("testCannotContinueDeleteOnInvalidParams", testCannotContinueDeleteOnInvalidParams)
+    ]
+}

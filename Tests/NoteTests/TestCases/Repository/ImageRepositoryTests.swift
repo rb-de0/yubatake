@@ -28,3 +28,10 @@ final class ImageRepositoryTests: FileHandleTestCase {
         XCTAssertTrue(repository.isExist(at: "/documents/imgs/renamed.png"))
     }
 }
+
+extension ImageRepositoryTests {
+    public static let allTests = [
+        ("testCanSaveAndDeleteImage", testCanSaveAndDeleteImage),
+        ("testCanRenameImage", testCanRenameImage)
+    ]
+}

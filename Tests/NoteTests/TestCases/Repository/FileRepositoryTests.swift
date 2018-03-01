@@ -141,3 +141,18 @@ final class FileRepositoryTests: FileHandleTestCase {
         }
     }
 }
+
+extension FileRepositoryTests {
+    public static let allTests = [
+        ("testCanGetAccessibleFilesOriginalOnlyNoTheme", testCanGetAccessibleFilesOriginalOnlyNoTheme),
+        ("testCanCreateUserData", testCanCreateUserData),
+        ("testCanDeleteUserData", testCanDeleteUserData),
+        ("testCanViewNotFound", testCanViewNotFound),
+        ("testCanGetFilesInATheme", testCanGetFilesInATheme),
+        ("testCanGetAllThemes", testCanGetAllThemes),
+        ("testCanSaveTheme", testCanSaveTheme),
+        ("testCanCopyTheme", testCanCopyTheme),
+        ("testCanDeleteTheme", testCanDeleteTheme),
+        ("testCanViewThemeNotFound", testCanViewThemeNotFound)
+    ]
+}
