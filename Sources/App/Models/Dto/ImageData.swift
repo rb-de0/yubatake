@@ -28,7 +28,7 @@ final class ImageData {
         self.name = name
         self.path = config.imageRelativePath.started(with: "/").finished(with: "/").appending(name)
     }
-    
+
     func save() throws {
         try imageRepository.saveImage(data: Data(bytes: data), at: path)
     }

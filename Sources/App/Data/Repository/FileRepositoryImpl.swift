@@ -122,7 +122,6 @@ final class FileRepositoryImpl: FileRepository, FileHandlable {
         return FileManager.default.contents(in: config.themeDir).filter { $0.isDir }.flatMap { $0.name }
     }
     
-    
     func readThemeFileData(in theme: String, at path: String, type: FileType) throws -> String {
         
         let path = themeFilePath(in: theme, at: path, type: type)

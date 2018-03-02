@@ -7,6 +7,7 @@ import Vapor
 final class Image: Model {
     
     static let idKey = "id"
+    static let nameKey = "name"
     static let pathKey = "path"
     static let altDescriptionKey = "alt_description"
     
@@ -60,8 +61,14 @@ extension Image: Preparation {
 extension Image: JSONRepresentable {
     
     func makeJSON() throws -> JSON {
+        
+        let config = Configs.resolve(FileConfig.self)
+        let basePath = config.imageRelativePath.started(with: "/").finished(with: "/")
+        
         var row = try makeRow()
         try row.set(Image.idKey, id)
+        try row.set(Image.nameKey, String(path.dropFirst(basePath.count)))
+        
         return JSON(row)
     }
 }
@@ -84,8 +91,18 @@ extension Image: Paginatable {
 extension Image: Updateable {
     
     func update(for req: Request) throws {
-        path = req.data[Image.pathKey]?.string ?? ""
-        altDescription = req.data[Image.altDescriptionKey]?.string ?? ""
+        
+        guard let _name = req.data[ImageData.imageNameKey]?.string,
+            let _altDescription = req.data[Image.altDescriptionKey]?.string else {
+                
+            throw Abort(.badRequest)
+        }
+        
+        let config = Configs.resolve(FileConfig.self)
+        let afterPath = config.imageRelativePath.started(with: "/").finished(with: "/").appending(_name)
+        
+        path = afterPath
+        altDescription = _altDescription
     }
     
     static var updateableKeys: [UpdateableKey<Image>] {

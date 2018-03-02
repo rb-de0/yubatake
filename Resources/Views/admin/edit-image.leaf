@@ -28,9 +28,9 @@
     <fieldset class="pure-group">
 
       <div class="form-label">
-        <label for="admin-image-title">Image Path</label>
+        <label for="admin-image-name">Image Name</label>
       </div>
-      <input id="admin-image-title" class="pure-input-1" name="path" value="#(path)" type="text">
+      <input id="admin-image-name" class="pure-input-1" name="image_file_name" value="#(name)" type="text">
 
       <div class="form-label">
         <label for="admin-alt-title">Alt Description</label>
