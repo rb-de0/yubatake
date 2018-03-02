@@ -62,8 +62,8 @@ final class DataMaker {
         return ["image_file_name": .init(name), "image_file_data": ""]
     }
     
-    class func makeImageJSON(path: String) -> JSON {
-        return ["path": .init(path), "alt_description": ""]
+    class func makeImageJSON(name: String) -> JSON {
+        return ["image_file_name": .init(name), "alt_description": ""]
     }
     
     private class func makeAuthorizedRequest(json: JSON) -> Request {

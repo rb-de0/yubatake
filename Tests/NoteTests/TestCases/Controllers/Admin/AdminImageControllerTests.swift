@@ -175,7 +175,7 @@ final class AdminImageControllerTests: ControllerTestCase {
         XCTAssertEqual(try Image.find(1)?.path, "/documents/imgs/favicon")
         XCTAssertTrue(resolve(ImageRepository.self).isExist(at: "/documents/imgs/favicon"))
         
-        let json = DataMaker.makeImageJSON(path: "/documents/imgs/sample")
+        let json = DataMaker.makeImageJSON(name: "sample")
         
         request = Request(method: .post, uri: "/admin/images/1/edit")
         request.cookies.insert(requestData.cookie)
