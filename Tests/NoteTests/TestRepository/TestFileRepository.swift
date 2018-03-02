@@ -3,32 +3,41 @@ import Foundation
 
 class TestFileRepository: FileRepository {
     
-    func saveImage(data: Data, at path: String) throws {
-        fatalError("Not Implemented")
+    func readFileData(at path: String, type: FileType) throws -> String {
+        return ""
     }
     
-    func deleteImage(at path: String) throws {
-        fatalError("Not Implemented")
-    }
-    
-    func renameImage(at path: String, to afterPath: String) throws {
-        fatalError("Not Implemented")
+    func readUserFileData(at path: String, type: FileType) throws -> String {
+        return ""
     }
     
     func writeUserFileData(at path: String, type: FileType, data: String) throws {}
     
     func deleteUserFileData(at path: String, type: FileType) throws {}
     
-    func readFileData(at path: String, type: FileType) throws -> String {
-        return ""
-    }
+    func deleteAllUserFiles() throws {}
     
-    func accessibleFiles() -> [AccessibleFileGroup] {
+    func files(in theme: String?) -> [AccessibleFileGroup] {
         return []
     }
     
-    func isExist(path: String) -> Bool {
-        return true
+    func readThemeFileData(in theme: String, at path: String, type: FileType) throws -> String {
+        fatalError("Not Implemented")
+    }
+    
+    func getAllThemes() throws -> [String] {
+        fatalError("Not Implemented")
+    }
+    
+    func saveTheme(as name: String) throws {
+        fatalError("Not Implemented")
+    }
+    
+    func copyTheme(name: String) throws {
+        fatalError("Not Implemented")
+    }
+    
+    func deleteTheme(name: String) throws {
+        fatalError("Not Implemented")
     }
 }
-

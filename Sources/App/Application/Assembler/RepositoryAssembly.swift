@@ -11,5 +11,9 @@ class RepositoryAssembly: Assembly {
         container.register(FileRepository.self) { _ in
             return FileRepositoryImpl()
         }.inObjectScope(.container)
+        
+        container.register(ImageRepository.self) { _ in
+            return ImageRepositoryImpl()
+        }.inObjectScope(.container)
     }
 }

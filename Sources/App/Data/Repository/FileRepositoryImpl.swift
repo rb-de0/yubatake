@@ -1,86 +1,47 @@
 import Foundation
 import Vapor
 
-final class FileRepositoryImpl: FileRepository {
+final class FileRepositoryImpl: FileRepository, FileHandlable {
     
-    private let config: FileConfig
+    let config: FileConfig
     
     init() {
         
         config = Configs.resolve(FileConfig.self)
         
         do {
-            try createImageDirIfNeeded()
+            try createDirIfNeeded()
         } catch {
             fatalError(error.localizedDescription)
         }
     }
     
-    func isExist(path: String) -> Bool {
-        return FileManager.default.fileExists(atPath: config.publicDir.finished(with: "/") + path)
-    }
-}
-
-// MARK: - Image
-extension FileRepositoryImpl {
+    // MARK: - User Files
     
-    func saveImage(data: Data, at path: String) throws {
+    func readFileData(at path: String, type: FileType) throws -> String {
         
-        let result = FileManager.default.createFile(atPath: config.publicDir.finished(with: "/") + path, contents: data, attributes: nil)
+        let path = filePath(at: path, type: type)
         
-        guard result else {
-            throw IOError.sameNameAlreadyExist
+        guard let fileData = FileManager.default.contents(atPath: path),
+            let fileString = String(data: fileData, encoding: .utf8) else {
+                
+            throw Abort(.notFound)
         }
+        
+        return fileString
     }
     
-    func deleteImage(at path: String) throws {
-        try FileManager.default.removeItem(atPath: config.publicDir.finished(with: "/") + path)
-    }
-    
-    func renameImage(at path: String, to afterPath: String) throws {
-        try FileManager.default.moveItem(atPath: config.publicDir.finished(with: "/") + path, toPath: config.publicDir.finished(with: "/") + afterPath)
-    }
-    
-    private func createImageDirIfNeeded() throws {
-        try FileManager.default.createDirectory(atPath: config.imageDir, withIntermediateDirectories: true, attributes: nil)
-    }
-}
-
-// MARK: - File
-extension FileRepositoryImpl {
-    
-    func accessibleFiles() -> [AccessibleFileGroup] {
+    func readUserFileData(at path: String, type: FileType) throws -> String {
         
-        let scriptGroups = [
-            FileFinder.find(group: config.scriptConfig),
-            FileFinder.find(group: config.scriptConfig, userPath: config.userRelativePath)
-        ]
+        let path = userFilePath(at: path, type: type)
         
-        let scriptGroup = AccessibleFileGroup.make(from: scriptGroups, with: config.scriptConfig.groupName, type: .publicResource)
-
-        let styleGroups = [
-            FileFinder.find(group: config.styleConfig),
-            FileFinder.find(group: config.styleConfig, userPath: config.userRelativePath)
-        ]
+        guard let fileData = FileManager.default.contents(atPath: path),
+            let fileString = String(data: fileData, encoding: .utf8) else {
+                
+            throw Abort(.notFound)
+        }
         
-        let styleGroup = AccessibleFileGroup.make(from: styleGroups, with: config.styleConfig.groupName, type: .publicResource)
-        
-        let viewGroups = [
-            FileFinder.find(group: config.viewConfig),
-            FileFinder.find(group: config.viewConfig, userPath: config.userRelativePath)
-        ]
-        
-        let viewGroup = AccessibleFileGroup.make(from: viewGroups, with: config.viewConfig.groupName, type: .view)
-        
-        return [scriptGroup, styleGroup, viewGroup]
-    }
-}
-
-// MARK: I/O
-extension FileRepositoryImpl {
-    
-    private func userDir(at type: FileType) -> String {
-        return type == .view ? config.userViewDir : config.userPublicDir
+        return fileString
     }
     
     func writeUserFileData(at path: String, type: FileType, data: String) throws {
@@ -89,7 +50,7 @@ extension FileRepositoryImpl {
             throw Abort(.badRequest)
         }
         
-        let path = (userDir(at: type).finished(with: "/") + path).normalized()
+        let path = userFilePath(at: path, type: type)
         let url = URL(fileURLWithPath: path)
         
         let fileManager = FileManager.default
@@ -106,13 +67,65 @@ extension FileRepositoryImpl {
     }
     
     func deleteUserFileData(at path: String, type: FileType) throws {
-        let path = (userDir(at: type).finished(with: "/") + path).normalized()
+        let path = userFilePath(at: path, type: type)
         try FileManager.default.removeItem(atPath: path)
     }
     
-    func readFileData(at path: String, type: FileType) throws -> String {
+    func deleteAllUserFiles() throws {
+        let fileManager = FileManager.default
+        try fileManager.removeItemIfExist(atPath: config.userPublicDir)
+        try fileManager.removeItemIfExist(atPath: config.userViewDir)
+    }
+    
+    // MARK: - Theme
+    
+    func files(in theme: String?) -> [AccessibleFileGroup] {
         
-        let path = type == .view ? config.viewsDir.finished(with: "/") + path : config.publicDir.finished(with: "/") + path
+        let publicDir = theme.map { themeSubDir(in: $0, type: .publicResource) } ?? config.publicDir
+        let viewDir = theme.map { themeSubDir(in: $0, type: .view) } ?? config.viewsDir
+        
+        let scriptSearchRule = FileSearchRule(
+            rootDir: publicDir,
+            subDir: config.scriptSubDir,
+            fileExtension: config.scriptExtension,
+            ignoreDir: nil
+        )
+        
+        let scriptFiles = FileSearcher.search(using: scriptSearchRule)
+        
+        let styleSearchRule = FileSearchRule(
+            rootDir: publicDir,
+            subDir: config.styleSubDir,
+            fileExtension: config.styleExtension,
+            ignoreDir: nil
+        )
+        
+        let styleFiles = FileSearcher.search(using: styleSearchRule)
+        
+        let viewSearchRule = FileSearchRule(
+            rootDir: viewDir,
+            subDir: "",
+            fileExtension: config.viewExtension,
+            ignoreDir: config.userRelativePath
+        )
+        
+        let viewFiles = FileSearcher.search(using: viewSearchRule)
+        
+        return [
+            AccessibleFileGroup.make(from: scriptFiles, name: config.scriptGroupName, type: .publicResource, rootDir: publicDir),
+            AccessibleFileGroup.make(from: styleFiles, name: config.styleGroupName, type: .publicResource, rootDir: publicDir),
+            AccessibleFileGroup.make(from: viewFiles, name: config.viewGroupName, type: .view, rootDir: viewDir)
+        ].filter { !$0.files.isEmpty }
+    }
+    
+    func getAllThemes() throws -> [String] {
+        return FileManager.default.contents(in: config.themeDir).filter { $0.isDir }.flatMap { $0.name }
+    }
+    
+    
+    func readThemeFileData(in theme: String, at path: String, type: FileType) throws -> String {
+        
+        let path = themeFilePath(in: theme, at: path, type: type)
         
         guard let fileData = FileManager.default.contents(atPath: path),
             let fileString = String(data: fileData, encoding: .utf8) else {
@@ -121,5 +134,42 @@ extension FileRepositoryImpl {
         }
         
         return fileString
+    }
+    
+    func saveTheme(as name: String) throws {
+        
+        let fileManager = FileManager.default
+        let themeDir = themeDirPath(for: name)
+        
+        try fileManager.removeItemIfExist(atPath: themeDir)
+        try fileManager.createDirectory(atPath: themeDir, withIntermediateDirectories: true, attributes: nil)
+        
+        try fileManager.copyItemIfExist(atPath: config.userPublicDir, toPath: themeSubDir(in: name, type: .publicResource))
+        try fileManager.copyItemIfExist(atPath: config.userViewDir, toPath: themeSubDir(in: name, type: .view))
+    }
+    
+    func copyTheme(name: String) throws {
+        
+        let fileManager = FileManager.default
+        
+        try fileManager.removeItemIfExist(atPath: config.userPublicDir)
+        try fileManager.removeItemIfExist(atPath: config.userViewDir)
+        
+        try fileManager.copyItemIfExist(atPath: themeSubDir(in: name, type: .publicResource), toPath: config.userPublicDir)
+        try fileManager.copyItemIfExist(atPath: themeSubDir(in: name, type: .view), toPath: config.userViewDir)
+    }
+    
+    func deleteTheme(name: String) throws {
+        
+        let fileManager = FileManager.default
+        let themeDir = themeDirPath(for: name)
+        
+        try fileManager.removeItemIfExist(atPath: themeDir)
+    }
+    
+    // MARK: - Private
+    
+    private func createDirIfNeeded() throws {
+        try FileManager.default.createDirectory(atPath: config.imageDir, withIntermediateDirectories: true, attributes: nil)
     }
 }

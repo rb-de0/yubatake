@@ -143,5 +143,3 @@ final class AdminPostController: EditableResourceRepresentable {
         return JSON(["tags": tags, "categories": categories])
     }
 }
-
-
