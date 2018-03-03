@@ -3,11 +3,8 @@ import Foundation
 
 class TestThemeRepository: FileRepository {
     
-    func readFileData(at path: String, type: FileType) throws -> String {
-        fatalError("Not Implemented")    }
-    
-    func readUserFileData(at path: String, type: FileType) throws -> String {
-        fatalError("Not Implemented")
+    func readFileData(in theme: String?, at path: String, type: FileType, customized: Bool) throws -> String {
+        return ""
     }
     
     func writeUserFileData(at path: String, type: FileType, data: String) throws {
@@ -24,10 +21,6 @@ class TestThemeRepository: FileRepository {
     
     func files(in theme: String?) -> [AccessibleFileGroup] {
         fatalError("Not Implemented")
-    }
-    
-    func readThemeFileData(in theme: String, at path: String, type: FileType) throws -> String {
-        return ""
     }
     
     func getAllThemes() throws -> [String] {
