@@ -11,16 +11,19 @@ extension API {
             )
         }
         
+        static let themesKey = "theme"
+        static let bodyKey = "name"
+        
         private lazy var fileRepository = resolve(FileRepository.self)
         
         func index(request: Request) throws -> ResponseRepresentable {
-            let theme = request.data["theme"]?.string
+            let theme = request.data[FileController.themesKey]?.string
             return try fileRepository.files(in: theme).makeJSON()
         }
         
         func store(request: Request) throws -> ResponseRepresentable {
            
-            guard let body = request.data["body"]?.string else {
+            guard let body = request.data[FileController.bodyKey]?.string else {
                 throw Abort(.badRequest)
             }
             

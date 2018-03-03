@@ -125,6 +125,13 @@ final class FileRepositoryImpl: FileRepository, FileHandlable {
     
     func saveTheme(as name: String) throws {
         
+        let allFiles = files(in: nil).flatMap { $0.files }
+        let hasUserFile = allFiles.contains(where: { (try? readFileData(in: nil, at: $0.relativePath, type: $0.type, customized: true)) != nil })
+        
+        guard hasUserFile else {
+            throw Abort(.badRequest)
+        }
+        
         let themeDir = themeDirPath(for: name)
         
         try fm.removeItemIfExist(atPath: themeDir)
