@@ -12,7 +12,7 @@ extension API {
         }
         
         static let themesKey = "theme"
-        static let bodyKey = "name"
+        static let bodyKey = "body"
         
         private lazy var fileRepository = resolve(FileRepository.self)
         
