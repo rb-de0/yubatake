@@ -37,6 +37,7 @@ final class UserFileMiddlewareTests: FileHandleTestCase {
 extension UserFileMiddlewareTests {
     public static let allTests = [
         ("testCanGetFile", testCanGetFile),
-        ("testCanGetUserFile", testCanGetUserFile)
+        ("testCanGetUserFile", testCanGetUserFile),
+        ("testCanBlockDirectoryTraversal", testCanBlockDirectoryTraversal)
     ]
 }

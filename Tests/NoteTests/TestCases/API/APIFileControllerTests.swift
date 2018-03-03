@@ -129,6 +129,21 @@ final class APIFileControllerTests: ControllerTestCase {
         
         XCTAssertEqual(response.status, .ok)
     }
+    
+    func testCanRespondOnReset() throws {
+        
+        let requestData = try login()
+        
+        var request: Request!
+        var response: Response!
+        
+        request = Request(method: .post, uri: "/api/files/reset")
+        request.cookies.insert(requestData.cookie)
+        try request.setJSONData([:], requestData.csrfToken)
+        response = try drop.respond(to: request)
+        
+        XCTAssertEqual(response.status, .ok)
+    }
 }
 
 extension APIFileControllerTests {
@@ -137,6 +152,7 @@ extension APIFileControllerTests {
         ("testCanRespondOnStore", testCanRespondOnStore),
         ("testCannotContinueStoreOnInvalidParams", testCannotContinueStoreOnInvalidParams),
         ("testCanRespondOnShow", testCanRespondOnShow),
-        ("testCanRespondOnDelete", testCanRespondOnDelete)
+        ("testCanRespondOnDelete", testCanRespondOnDelete),
+        ("testCanRespondOnReset", testCanRespondOnReset)
     ]
 }

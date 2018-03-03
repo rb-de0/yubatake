@@ -152,6 +152,19 @@ final class FileRepositoryTests: FileHandleTestCase {
             XCTAssertTrue(true)
         }
     }
+    
+    func testCanReset() throws {
+        
+        let repository = FileRepositoryImpl()
+        
+        try repository.writeUserFileData(at: "/js/test.js", type: .publicResource, data: "JavaScriptTestCodeUpdated")
+        try repository.writeUserFileData(at: "/test/test.leaf", type: .view, data: "LeafTestTemplateUpdated")
+        
+        try repository.deleteAllUserFiles()
+        
+        XCTAssertThrowsError(try repository.readFileData(in: nil, at: "/js/test.js", type: .publicResource, customized: true))
+        XCTAssertThrowsError(try repository.readFileData(in: nil, at: "/test/test.leaf", type: .view, customized: true))
+    }
 }
 
 extension FileRepositoryTests {
@@ -160,11 +173,13 @@ extension FileRepositoryTests {
         ("testCanCreateUserData", testCanCreateUserData),
         ("testCanDeleteUserData", testCanDeleteUserData),
         ("testCanViewNotFound", testCanViewNotFound),
+        ("testCanBlockDirectoryTraversal", testCanBlockDirectoryTraversal),
         ("testCanGetFilesInATheme", testCanGetFilesInATheme),
         ("testCanGetAllThemes", testCanGetAllThemes),
         ("testCanSaveTheme", testCanSaveTheme),
         ("testCanCopyTheme", testCanCopyTheme),
         ("testCanDeleteTheme", testCanDeleteTheme),
-        ("testCanViewThemeNotFound", testCanViewThemeNotFound)
+        ("testCanViewThemeNotFound", testCanViewThemeNotFound),
+        ("testCanReset", testCanReset)
     ]
 }
