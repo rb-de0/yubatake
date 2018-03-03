@@ -113,9 +113,9 @@ final class FileRepositoryImpl: FileRepository, FileHandlable {
         let viewFiles = FileSearcher.search(using: viewSearchRule)
         
         return [
-            AccessibleFileGroup.make(from: scriptFiles, name: config.scriptGroupName, type: .publicResource, rootDir: publicDir),
-            AccessibleFileGroup.make(from: styleFiles, name: config.styleGroupName, type: .publicResource, rootDir: publicDir),
-            AccessibleFileGroup.make(from: viewFiles, name: config.viewGroupName, type: .view, rootDir: viewDir)
+            AccessibleFileGroup.make(from: scriptFiles, name: config.scriptGroupName, type: .publicResource, rootDir: publicDir, theme: theme),
+            AccessibleFileGroup.make(from: styleFiles, name: config.styleGroupName, type: .publicResource, rootDir: publicDir, theme: theme),
+            AccessibleFileGroup.make(from: viewFiles, name: config.viewGroupName, type: .view, rootDir: viewDir, theme: theme)
         ].filter { !$0.files.isEmpty }
     }
     

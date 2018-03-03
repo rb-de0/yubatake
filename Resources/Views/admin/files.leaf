@@ -22,10 +22,10 @@
         <div class="pure-menu">
           <ul class="pure-menu-list">
             <div class="theme-list-item-header">Current File</div>
-            <a v-on:click="selectTheme(null)" class="pure-menu-link theme-list-item">Active</a>
+            <a v-on:click="selectTheme(null)" class="pure-menu-link theme-list-item" v-bind:class="{ selected: selectedTheme === null }">Active</a>
             <div v-if="isNotEmtpyThemeList" class="theme-list-item-header">Themes</div>
             <div v-for="theme in themelist" class="pure-menu-item">
-              <a v-on:click="selectTheme(theme)" class="pure-menu-link theme-list-item">{{ theme }}</a>
+              <a v-on:click="selectTheme(theme)" class="pure-menu-link theme-list-item" v-bind:class="{ selected: theme === selectedTheme }">{{ theme }}</a>
             </div>
           </ul>
         </div>
@@ -57,7 +57,10 @@
                 <div v-for="group in grouplist">
                   <div class="file-list-group">{{ group.name }}</div>
                   <div v-for="file in group.files" class="pure-menu-item">
-                    <a v-on:click="selectFile(file)" class="pure-menu-link file-list-item">{{ file.name }}</a>
+                    <div class="file-list-item" v-bind:class="{ selected: file === selectedFile }">
+                      <div class="file-customized-icon" v-show="file.customized"><div class="circle"></div></div>
+                      <a v-on:click="selectFile(file)" class="pure-menu-link">{{ file.name }}</a>
+                    </div>
                   </div>
                 </div>
               </ul>

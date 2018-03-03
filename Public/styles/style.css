@@ -717,6 +717,10 @@ ol {
   padding: .5rem 1rem;
 }
 
+.theme-list-item.selected {
+  background-color: #f7f7f7;
+}
+
 .theme-list-item-header {
   font-size: 1rem;
   font-weight: bold;
@@ -736,8 +740,30 @@ ol {
 }
 
 .file-list-item {
+  position: relative;
+}
+
+.file-list-item .pure-menu-link {
   font-size: .75rem;
   padding: .5rem 1rem;
+}
+
+.file-list-item.selected {
+  background-color: #f7f7f7;
+}
+
+.file-customized-icon {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+.circle {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ccc;
 }
 
 .file-body-tab {

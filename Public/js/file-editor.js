@@ -77,7 +77,7 @@ var viewModel = new Vue({
         params: {
           path: file.path,
           type: file.type,
-          theme: this.selectedTheme
+          theme: file.theme
         }
       })
       .then(function (response) {
@@ -271,6 +271,7 @@ var viewModel = new Vue({
     axios.get(makeRequestURL("/api/themes"))
     .then(function (response) {
       receiver.themelist = response.data.themes
+      receiver.selectTheme(null)
     })
   }
 })
