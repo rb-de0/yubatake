@@ -5,6 +5,12 @@ protocol FileHandlable {
 
 extension FileHandlable {
     
+    func verifyPath(_ path: String) throws {
+        if path.contains("../") {
+            throw Abort(.forbidden)
+        }
+    }
+    
     func userFilePath(at path: String, type: FileType) -> String {
         let dirPath = type == .view ? config.userViewDir : config.userPublicDir
         return (dirPath.finished(with: "/") + path).normalized()

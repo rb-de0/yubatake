@@ -45,17 +45,17 @@ final class AccessibleFileSet: JSONRepresentable {
         self.theme = theme
         
         if let _theme = theme {
-            let data = try fileRepository.readThemeFileData(in: _theme, at: _path, type: _type)
+            let data = try fileRepository.readFileData(in: _theme, at: _path, type: _type, customized: false)
             self.bodies = [Body(body: data, customized: false)]
             return
         }
         
         var bodies = [Body]()
         
-        let originalData = try fileRepository.readFileData(at: _path, type: _type)
+        let originalData = try fileRepository.readFileData(in: nil, at: _path, type: _type, customized: false)
         bodies.append(Body(body: originalData, customized: false))
         
-        if let userData = try? fileRepository.readUserFileData(at: _path, type: _type) {
+        if let userData = try? fileRepository.readFileData(in: nil, at: _path, type: _type, customized: true) {
             bodies.append(Body(body: userData, customized: true))
         }
         

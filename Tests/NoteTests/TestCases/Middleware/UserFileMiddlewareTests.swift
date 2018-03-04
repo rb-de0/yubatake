@@ -24,11 +24,20 @@ final class UserFileMiddlewareTests: FileHandleTestCase {
         
         XCTAssertEqual(response.status, .ok)
     }
+    
+    func testCanBlockDirectoryTraversal() throws {
+        
+        let request = Request(method: .get, uri: "/../Package.swift")
+        let response = try drop.respond(to: request)
+        
+        XCTAssertEqual(response.status, .forbidden)
+    }
 }
 
 extension UserFileMiddlewareTests {
     public static let allTests = [
         ("testCanGetFile", testCanGetFile),
-        ("testCanGetUserFile", testCanGetUserFile)
+        ("testCanGetUserFile", testCanGetUserFile),
+        ("testCanBlockDirectoryTraversal", testCanBlockDirectoryTraversal)
     ]
 }

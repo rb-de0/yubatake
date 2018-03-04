@@ -1,17 +1,12 @@
 import Vapor
 
-final class AccessibleFileGroup: JSONRepresentable {
+struct AccessibleFileGroup: JSONRepresentable {
     
     static let nameKey = "name"
     static let fileListKey = "files"
     
     let name: String
     let files: [AccessibleFile]
-    
-    init(name: String, files: [AccessibleFile]) {
-        self.name = name
-        self.files = files
-    }
     
     func makeJSON() throws -> JSON {
         var json = JSON()
@@ -20,7 +15,9 @@ final class AccessibleFileGroup: JSONRepresentable {
         return json
     }
     
-    class func make(from files: [File], name: String, type: FileType, rootDir: String) -> AccessibleFileGroup {
+    static func make(from files: [File], name: String, type: FileType, rootDir: String, theme: String?) -> AccessibleFileGroup {
+        
+        let repository = resolve(FileRepository.self)
         
         var accessibleFiles = [AccessibleFile]()
         
@@ -32,7 +29,9 @@ final class AccessibleFileGroup: JSONRepresentable {
                 continue
             }
             
-            accessibleFiles.append(AccessibleFile(name: file.name, type: type, relativePath: relativePath))
+            let customized = theme == nil && (try? repository.readFileData(in: theme, at: relativePath, type: type, customized: true)) != nil
+            let accessibleFile = AccessibleFile(name: file.name, type: type, relativePath: relativePath, customized: customized, theme: theme)
+            accessibleFiles.append(accessibleFile)
         }
         
         accessibleFiles.sort(by: { $0.name < $1.name })

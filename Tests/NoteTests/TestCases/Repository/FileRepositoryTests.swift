@@ -24,22 +24,22 @@ final class FileRepositoryTests: FileHandleTestCase {
         
         let repository = FileRepositoryImpl()
         try repository.writeUserFileData(at: "/js/test.js", type: .publicResource, data: "JavaScriptTestCodeUpdated")
-        updated = try repository.readFileData(at: "/user/js/test.js", type: .publicResource)
+        updated = try repository.readFileData(in: nil, at: "/user/js/test.js", type: .publicResource, customized: false)
         
         XCTAssertEqual(updated, "JavaScriptTestCodeUpdated")
-        XCTAssertNoThrow(try repository.readUserFileData(at: "/js/test.js", type: .publicResource))
+        XCTAssertNoThrow(try repository.readFileData(in: nil, at: "/js/test.js", type: .publicResource, customized: true))
         
         try repository.writeUserFileData(at: "/styles/test.css", type: .publicResource, data: "CSSTestStyleUpdated")
-        updated = try repository.readFileData(at: "/user/styles/test.css", type: .publicResource)
+        updated = try repository.readFileData(in: nil, at: "/user/styles/test.css", type: .publicResource, customized: false)
         
         XCTAssertEqual(updated, "CSSTestStyleUpdated")
-        XCTAssertNoThrow(try repository.readUserFileData(at: "/styles/test.css", type: .publicResource))
+        XCTAssertNoThrow(try repository.readFileData(in: nil, at: "/styles/test.css", type: .publicResource, customized: true))
         
         try repository.writeUserFileData(at: "/test/test.leaf", type: .view, data: "LeafTestTemplateUpdated")
-        updated = try repository.readFileData(at: "/user/test/test.leaf", type: .view)
+        updated = try repository.readFileData(in: nil, at: "/user/test/test.leaf", type: .view, customized: false)
         
         XCTAssertEqual(updated, "LeafTestTemplateUpdated")
-        XCTAssertNoThrow(try repository.readUserFileData(at: "/test/test.leaf", type: .view))
+        XCTAssertNoThrow(try repository.readFileData(in: nil, at: "/test/test.leaf", type: .view, customized: true))
     }
     
     func testCanDeleteUserData() throws {
@@ -48,17 +48,17 @@ final class FileRepositoryTests: FileHandleTestCase {
         try repository.writeUserFileData(at: "/js/test.js", type: .publicResource, data: "JavaScriptTestCodeUpdated")
         try repository.deleteUserFileData(at: "/js/test.js", type: .publicResource)
         
-        XCTAssertThrowsError(try repository.readUserFileData(at: "/js/test.js", type: .publicResource))
+        XCTAssertThrowsError(try repository.readFileData(in: nil, at: "/js/test.js", type: .publicResource, customized: true))
         
         try repository.writeUserFileData(at: "/styles/test.css", type: .publicResource, data: "CSSTestStyleUpdated")
         try repository.deleteUserFileData(at: "/styles/test.css", type: .publicResource)
         
-        XCTAssertThrowsError(try repository.readUserFileData(at: "/styles/test.css", type: .publicResource))
+        XCTAssertThrowsError(try repository.readFileData(in: nil, at: "/styles/test.css", type: .publicResource, customized: true))
         
         try repository.writeUserFileData(at: "/test/test.leaf", type: .view, data: "LeafTestTemplateUpdated")
         try repository.deleteUserFileData(at: "/test/test.leaf", type: .view)
         
-        XCTAssertThrowsError(try repository.readUserFileData(at: "/test/test.leaf", type: .publicResource))
+        XCTAssertThrowsError(try repository.readFileData(in: nil, at: "/test/test.leaf", type: .view, customized: true))
     }
     
     func testCanViewNotFound() throws {
@@ -66,9 +66,21 @@ final class FileRepositoryTests: FileHandleTestCase {
         let repository = FileRepositoryImpl()
         
         do {
-            _ = try repository.readFileData(at: "/js/not_found.js", type: .publicResource)
+            _ = try repository.readFileData(in: nil, at: "/js/not_found.js", type: .publicResource, customized: false)
             XCTFail()
         } catch let error as Abort where error.status == .notFound {
+            XCTAssertTrue(true)
+        }
+    }
+    
+    func testCanBlockDirectoryTraversal() throws {
+        
+        let repository = FileRepositoryImpl()
+        
+        do {
+            _ = try repository.readFileData(in: nil, at: "../Package.swift", type: .publicResource, customized: false)
+            XCTFail()
+        } catch let error as Abort where error.status == .forbidden {
             XCTAssertTrue(true)
         }
     }
@@ -102,7 +114,7 @@ final class FileRepositoryTests: FileHandleTestCase {
         
         XCTAssertEqual(themes.count, 3)
         
-        let code = try repository.readThemeFileData(in: "Theme3", at: "/js/test.js", type: .publicResource)
+        let code = try repository.readFileData(in: "Theme3", at: "/js/test.js", type: .publicResource, customized: false)
         XCTAssertEqual(code, "JavaScriptTestCodeForTheme3")
     }
     
@@ -111,10 +123,10 @@ final class FileRepositoryTests: FileHandleTestCase {
         let repository = FileRepositoryImpl()
         try repository.copyTheme(name: "Theme1")
         
-        let jsCode = try repository.readFileData(at: "/user/js/test.js", type: .publicResource)
+        let jsCode = try repository.readFileData(in: nil, at: "/user/js/test.js", type: .publicResource, customized: false)
         XCTAssertEqual(jsCode, "JavaScriptTestCodeForTheme1")
         
-        let leafCode = try repository.readFileData(at: "/user/test.leaf", type: .view)
+        let leafCode = try repository.readFileData(in: nil, at: "/user/test.leaf", type: .view, customized: false)
         XCTAssertEqual(leafCode, "LeafTestTemplateForTheme1")
     }
     
@@ -134,11 +146,24 @@ final class FileRepositoryTests: FileHandleTestCase {
         let repository = FileRepositoryImpl()
         
         do {
-            _ = try repository.readThemeFileData(in: "Theme3", at: "/js/test.js", type: .publicResource)
+            _ = try repository.readFileData(in: "Theme3", at: "/js/test.js", type: .publicResource, customized: false)
             XCTFail()
         } catch let error as Abort where error.status == .notFound {
             XCTAssertTrue(true)
         }
+    }
+    
+    func testCanReset() throws {
+        
+        let repository = FileRepositoryImpl()
+        
+        try repository.writeUserFileData(at: "/js/test.js", type: .publicResource, data: "JavaScriptTestCodeUpdated")
+        try repository.writeUserFileData(at: "/test/test.leaf", type: .view, data: "LeafTestTemplateUpdated")
+        
+        try repository.deleteAllUserFiles()
+        
+        XCTAssertThrowsError(try repository.readFileData(in: nil, at: "/js/test.js", type: .publicResource, customized: true))
+        XCTAssertThrowsError(try repository.readFileData(in: nil, at: "/test/test.leaf", type: .view, customized: true))
     }
 }
 
@@ -148,11 +173,13 @@ extension FileRepositoryTests {
         ("testCanCreateUserData", testCanCreateUserData),
         ("testCanDeleteUserData", testCanDeleteUserData),
         ("testCanViewNotFound", testCanViewNotFound),
+        ("testCanBlockDirectoryTraversal", testCanBlockDirectoryTraversal),
         ("testCanGetFilesInATheme", testCanGetFilesInATheme),
         ("testCanGetAllThemes", testCanGetAllThemes),
         ("testCanSaveTheme", testCanSaveTheme),
         ("testCanCopyTheme", testCanCopyTheme),
         ("testCanDeleteTheme", testCanDeleteTheme),
-        ("testCanViewThemeNotFound", testCanViewThemeNotFound)
+        ("testCanViewThemeNotFound", testCanViewThemeNotFound),
+        ("testCanReset", testCanReset)
     ]
 }

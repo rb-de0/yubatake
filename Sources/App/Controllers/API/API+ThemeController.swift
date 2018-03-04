@@ -13,6 +13,7 @@ extension API {
         }
         
         static let themesKey = "themes"
+        static let nameKey = "name"
         
         private lazy var fileRepository = resolve(FileRepository.self)
         
@@ -25,7 +26,7 @@ extension API {
         
         func store(request: Request) throws -> ResponseRepresentable {
             
-            guard let name = request.data["name"]?.string else {
+            guard let name = request.data[ThemeController.nameKey]?.string else {
                 throw Abort(.badRequest)
             }
             
@@ -36,7 +37,7 @@ extension API {
         
         func apply(request: Request) throws -> ResponseRepresentable {
             
-            guard let name = request.data["name"]?.string else {
+            guard let name = request.data[ThemeController.nameKey]?.string else {
                 throw Abort(.badRequest)
             }
             
@@ -47,7 +48,7 @@ extension API {
         
         func destroy(request: Request) throws -> ResponseRepresentable {
             
-            guard let name = request.data["name"]?.string else {
+            guard let name = request.data[ThemeController.nameKey]?.string else {
                 throw Abort(.badRequest)
             }
             
