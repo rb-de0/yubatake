@@ -4,7 +4,18 @@ var viewModel = new Vue({
     page: 1,
     images: [],
     hasNext: false,
-    hasPrevious: false
+    hasPrevious: false,
+    latestScrollOffset: 0,
+    tagString: '',
+    tags: []
+  },
+  watch: {
+    tagString: function (tagString) {
+      this.tags = tagString.split(',')
+    },
+    tags: function (tags) {
+      this.tagString = tags.join(',')
+    }
   },
   methods: {
     showPreview: function (e) {
@@ -15,6 +26,7 @@ var viewModel = new Vue({
       preview.style.display = 'block'
       preview.style.height = window.innerHeight + 'px'
 
+      this.latestScrollOffset = window.scrollY
       document.querySelector('.pure-form').style.display = 'none'
 
       var content = document.getElementById('admin-post-contents').value
@@ -36,6 +48,7 @@ var viewModel = new Vue({
       e.preventDefault()
       document.getElementById('admin-content-preview').style.display = 'none'
       document.querySelector('.pure-form').style.display = 'block'
+      window.scrollTo(0, this.latestScrollOffset)
     },
     showPickerView: function (e) {
 
@@ -46,6 +59,10 @@ var viewModel = new Vue({
       this.request(null)
     },
     closePickerView: function (e) {
+
+      if (e.target !== document.getElementById('admin-image-picker')) {
+        return
+      }
 
       e.preventDefault()
       document.getElementById('admin-image-picker').style.display = 'none'
@@ -101,7 +118,7 @@ var viewModel = new Vue({
     },
     selectedTag: function (e) {
 
-      var text = document.getElementById('admin-tag-text').value
+      var text = this.tagString
       var tags = text.split(",")
 
       var sameTags = tags.filter(function(tag) {
@@ -112,9 +129,18 @@ var viewModel = new Vue({
         return
       }
 
-      var lastCharacter = text.substr(text.length - 1)
-      var separator = (lastCharacter === "," || text === "") ? "" : ","
-      document.getElementById('admin-tag-text').value = text + separator + e.target.textContent
+      tags.push(e.target.textContent)
+      var emptyRemoved = tags.filter(function(tag) {
+        return tag !== ""
+      })
+
+      this.tags = emptyRemoved
+    },
+    isSelectedTag: function (tag) {
+      return this.tags.includes(tag)
     }
+  },
+  created: function() {
+    this.tags = document.getElementById('admin-tag-text').value.split(',')
   }
 })

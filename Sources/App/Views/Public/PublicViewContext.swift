@@ -32,6 +32,12 @@ final class PublicViewContext {
         try node.set("page_url", request.uri.makeFoundationURL().absoluteString)
         try node.set("meta", config.meta?.makeJSON())
         
+        // tags
+        try node.set("all_tags", try Tag.numberOfPosts().makeJSON())
+        
+        // categories
+        try node.set("all_categories", try Category.numberOfPostsForAll().makeJSON())
+        
         return try resolve(ViewCreator.self).make(path, node, for: request)
     }
 }

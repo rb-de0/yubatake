@@ -30,7 +30,7 @@
     <fieldset class="pure-group">
       <div class="pure-u-1 pure-u-md-1-2">
         <div id="admin-category-container">
-          <div class="admin-supplement-title">
+          <div class="form-label">
             Category
           </div>
           <div class="admin-supplement-list-container">
@@ -58,14 +58,14 @@
     <fieldset class="pure-group">
       <div class="pure-u-1 pure-u-md-1-2">
         <div id="admin-tag-container">
-          <div class="admin-supplement-title">
+          <div class="form-label">
             <label for="admin-tag-text">Tags(comma separated)</label>
           </div>
-          <input id="admin-tag-text" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
+          <input id="admin-tag-text" v-model="tagString" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
           <div class="admin-supplement-list-container">
             <ul class="admin-supplement-list">
               #loop(tags, "tag") {
-                <li class="admin-supplement-tag-item" v-on:click="selectedTag">#(tag.name)</li>
+                <li class="admin-supplement-tag-item" v-bind:class="{ selected: isSelectedTag('#(tag.name)') }" v-on:click="selectedTag">#(tag.name)</li>
               }
             </ul>
           </div>
@@ -74,7 +74,7 @@
     </fieldset>
 
     <fieldset id="admin-option-field-set" class="pure-group">
-      <div class="admin-supplement-title">
+      <div class="form-label">
         <label>Options</label>
       </div>
 
@@ -96,13 +96,13 @@
 
     <fieldset class="pure-group">
       <div id="admin-content-input-header">
-        <label for="admin-post-contents">Contents</label>
+        <label class="form-label" for="admin-post-contents">Contents</label>
         <div>
           <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
           <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPreview">Preview</button>
         </div>
       </div>
-      <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="20">#(post.content)</textarea>
+      <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="24">#(post.content)</textarea>
     </fieldset>
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
@@ -116,11 +116,10 @@
   </div>
 
   <div id="admin-image-picker" v-on:click="closePickerView">
-    <button class="pure-button pure-button-primary admin-content-overlay-close-button" v-on:click="closePickerView">Close</button>
     <div id="admin-image-picker-content">
 
       <div id="admin-image-picker-header">
-        <div id="admin-image-picker-title">Image Picker</div>
+        <div id="admin-image-picker-title">Select a image</div>
         <div>
           <button v-if="hasPrevious" class="pure-button" v-on:click="requestPrevious">Previous</button>
           <button v-if="hasNext" class="pure-button" v-on:click="requestNext">Next</button>
@@ -128,7 +127,7 @@
       </div>
 
       <div id="admin-image-picker-items" class="pure-g">
-        <div v-for="image in images" class="pure-u-1-2 pure-u-md-1-8">
+        <div v-for="image in images" class="pure-u-1-2 pure-u-md-1-4 pure-u-lg-1-8">
           <div class="admin-image-card-container">
             <div class="admin-image-card" v-on:click="selectImage(image)">
               <img class="admin-image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>

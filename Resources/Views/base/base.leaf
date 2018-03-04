@@ -49,6 +49,26 @@
           }
         }
       </div>
+      <div id="menu-subcontents">
+        #if(all_categories) {
+          <div class="menu-subcontents-header">Categories</div>
+          #loop(all_categories, "category") {
+            <div class="menu-subcontents-item">
+              <a class="title-link" href="/categories/#(category.category.id)/posts">#(category.category.name) (#(category.count))</a>
+            </div>
+          }
+        }
+      </div>
+      <div id="menu-subcontents">
+        #if(all_tags) {
+          <div class="menu-subcontents-header">Tags</div>
+          #loop(all_tags, "tag") {
+            <div class="menu-subcontents-item">
+              <a class="title-link" href="/tags/#(tag.tag.id)/posts">#(tag.tag.name) (#(tag.count))</a>
+            </div>
+          }
+        }
+      </div>
     </div>
   </div>
 
