@@ -5,6 +5,18 @@ import Vapor
 
 final class Tag: Model {
     
+    struct NumberOfPosts: JSONRepresentable {
+        let tag: Tag
+        let count: Int
+        
+        func makeJSON() throws -> JSON {
+            var json = JSON()
+            try json.set("tag", tag)
+            try json.set("count", count)
+            return json
+        }
+    }
+    
     static let idKey = "id"
     static let nameKey = "name"
     static let tagsKey = "tags"
@@ -56,6 +68,17 @@ final class Tag: Model {
     
     static func insertedTags(in tags: [Tag]) throws -> [Tag] {
         return try tags.flatMap { try Tag.makeQuery().filter(Tag.nameKey == $0.name).first() }
+    }
+    
+    static func numberOfPosts(count: Int = 10) throws -> [NumberOfPosts]  {
+        
+        return
+            try Tag.all().flatMap {
+                return NumberOfPosts(tag: $0, count: try $0.posts.makeQuery().count())
+            }
+            .filter { $0.count > 0 }
+            .sorted(by: { $0.count > $1.count })
+            .take(n: count)
     }
 }
 
