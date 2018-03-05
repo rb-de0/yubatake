@@ -19,7 +19,6 @@ final class AdminImageViewController: EditableResourceRepresentable {
         
         let resource = Resource<Image>(
             index: index,
-            store: store,
             edit: edit
         )
         
@@ -34,23 +33,10 @@ final class AdminImageViewController: EditableResourceRepresentable {
     private lazy var imageRepository = resolve(ImageRepository.self)
     
     func index(request: Request) throws -> ResponseRepresentable {
-        var page = try Image.makeQuery().paginate(for: request).makeJSON()
+        var json = JSON()
         let hasNotFound = try Image.all().filter { image in !imageRepository.isExist(at: image.path) }.count > 0
-        try page.set("has_not_found", hasNotFound)
-        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
-    }
-    
-    func store(request: Request) throws -> ResponseRepresentable {
-        
-        let imageData = try ImageData(request: request)
-        let image = try Image(data: imageData)
-
-        try Image.database?.transaction { conn in
-            try image.makeQuery(conn).save()
-            try imageData.save()
-        }
-
-        return Response(redirect: "/admin/images")
+        try json.set("has_not_found", hasNotFound)
+        return try ContextMaker.makeIndexView().makeResponse(context: json, for: request)
     }
     
     func edit(request: Request, image: Image) throws -> ResponseRepresentable {

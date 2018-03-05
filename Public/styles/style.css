@@ -357,6 +357,7 @@ ol {
   margin-bottom: 1rem;
   font-size: 2rem;
   font-weight: bold;
+  word-break: break-all;
 }
 
 #post-content-header-date {
@@ -388,6 +389,7 @@ ol {
 }
 
 #post-content-body {
+  padding-bottom: 5rem;
   line-height: 1.8;
   text-align: left;
   font-size: .9rem;
@@ -603,6 +605,7 @@ ol {
 }
 
 #admin-image-picker-content {
+  position: relative;
   width: 80%;
   height: 80%;
   background-color: #fff;
@@ -613,10 +616,21 @@ ol {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1rem 0;
+  padding: .5rem 1rem 0;
 }
 
-#admin-image-picker-header .pure-button {
+#admin-image-picker-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 1rem .5rem;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+}
+
+#admin-image-picker-header .pure-button, #admin-image-picker-footer .pure-button {
   margin-right: .25rem;
   background-color: #222222;
   color: #fff;
@@ -624,6 +638,11 @@ ol {
 
 #admin-image-picker-title {
   font-size: 1.25rem;
+  font-weight: bold;
+}
+
+#admin-image-picker-page {
+  font-size: .9rem;
   font-weight: bold;
 }
 
@@ -686,7 +705,8 @@ ol {
 .admin-image-card-container {
   position: relative;
   width: 100%;
-  padding-top: 100%
+  padding-top: 100%;
+  cursor: pointer;
 }
 
 .admin-image-card {
@@ -935,10 +955,5 @@ ol {
 
   #admin-content-preview {
     left: 240px;
-  }
-
-  #admin-image-picker-content {
-    width: 70%;
-    height: 60%;
   }
 }
