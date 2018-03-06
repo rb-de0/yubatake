@@ -204,6 +204,7 @@ ol {
   height: 2.5rem;
   background-color: #333333;
   cursor: pointer;
+  -webkit-overflow-scrolling: touch;
 }
 
 #toggle-menu-container {
@@ -236,6 +237,7 @@ ol {
   padding: 16px 32px 16px;
   color: #222222;
   overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 #content-page-title {
@@ -406,7 +408,7 @@ ol {
 
 #post-content-body {
   padding-bottom: 5rem;
-  line-height: 1.8;
+  line-height: 2.0;
   text-align: left;
   font-size: .9rem;
 }
