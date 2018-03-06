@@ -11,15 +11,19 @@ extension API {
             )
         }
         
-        private lazy var repository = resolve(FileRepository.self)
+        static let themesKey = "theme"
+        static let bodyKey = "body"
+        
+        private lazy var fileRepository = resolve(FileRepository.self)
         
         func index(request: Request) throws -> ResponseRepresentable {
-            return try repository.accessibleFiles().makeJSON()
+            let theme = request.data[FileController.themesKey]?.string
+            return try fileRepository.files(in: theme).makeJSON()
         }
         
         func store(request: Request) throws -> ResponseRepresentable {
            
-            guard let body = request.data["body"]?.string else {
+            guard let body = request.data[FileController.bodyKey]?.string else {
                 throw Abort(.badRequest)
             }
             
@@ -37,6 +41,11 @@ extension API {
         func destroy(request: Request) throws -> ResponseRepresentable {
             let set = try AccessibleFileSet(request: request)
             try set.delete()
+            return Response(status: .ok)
+        }
+        
+        func reset(request: Request) throws -> ResponseRepresentable {
+            try fileRepository.deleteAllUserFiles()
             return Response(status: .ok)
         }
     }

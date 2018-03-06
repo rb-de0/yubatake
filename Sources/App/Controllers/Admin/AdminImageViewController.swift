@@ -19,7 +19,6 @@ final class AdminImageViewController: EditableResourceRepresentable {
         
         let resource = Resource<Image>(
             index: index,
-            store: store,
             edit: edit
         )
         
@@ -31,26 +30,13 @@ final class AdminImageViewController: EditableResourceRepresentable {
         )
     }
     
-    private lazy var repository = resolve(FileRepository.self)
+    private lazy var imageRepository = resolve(ImageRepository.self)
     
     func index(request: Request) throws -> ResponseRepresentable {
-        var page = try Image.makeQuery().paginate(for: request).makeJSON()
-        let hasNotFound = try Image.all().filter { image in !repository.isExist(path: image.path) }.count > 0
-        try page.set("has_not_found", hasNotFound)
-        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
-    }
-    
-    func store(request: Request) throws -> ResponseRepresentable {
-        
-        let imageData = try ImageData(request: request)
-        let image = try Image(data: imageData)
-
-        try Image.database?.transaction { conn in
-            try image.makeQuery(conn).save()
-            try imageData.save()
-        }
-
-        return Response(redirect: "/admin/images")
+        var json = JSON()
+        let hasNotFound = try Image.all().filter { image in !imageRepository.isExist(at: image.path) }.count > 0
+        try json.set("has_not_found", hasNotFound)
+        return try ContextMaker.makeIndexView().makeResponse(context: json, for: request)
     }
     
     func edit(request: Request, image: Image) throws -> ResponseRepresentable {
@@ -58,7 +44,7 @@ final class AdminImageViewController: EditableResourceRepresentable {
     }
     
     func update(request: Request, image: Image) throws -> ResponseRepresentable {
-        
+
         let id = try image.assertId()
         
         do {
@@ -68,7 +54,7 @@ final class AdminImageViewController: EditableResourceRepresentable {
             try Image.database?.transaction { conn in
                 try image.update(for: request)
                 try image.makeQuery(conn).save()
-                try repository.renameImage(at: beforePath, to: image.path)
+                try imageRepository.renameImage(at: beforePath, to: image.path)
             }
             
             return Response(redirect: "/admin/images/\(id)/edit")
@@ -95,7 +81,7 @@ final class AdminImageViewController: EditableResourceRepresentable {
     func cleanup(request: Request) throws -> ResponseRepresentable {
         
         try Image.all()
-            .filter { image in !repository.isExist(path: image.path) }
+            .filter { image in !imageRepository.isExist(at: image.path) }
             .forEach { try $0.delete() }
         
         return Response(redirect: "/admin/images")

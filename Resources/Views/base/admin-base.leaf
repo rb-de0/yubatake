@@ -21,12 +21,15 @@
       <span></span>
     </div>
   </div>
-  
+
   <div id="menu">
 
     <div class="pure-menu">
-      <div class="pure-menu-heading">Dashboard</div>
+      <div class="pure-menu-heading">
+        <a href="/"><div id="menu-header-site-name">#(site_info.name)</div></a>
+      </div>
       <ul class="pure-menu-list">
+        <div class="menu-section-border"></div>
         <li class="pure-menu-item #equal(menu_type, "new_posts") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/posts/create">NewPost</a>
         </li>
@@ -34,7 +37,7 @@
           <a class="pure-menu-link" href="/admin/posts">Posts</a>
         </li>
         <li class="pure-menu-item #equal(menu_type, "static_content") { pure-menu-selected }">
-          <a class="pure-menu-link" href="/admin/static-contents">StaticContent</a>
+          <a class="pure-menu-link" href="/admin/static-contents">StaticContents</a>
         </li>
         <li class="pure-menu-item #equal(menu_type, "tags") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/tags">Tags</a>
@@ -45,15 +48,17 @@
         <li class="pure-menu-item #equal(menu_type, "images") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/images">Images</a>
         </li>
+        <div class="menu-section-border"></div>
+        <li class="pure-menu-item #equal(menu_type, "edit_file") { pure-menu-selected }">
+          <a class="pure-menu-link" href="/admin/files">Themes</a>
+        </li>
         <li class="pure-menu-item #equal(menu_type, "site_info") { pure-menu-selected }">
-          <a class="pure-menu-link" href="/admin/siteinfo/edit">SiteInfo</a>
+          <a class="pure-menu-link" href="/admin/siteinfo/edit">Site</a>
         </li>
         <li class="pure-menu-item #equal(menu_type, "user") { pure-menu-selected }">
-          <a class="pure-menu-link" href="/admin/user/edit">UserSetting</a>
+          <a class="pure-menu-link" href="/admin/user/edit">User</a>
         </li>
-        <li class="pure-menu-item #equal(menu_type, "edit_file") { pure-menu-selected }">
-          <a class="pure-menu-link" href="/admin/files">EditFile</a>
-        </li>
+        <div class="menu-section-border"></div>
         <li class="pure-menu-item">
           <a class="pure-menu-link" href="/logout">Logout</a>
         </li>

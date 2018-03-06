@@ -5,6 +5,18 @@ import Vapor
 
 final class Category: Model {
     
+    struct NumberOfPosts: JSONRepresentable {
+        let category: Category
+        let count: Int
+        
+        func makeJSON() throws -> JSON {
+            var json = JSON()
+            try json.set("category", category)
+            try json.set("count", count)
+            return json
+        }
+    }
+    
     static let idKey = "id"
     static let nameKey = "name"
     
@@ -39,6 +51,16 @@ final class Category: Model {
     
     static func makeNonCategorized() -> Category {
         return Category(name: "NonCategorized")
+    }
+    
+    static func numberOfPostsForAll() throws -> [NumberOfPosts] {
+        
+        return
+            try Category.all().flatMap {
+                return NumberOfPosts(category: $0, count: try $0.posts.makeQuery().count())
+            }
+            .filter { $0.count > 0 }
+            .sorted(by: { $0.count > $1.count })
     }
 }
 

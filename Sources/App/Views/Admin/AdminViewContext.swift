@@ -31,6 +31,7 @@ final class AdminViewContext {
         var node = try context.makeNode(in: ViewContext.shared)
         
         let siteInfo = try SiteInfo.shared()
+        try node.set("site_info", siteInfo.makeJSON())
         try node.set("menu_type", menuType?.rawValue)
         try node.set("page_title", title ?? siteInfo.name)
 

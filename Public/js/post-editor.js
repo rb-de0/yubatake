@@ -4,7 +4,24 @@ var viewModel = new Vue({
     page: 1,
     images: [],
     hasNext: false,
-    hasPrevious: false
+    hasPrevious: false,
+    totalPage: 0,
+    latestScrollOffset: 0,
+    tagString: '',
+    tags: []
+  },
+  computed: {
+    hasImages: function() {
+      return this.images.length !== 0
+    }
+  },
+  watch: {
+    tagString: function (tagString) {
+      this.tags = tagString.split(',')
+    },
+    tags: function (tags) {
+      this.tagString = tags.join(',')
+    }
   },
   methods: {
     showPreview: function (e) {
@@ -15,6 +32,7 @@ var viewModel = new Vue({
       preview.style.display = 'block'
       preview.style.height = window.innerHeight + 'px'
 
+      this.latestScrollOffset = window.scrollY
       document.querySelector('.pure-form').style.display = 'none'
 
       var content = document.getElementById('admin-post-contents').value
@@ -36,20 +54,27 @@ var viewModel = new Vue({
       e.preventDefault()
       document.getElementById('admin-content-preview').style.display = 'none'
       document.querySelector('.pure-form').style.display = 'block'
+      window.scrollTo(0, this.latestScrollOffset)
     },
     showPickerView: function (e) {
 
       e.preventDefault()
       document.getElementById('admin-image-picker').style.display = 'flex'
-      document.body.style.overflow = 'hidden'
+      document.getElementById('content').style.overflow = 'hidden'
+      document.getElementById('menu').style.overflow = 'hidden'
 
       this.request(null)
     },
     closePickerView: function (e) {
 
+      if (e.target !== document.getElementById('admin-image-picker')) {
+        return
+      }
+
       e.preventDefault()
       document.getElementById('admin-image-picker').style.display = 'none'
-      document.body.style.overflow = 'scroll'
+      document.getElementById('content').style.overflow = 'scroll'
+      document.getElementById('menu').style.overflow = 'scroll'
     },
     requestNext: function (e) {
       this.request(this.page + 1)
@@ -75,7 +100,29 @@ var viewModel = new Vue({
         receiver.hasNext = response.data.page.position.next !== undefined
         receiver.hasPrevious = response.data.page.position.previous !== undefined
         receiver.images = response.data.data
-        receiver.page = page
+        receiver.totalPage = response.data.page.position.max
+        receiver.page = response.data.page.position.current
+      })
+    },
+    upload: function (e) {
+
+      var fileName = e.target.value.split('/').pop().split('\\').pop()
+
+      if (e.target.files.length < 1) {
+        return
+      }
+
+      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
+      var receiver = this
+
+      var data = new FormData()
+      data.append('image_file_name', fileName)
+      data.append('image_file_data', e.target.files[0])
+      data.append('csrf-token', csrfToken)
+
+      axios.post(makeRequestURL("/api/images"), data)
+      .then(function (response) {
+        receiver.request(1)
       })
     },
     selectImage: function (image) {
@@ -101,7 +148,7 @@ var viewModel = new Vue({
     },
     selectedTag: function (e) {
 
-      var text = document.getElementById('admin-tag-text').value
+      var text = this.tagString
       var tags = text.split(",")
 
       var sameTags = tags.filter(function(tag) {
@@ -112,9 +159,18 @@ var viewModel = new Vue({
         return
       }
 
-      var lastCharacter = text.substr(text.length - 1)
-      var separator = (lastCharacter === "," || text === "") ? "" : ","
-      document.getElementById('admin-tag-text').value = text + separator + e.target.textContent
+      tags.push(e.target.textContent)
+      var emptyRemoved = tags.filter(function(tag) {
+        return tag !== ""
+      })
+
+      this.tags = emptyRemoved
+    },
+    isSelectedTag: function (tag) {
+      return this.tags.includes(tag)
     }
+  },
+  created: function() {
+    this.tags = document.getElementById('admin-tag-text').value.split(',')
   }
 })

@@ -39,7 +39,6 @@ extension Config {
         let defaultDataFile = DataFile(workDir: viewsDir)
         let userDataFile = DataFile(workDir: fileConfig.userViewDir.finished(with: "/"))
         let userLeafRenderer = UserLeafRenderder(file: defaultDataFile, userFile: userDataFile)
-        userLeafRenderer.stem.register(Escape())
         addConfigurable(view: { _ in userLeafRenderer } , name: "userleaf")
     }
     

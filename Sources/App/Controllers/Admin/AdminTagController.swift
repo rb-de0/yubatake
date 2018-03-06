@@ -87,5 +87,3 @@ final class AdminTagController: EditableResourceRepresentable {
         return Response(redirect: "/admin/tags")
     }
 }
-
-

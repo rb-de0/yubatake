@@ -5,13 +5,14 @@ import Swinject
 import Vapor
 import XCTest
 
-final class APIFileControllerTests: ControllerTestCase {
+final class APIThemeControllerTests: ControllerTestCase {
     
     struct RepositoryAssembly: Assembly {
         
         func assemble(container: Container) {
+            
             container.register(FileRepository.self) { _ in
-                return TestFileRepository()
+                return TestThemeRepository()
             }.inObjectScope(.container)
         }
     }
@@ -20,7 +21,7 @@ final class APIFileControllerTests: ControllerTestCase {
         super.setUp()
         App.register(assembly: RepositoryAssembly())
     }
-    
+
     func testCanViewIndex() throws {
         
         let requestData = try login()
@@ -28,7 +29,7 @@ final class APIFileControllerTests: ControllerTestCase {
         var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/api/files")
+        request = Request(method: .get, uri: "/api/themes")
         request.cookies.insert(requestData.cookie)
         response = try drop.respond(to: request)
         
@@ -42,16 +43,9 @@ final class APIFileControllerTests: ControllerTestCase {
         var request: Request!
         var response: Response!
         
-        request = Request(method: .post, uri: "/api/filebody")
+        request = Request(method: .post, uri: "/api/themes")
         request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["body": "test", "path": "", "type": "public"], requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        
-        request = Request(method: .post, uri: "/api/filebody")
-        request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["body": "test", "path": "", "type": "view"], requestData.csrfToken)
+        try request.setJSONData(["name": "Theme1"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
@@ -64,48 +58,42 @@ final class APIFileControllerTests: ControllerTestCase {
         var request: Request!
         var response: Response!
         
-        request = Request(method: .post, uri: "/api/filebody")
+        request = Request(method: .post, uri: "/api/themes")
         request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["path": "", "type": "public"], requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .badRequest)
-        
-        request = Request(method: .post, uri: "/api/filebody")
-        request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["body": "test", "type": "view"], requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .badRequest)
-        
-        request = Request(method: .post, uri: "/api/filebody")
-        request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["body": "test", "path": "", "type": ""], requestData.csrfToken)
+        try request.setJSONData([:], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .badRequest)
     }
     
-    func testCanRespondOnShow() throws {
+    func testCanRespondOnApply() throws {
         
         let requestData = try login()
         
         var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/api/filebody")
+        request = Request(method: .post, uri: "/api/themes/apply")
         request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["path": "", "type": "public"], requestData.csrfToken)
+        try request.setJSONData(["name": "Theme1"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
+    }
+    
+    func testCannotContinueApplyOnInvalidParams() throws {
         
-        request = Request(method: .get, uri: "/api/filebody")
+        let requestData = try login()
+        
+        var request: Request!
+        var response: Response!
+        
+        request = Request(method: .post, uri: "/api/themes/apply")
         request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["path": "", "type": "view"], requestData.csrfToken)
+        try request.setJSONData([:], requestData.csrfToken)
         response = try drop.respond(to: request)
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.status, .badRequest)
     }
     
     func testCanRespondOnDelete() throws {
@@ -115,44 +103,38 @@ final class APIFileControllerTests: ControllerTestCase {
         var request: Request!
         var response: Response!
         
-        request = Request(method: .post, uri: "/api/filebody/delete")
+        request = Request(method: .post, uri: "/api/themes/delete")
         request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["path": "", "type": "public"], requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        
-        request = Request(method: .post, uri: "/api/filebody/delete")
-        request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["path": "", "type": "view"], requestData.csrfToken)
+        try request.setJSONData(["name": "Theme1"], requestData.csrfToken)
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
     }
     
-    func testCanRespondOnReset() throws {
+    func testCannotContinueDeleteOnInvalidParams() throws {
         
         let requestData = try login()
         
         var request: Request!
         var response: Response!
         
-        request = Request(method: .post, uri: "/api/files/reset")
+        request = Request(method: .post, uri: "/api/themes/delete")
         request.cookies.insert(requestData.cookie)
         try request.setJSONData([:], requestData.csrfToken)
         response = try drop.respond(to: request)
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.status, .badRequest)
     }
 }
 
-extension APIFileControllerTests {
+extension APIThemeControllerTests {
     public static let allTests = [
         ("testCanViewIndex", testCanViewIndex),
         ("testCanRespondOnStore", testCanRespondOnStore),
         ("testCannotContinueStoreOnInvalidParams", testCannotContinueStoreOnInvalidParams),
-        ("testCanRespondOnShow", testCanRespondOnShow),
+        ("testCanRespondOnApply", testCanRespondOnApply),
+        ("testCannotContinueApplyOnInvalidParams", testCannotContinueApplyOnInvalidParams),
         ("testCanRespondOnDelete", testCanRespondOnDelete),
-        ("testCanRespondOnReset", testCanRespondOnReset)
+        ("testCannotContinueDeleteOnInvalidParams", testCannotContinueDeleteOnInvalidParams)
     ]
 }

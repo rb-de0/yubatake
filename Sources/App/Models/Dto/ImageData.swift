@@ -9,7 +9,7 @@ final class ImageData {
     
     static let fileNameLength = 16
     
-    private lazy var repository = resolve(FileRepository.self)
+    private lazy var imageRepository = resolve(ImageRepository.self)
     
     let data: Bytes
     let name: String
@@ -28,8 +28,8 @@ final class ImageData {
         self.name = name
         self.path = config.imageRelativePath.started(with: "/").finished(with: "/").appending(name)
     }
-    
+
     func save() throws {
-        try repository.saveImage(data: Data(bytes: data), at: path)
+        try imageRepository.saveImage(data: Data(bytes: data), at: path)
     }
 }

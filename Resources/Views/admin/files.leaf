@@ -11,46 +11,84 @@
 
 #export("content") {
 
-  <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
-
   <div id="file-editor-app">
-    <div class="pure-g" v-cloak>
 
-      <div id="file-list" class="pure-u-1 pure-u-lg-1-5 pure-u-xl-1-8">
+    <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
 
-        <div id="admin-page-title">File Editor</div>
+    <div id="file-editor-grid" class="pure-g" v-cloak>
+
+      <div id="theme-list" class="pure-u-1 pure-u-lg-1-5 pure-u-xl-1-8">
 
         <div class="pure-menu">
           <ul class="pure-menu-list">
-            <div v-for="group in grouplist">
-              <div class="file-list-group">{{ group.name }}</div>
-              <div v-for="file in group.files" class="pure-menu-item">
-                <a v-on:click="selectFile(file)" class="pure-menu-link file-list-item">{{ file.name }}</a>
-              </div>
+            <div class="theme-list-item-header">Current File</div>
+            <a v-on:click="selectTheme(null)" class="pure-menu-link theme-list-item" v-bind:class="{ selected: selectedTheme === null }">Active</a>
+            <div v-if="isNotEmtpyThemeList" class="theme-list-item-header">Themes</div>
+            <div v-for="theme in themelist" class="pure-menu-item">
+              <a v-on:click="selectTheme(theme)" class="pure-menu-link theme-list-item" v-bind:class="{ selected: theme === selectedTheme }">{{ theme }}</a>
             </div>
           </ul>
         </div>
       </div>
 
-      <div class="pure-u-1 pure-u-lg-4-5 pure-u-xl-7-8">
-        <div v-show="isFileSelected" id="file-editor-container">
-          <div id="file-editor-header">
-            <div id="file-name-container">
-              <div v-if="isFileSelected" id="file-name"> {{ selectedFile.name }} ( {{ selectedFile.path }} )</div>
-              <div v-if="hasError" class="field-error">An error occurred.</div>
-            </div>
-            <div id="file-save-button-container">
-              <button v-on:click="save" class="pure-button pure-button-primary">Save</button>
-              <button v-if="hasUserFile" v-on:click="destroy" class="button-delete pure-button pure-button-primary">Delete</button>
+      <div v-if="isNotEmptyGroupList" class="pure-u-1 pure-u-lg-4-5 pure-u-xl-7-8">
+
+        <div id="theme-header">
+          <div>
+            <div class="selected-theme" v-if="isThemeSelected"> {{ selectedTheme }} </div>
+            <div class="selected-theme" v-else> Active </div>
+          </div>
+          <div v-if="isThemeSelected">
+            <button v-on:click="applyTheme" class="pure-button pure-button-primary">Apply</button>
+            <button v-on:click="destroyTheme" class="button-delete pure-button pure-button-primary">Delete</button>
+          </div>
+          <div v-else class="pure-form">
+            <input id="theme-name" type="text" name="theme" placeholder="theme name">
+            <button v-on:click="saveTheme" class="pure-button pure-button-primary">Save Theme</button>
+            <button v-on:click="resetFiles" class="button-delete pure-button pure-button-primary">Reset</button>
+          </div>
+        </div>
+
+        <div id="theme-content" class="pure-g">
+
+          <div id="file-list" class="pure-u-1 pure-u-lg-1-5 pure-u-xl-2-8">
+            <div class="pure-menu">
+              <ul class="pure-menu-list">
+                <div v-for="group in grouplist">
+                  <div class="file-list-group">{{ group.name }}</div>
+                  <div v-for="file in group.files" class="pure-menu-item">
+                    <div class="file-list-item" v-bind:class="{ selected: file === selectedFile }">
+                      <div class="file-customized-icon" v-show="file.customized"><div class="circle"></div></div>
+                      <a v-on:click="selectFile(file)" class="pure-menu-link">{{ file.name }}</a>
+                    </div>
+                  </div>
+                </div>
+              </ul>
             </div>
           </div>
-          <div class="pure-g">
-            <div v-for="(body, index) in bodies" class="pure-u-1-2 file-body-tab" v-bind:class="{ selected: index === selectedBodyIndex }" v-on:click="selectBodyIndex(index)">
-              <div class="file-body-tab-inner" v-if=body.customized>User</div>
-              <div class="file-body-tab-inner" v-if=!body.customized>Original</div>
+
+          <div id="file-editor-container" class="pure-u-1 pure-u-lg-4-5 pure-u-xl-6-8">
+            <div id="file-editor-container-inner" v-show="isFileSelected">
+              <div id="file-editor-header">
+                <div id="file-name-container">
+                  <div v-if="isFileSelected" id="file-name"> {{ selectedFile.name }} ( {{ selectedFile.path }} )</div>
+                  <div v-if="hasError" class="field-error">An error occurred.</div>
+                </div>
+                <div v-if="isThemeSelected === false" id="file-save-button-container">
+                  <button v-on:click="save" class="pure-button pure-button-primary">Save</button>
+                  <button v-if="hasUserFile" v-on:click="destroy" class="button-delete pure-button pure-button-primary">Delete</button>
+                </div>
+              </div>
+              <div class="pure-g">
+                <div v-for="(body, index) in bodies" class="pure-u-1-2 file-body-tab" v-bind:class="{ selected: index === selectedBodyIndex }" v-on:click="selectBodyIndex(index)">
+                  <div class="file-body-tab-inner" v-if=body.customized>User</div>
+                  <div class="file-body-tab-inner" v-if=!body.customized>Original</div>
+                </div>
+              </div>
+              <div id="file-editor"></div>
             </div>
           </div>
-          <div id="file-editor"></div>
+
         </div>
       </div>
 

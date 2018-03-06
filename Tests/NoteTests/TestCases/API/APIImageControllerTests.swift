@@ -10,7 +10,8 @@ final class APIImageControllerTests: ControllerTestCase {
     struct RepositoryAssembly: Assembly {
         
         func assemble(container: Container) {
-            container.register(FileRepository.self) { _ in
+            
+            container.register(ImageRepository.self) { _ in
                 return TestImageFileRepository()
             }.inObjectScope(.container)
         }

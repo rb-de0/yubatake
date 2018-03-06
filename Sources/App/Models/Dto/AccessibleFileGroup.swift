@@ -1,17 +1,12 @@
 import Vapor
 
-final class AccessibleFileGroup: JSONRepresentable {
+struct AccessibleFileGroup: JSONRepresentable {
     
     static let nameKey = "name"
     static let fileListKey = "files"
     
     let name: String
     let files: [AccessibleFile]
-    
-    init(name: String, files: [AccessibleFile]) {
-        self.name = name
-        self.files = files
-    }
     
     func makeJSON() throws -> JSON {
         var json = JSON()
@@ -20,32 +15,23 @@ final class AccessibleFileGroup: JSONRepresentable {
         return json
     }
     
-    class func make(from groups: [FileGroup], with name: String, type: FileType) -> AccessibleFileGroup {
+    static func make(from files: [File], name: String, type: FileType, rootDir: String, theme: String?) -> AccessibleFileGroup {
+        
+        let repository = resolve(FileRepository.self)
         
         var accessibleFiles = [AccessibleFile]()
         
-        for group in groups {
+        for file in files {
             
-            for file in group.files {
-                
-                let relativePath = String(file.fullPath.dropFirst(group.groupDir.count)).started(with: "/")
-                let relativePathToRoot = String(file.fullPath.dropFirst(group.rootDir.count)).started(with: "/")
-                
-                if let existFile = accessibleFiles.first(where: { $0.relativePath == relativePath  }) {
-                    if group.customized {
-                        existFile.userPathToRoot = relativePathToRoot
-                    } else {
-                        existFile.originalPathToRoot = relativePathToRoot
-                    }
-                    continue
-                }
-                
-                if group.customized {
-                    accessibleFiles.append(AccessibleFile(name: file.name, type: type, relativePath: relativePath, userPathToRoot: relativePathToRoot))
-                } else {
-                    accessibleFiles.append(AccessibleFile(name: file.name, type: type, relativePath: relativePath, originalPathToRoot: relativePathToRoot))
-                }
+            let relativePath = String(file.fullPath.dropFirst(rootDir.count)).started(with: "/")
+            
+            if accessibleFiles.contains(where: { $0.relativePath == relativePath }) {
+                continue
             }
+            
+            let customized = theme == nil && (try? repository.readFileData(in: theme, at: relativePath, type: type, customized: true)) != nil
+            let accessibleFile = AccessibleFile(name: file.name, type: type, relativePath: relativePath, customized: customized, theme: theme)
+            accessibleFiles.append(accessibleFile)
         }
         
         accessibleFiles.sort(by: { $0.name < $1.name })

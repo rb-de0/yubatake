@@ -2,7 +2,7 @@ import Foundation
 
 extension String {
     
-    func take(n: Int) -> String{
+    func take(n: Int) -> String {
         
         if n >= self.count {
             return self
