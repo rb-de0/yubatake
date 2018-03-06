@@ -5,6 +5,7 @@ var viewModel = new Vue({
     images: [],
     hasNext: false,
     hasPrevious: false,
+    totalPage: 0,
     latestScrollOffset: 0,
     tagString: '',
     tags: []
@@ -92,7 +93,29 @@ var viewModel = new Vue({
         receiver.hasNext = response.data.page.position.next !== undefined
         receiver.hasPrevious = response.data.page.position.previous !== undefined
         receiver.images = response.data.data
-        receiver.page = page
+        receiver.totalPage = response.data.page.position.max
+        receiver.page = response.data.page.position.current
+      })
+    },
+    upload: function (e) {
+
+      var fileName = e.target.value.split('/').pop().split('\\').pop()
+
+      if (e.target.files.length < 1) {
+        return
+      }
+
+      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
+      var receiver = this
+
+      var data = new FormData()
+      data.append('image_file_name', fileName)
+      data.append('image_file_data', e.target.files[0])
+      data.append('csrf-token', csrfToken)
+
+      axios.post(makeRequestURL("/api/images"), data)
+      .then(function (response) {
+        receiver.request(1)
       })
     },
     selectImage: function (image) {

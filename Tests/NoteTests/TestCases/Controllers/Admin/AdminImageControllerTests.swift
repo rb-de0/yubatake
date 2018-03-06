@@ -37,7 +37,6 @@ final class AdminImageControllerTests: ControllerTestCase {
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
         XCTAssertEqual(view.get("has_not_found"), false)
     }
     
@@ -120,7 +119,7 @@ final class AdminImageControllerTests: ControllerTestCase {
         response = try drop.respond(to: request)
         
         XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
+        XCTAssertEqual(try Image.count(), 1)
         
         let json: JSON = ["images": [1]]
         request = Request(method: .post, uri: "/admin/images/delete")
@@ -134,26 +133,6 @@ final class AdminImageControllerTests: ControllerTestCase {
     }
     
     // MARK: - Store/Update
-    
-    func testCanStoreAImage() throws {
-        
-        let requestData = try login()
-        
-        var request: Request!
-        var response: Response!
-        
-        let json = DataMaker.makeImageDataJSON(name: "favicon")
-        
-        request = Request(method: .post, uri: "/admin/images")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/images")
-        XCTAssertEqual(try Image.count(), 1)
-        XCTAssertTrue(resolve(ImageRepository.self).isExist(at: "/documents/imgs/favicon"))
-    }
     
     func testCanUpdateAImage() throws {
         
@@ -196,7 +175,6 @@ extension AdminImageControllerTests {
         ("testCanViewEditView", testCanViewEditView),
         ("testCanCleanUp", testCanCleanUp),
         ("testCanDestroyAImage", testCanDestroyAImage),
-        ("testCanStoreAImage", testCanStoreAImage),
         ("testCanUpdateAImage", testCanUpdateAImage)
     ]
 }

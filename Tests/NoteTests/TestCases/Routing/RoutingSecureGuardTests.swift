@@ -42,7 +42,6 @@ final class RoutingSecureGuardTests: ControllerTestCase {
         // Images
         canGuard(method: .get, uri: "/admin/images")
         canGuard(method: .get, uri: "/admin/images/1/edit")
-        canGuard(method: .post, uri: "/admin/images")
         canGuard(method: .post, uri: "/admin/images/1/edit")
         canGuard(method: .post, uri: "/admin/images/delete")
         canGuard(method: .post, uri: "/admin/images/cleanup")
@@ -68,6 +67,7 @@ final class RoutingSecureGuardTests: ControllerTestCase {
         canGuardAPI(method: .post, uri: "/api/filebody")
         canGuardAPI(method: .post, uri: "/api/filebody/delete")
         canGuardAPI(method: .get, uri: "/api/images")
+        canGuardAPI(method: .post, uri: "/api/images")
     }
     
     private func canGuard(method: HTTP.Method, uri: String) {
