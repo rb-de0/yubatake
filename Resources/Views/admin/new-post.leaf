@@ -118,27 +118,27 @@
   <div id="admin-image-picker" v-on:click="closePickerView">
     <div id="admin-image-picker-content">
 
-      <div id="admin-image-picker-header">
-        <div>
-          <span id="admin-image-picker-title">Select a image</span>
-          <span id="admin-image-picker-page"> {{ page }}/{{ totalPage }} </span>
+      <div>
+        <div id="admin-image-picker-header">
+          <div id="admin-image-picker-title">Select a image</div>
+          <label class="pure-button" for="image-file-data">Upload
+            <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
+          </label>
         </div>
-        <label class="pure-button" for="image-file-data">Upload
-          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
-        </label>
-      </div>
 
-      <div id="admin-image-picker-items" class="pure-g">
-        <div v-for="image in images" class="pure-u-1-2 pure-u-md-1-4 pure-u-lg-1-8">
-          <div class="admin-image-card-container">
-            <div class="admin-image-card" v-on:click="selectImage(image)">
-              <img class="admin-image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+        <div id="admin-image-picker-items" class="pure-g">
+          <div v-for="image in images" class="pure-u-1-2 pure-u-md-1-4 pure-u-lg-1-8">
+            <div class="admin-image-card-container">
+              <div class="admin-image-card" v-on:click="selectImage(image)">
+                <img class="admin-image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div id="admin-image-picker-footer">
+        <div v-show="hasImages" id="admin-image-picker-page"> {{ page }}/{{ totalPage }} </div>
         <div>
           <button v-if="hasPrevious" class="pure-button" v-on:click="requestPrevious">Previous</button>
           <button v-if="hasNext" class="pure-button" v-on:click="requestNext">Next</button>

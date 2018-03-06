@@ -13,8 +13,9 @@
       <div id="post-content-title">#(title)</div>
 
       #if(is_static) {} ##else() {
-        <div id="post-content-header-content-container">
-          <div id="post-content-header-content">
+        <div id="post-content-header-content">
+
+          <div id="post-content-header-post-attribute">
             #if(category) {
               <span>
                 <a class="category-link" href="/categories/#(category.id)/posts">#(category.name)</a>
@@ -28,17 +29,16 @@
               #loop(tags, "tag") {<span><a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a></span>}
             }
           </div>
+
+          <div id="post-content-header-date">
+            <div class="post-content-header-text">PublishedAt: #(formatted_created_at)</div>
+            <div class="post-content-header-text">UpdatedAt: #(formatted_updated_at)</div>
+          </div>
         </div>
       }
 
-      <div id="post-content-header-date">
-        <div class="post-content-header-text">PublishedAt: #(formatted_created_at)</div>
-        <div class="post-content-header-text">UpdatedAt: #(formatted_updated_at)</div>
-      </div>
-
     </div>
 
-    <hr id="post-content-border"></hr>
     <div id="post-content-body">
       #raw(html_content)
     </div>

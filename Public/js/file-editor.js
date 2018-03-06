@@ -148,6 +148,7 @@ var viewModel = new Vue({
       })
       .then(function (response) {
         receiver.hasError = false
+        receiver.selectedFile.customized = true
         receiver.fetchFileBody(null)
       })
       .catch(function (error) {
@@ -173,6 +174,7 @@ var viewModel = new Vue({
       .then(function (response) {
         receiver.hasError = false
         receiver.fetchFileBody(null)
+        receiver.selectedFile.customized = false
       })
       .catch(function (error) {
         receiver.hasError = true
