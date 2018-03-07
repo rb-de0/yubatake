@@ -21,6 +21,7 @@ input[type=checkbox] {
 
 ul {
   margin: 0px;
+  -webkit-padding-start: 1rem;
 }
 
 th {
@@ -203,6 +204,7 @@ ol {
   height: 2.5rem;
   background-color: #333333;
   cursor: pointer;
+  -webkit-overflow-scrolling: touch;
 }
 
 #toggle-menu-container {
@@ -227,10 +229,15 @@ ol {
 */
 
 #content {
-  position: relative;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
   padding: 16px 32px 16px;
-  margin-left: 0px;
   color: #222222;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 #content-page-title {
@@ -243,6 +250,7 @@ ol {
   position: relative;
   margin: -8px -24px -8px;
   padding: 8px 24px 8px;
+  max-width: 900px;
   color: #222222;
   background-color: white;
 }
@@ -351,6 +359,9 @@ ol {
 
 #post-content-header {
   margin-top: .5rem;
+  margin-bottom: 2rem;
+  padding-bottom: .3rem;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 #post-content-title {
@@ -361,25 +372,32 @@ ol {
 }
 
 #post-content-header-date {
+  display: flex;
+  flex-wrap: wrap;
   margin-top: .4rem;
-  margin-bottom: .4rem;
   font-size: .75rem;
-  display: block;
-  color: #888;
 }
 
 #post-content-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+#post-content-header-post-attribute {
+  margin-right: 2rem;
   line-height: 2.4;
 }
 
-#post-content-header-content a {
+#post-content-header-post-attribute a {
   text-decoration: none;
 }
 
 .post-content-header-text {
   margin-right: 1rem;
   margin-left: 0px;
-  line-height: 1.8;
+  line-height: 1.9;
 }
 
 #post-content-border {
@@ -390,7 +408,7 @@ ol {
 
 #post-content-body {
   padding-bottom: 5rem;
-  line-height: 1.8;
+  line-height: 2.0;
   text-align: left;
   font-size: .9rem;
 }
@@ -398,27 +416,27 @@ ol {
 #post-content-body h1 {
   margin-top: 3.5rem;
   margin-bottom: 1.25rem;
-  padding-bottom: .625rem;
+  padding-bottom: .2rem;
   font-weight: bold;
   font-size: 1.4rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 #post-content-body h2 {
   margin-top: 3rem;
   margin-bottom: 1.25rem;
-  padding-bottom: .625rem;
+  padding-bottom: .2rem;
   font-weight: 600;
   font-size: 1.3rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 #post-content-body h3 {
   margin-top: 48px;
-  margin-bottom: 1.25rem;
-  padding-bottom: .625rem;
+  margin-bottom: .5rem;
+  padding-bottom: .2rem;
   font-size: 1.2rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid #f1f1f1;
 }
 
 #post-content-body a {
@@ -605,6 +623,9 @@ ol {
 }
 
 #admin-image-picker-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   position: relative;
   width: 80%;
   height: 80%;
@@ -621,13 +642,9 @@ ol {
 
 #admin-image-picker-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 0 1rem .5rem;
-  position: absolute;
-  bottom: 0px;
-  right: 0px;
-  left: 0px;
 }
 
 #admin-image-picker-header .pure-button, #admin-image-picker-footer .pure-button {
@@ -647,6 +664,7 @@ ol {
 }
 
 #admin-image-picker-items {
+
   padding: .5rem 1rem 1rem;
 }
 
@@ -934,7 +952,12 @@ ol {
   }
 
   #content {
-    margin-left: 240px;
+    left: 240px;
+    z-index: 1;
+  }
+
+  #content #post-content {
+    margin: 0 auto;
   }
 
   #menu {

@@ -10,6 +10,11 @@ var viewModel = new Vue({
     tagString: '',
     tags: []
   },
+  computed: {
+    hasImages: function() {
+      return this.images.length !== 0
+    }
+  },
   watch: {
     tagString: function (tagString) {
       this.tags = tagString.split(',')
@@ -55,7 +60,8 @@ var viewModel = new Vue({
 
       e.preventDefault()
       document.getElementById('admin-image-picker').style.display = 'flex'
-      document.body.style.overflow = 'hidden'
+      document.getElementById('content').style.overflow = 'hidden'
+      document.getElementById('menu').style.overflow = 'hidden'
 
       this.request(null)
     },
@@ -67,7 +73,8 @@ var viewModel = new Vue({
 
       e.preventDefault()
       document.getElementById('admin-image-picker').style.display = 'none'
-      document.body.style.overflow = 'scroll'
+      document.getElementById('content').style.overflow = 'scroll'
+      document.getElementById('menu').style.overflow = 'scroll'
     },
     requestNext: function (e) {
       this.request(this.page + 1)
