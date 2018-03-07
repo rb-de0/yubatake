@@ -4,7 +4,7 @@ function getModeFromFileName(filename) {
     case 'js':
     return 'ace/mode/javascript'
     case 'css':
-    return "ace/mode/css"
+    return 'ace/mode/css'
     case 'leaf':
     return 'ace/mode/html'
     default:
@@ -73,7 +73,7 @@ var viewModel = new Vue({
 
       var receiver = this
 
-      axios.get(makeRequestURL("/api/filebody"), {
+      axios.get(makeRequestURL('/api/filebody'), {
         params: {
           path: file.path,
           type: file.type,
@@ -94,14 +94,14 @@ var viewModel = new Vue({
     updateEditor: function () {
 
       if (this.editor === null) {
-        this.editor = ace.edit("file-editor")
+        this.editor = ace.edit('file-editor')
         this.editor.$blockScrolling = Infinity
-        this.editor.setTheme("ace/theme/xcode")
+        this.editor.setTheme('ace/theme/xcode')
         this.editor.session.setUseWorker(false)
       }
 
       if (this.bodies === null || this.bodies.length === 0) {
-        this.editor.setValue("")
+        this.editor.setValue('')
         return
       }
 
@@ -140,7 +140,7 @@ var viewModel = new Vue({
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
       var receiver = this
 
-      axios.post(makeRequestURL("/api/filebody"), {
+      axios.post(makeRequestURL('/api/filebody'), {
         body: body,
         path: path,
         type: type,
@@ -165,7 +165,7 @@ var viewModel = new Vue({
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
       var receiver = this
 
-      axios.post(makeRequestURL("/api/filebody/delete"), {
+      axios.post(makeRequestURL('/api/filebody/delete'), {
         path: path,
         type: type,
         'csrf-token': csrfToken
@@ -183,7 +183,7 @@ var viewModel = new Vue({
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
       var receiver = this
 
-      axios.post(makeRequestURL("/api/files/reset"), {
+      axios.post(makeRequestURL('/api/files/reset'), {
         'csrf-token': csrfToken
       })
       .then(function (response) {
@@ -198,7 +198,7 @@ var viewModel = new Vue({
       this.selectedFile = null
 
       var receiver = this
-      axios.get(makeRequestURL("/api/files"), {
+      axios.get(makeRequestURL('/api/files'), {
         params: {
           theme: theme
         }
@@ -219,7 +219,7 @@ var viewModel = new Vue({
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
 
       var receiver = this
-      axios.post(makeRequestURL("/api/themes/apply"), {
+      axios.post(makeRequestURL('/api/themes/apply'), {
         name: name,
         'csrf-token': csrfToken
       })
@@ -236,7 +236,7 @@ var viewModel = new Vue({
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
 
       var receiver = this
-      axios.post(makeRequestURL("/api/themes"), {
+      axios.post(makeRequestURL('/api/themes'), {
         name: name,
         'csrf-token': csrfToken
       })
@@ -253,7 +253,7 @@ var viewModel = new Vue({
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
 
       var receiver = this
-      axios.post(makeRequestURL("/api/themes/delete"), {
+      axios.post(makeRequestURL('/api/themes/delete'), {
         name: name,
         'csrf-token': csrfToken
       })
@@ -268,7 +268,7 @@ var viewModel = new Vue({
   mounted: function() {
 
     var receiver = this
-    axios.get(makeRequestURL("/api/themes"))
+    axios.get(makeRequestURL('/api/themes'))
     .then(function (response) {
       receiver.themelist = response.data.themes
       receiver.selectTheme(null)

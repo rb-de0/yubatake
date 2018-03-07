@@ -31,7 +31,7 @@ var viewModel = new Vue({
       data.append('image_file_data', e.target.files[0])
       data.append('csrf-token', csrfToken)
 
-      axios.post(makeRequestURL("/api/images"), data)
+      axios.post(makeRequestURL('/api/images'), data)
       .then(function (response) {
         location.reload()
       })
@@ -41,14 +41,14 @@ var viewModel = new Vue({
 
     var receiver = this
 
-    var page = getQueryParams()["page"]
+    var page = getQueryParams()['page']
     if (page === undefined) {
       page = 1
     } else {
       page = parseInt(page)
     }
 
-    axios.get(makeRequestURL("/api/images"), {
+    axios.get(makeRequestURL('/api/images'), {
       params: {
         page: page
       }
