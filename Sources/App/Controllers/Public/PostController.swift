@@ -21,6 +21,9 @@ final class PostController: ResourceRepresentable {
         )
     }
     
+    static let tagKey = "tag"
+    static let categoryKey = "category"
+    
     func index(request: Request) throws -> ResponseRepresentable {
         let page = try Post.makeQuery().publicAll().paginate(for: request).makeJSON()
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
@@ -28,19 +31,19 @@ final class PostController: ResourceRepresentable {
     
     func index(request: Request, inTag tag: Tag) throws -> ResponseRepresentable {
         var page = try tag.posts.makeQuery().publicAll().paginate(for: request).makeJSON()
-        try page.set("tag", tag.makeJSON())
+        try page.set(PostController.tagKey, tag.makeJSON())
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
     }
     
     func index(request: Request, inCategory category: Category) throws -> ResponseRepresentable {
         var page = try category.posts.makeQuery().publicAll().paginate(for: request).makeJSON()
-        try page.set("category", category.makeJSON())
+        try page.set(PostController.categoryKey, category.makeJSON())
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
     }
     
     func indexNoCategory(request: Request) throws -> ResponseRepresentable {
         var page = try Post.makeQuery().publicAll().filter(Category.foreignIdKey, nil).paginate(for: request).makeJSON()
-        try page.set("category", Category.makeNonCategorized())
+        try page.set(PostController.categoryKey, Category.makeNonCategorized())
         return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
     }
 

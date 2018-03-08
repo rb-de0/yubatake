@@ -38,12 +38,12 @@ var viewModel = new Vue({
       var content = document.getElementById('admin-post-contents').value
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
 
-      axios.post(makeRequestURL("/api/converted_markdown"), {
+      axios.post(makeRequestURL('/api/converted_markdown'), {
         content: content,
         'csrf-token': csrfToken
       })
       .then(function (response) {
-        document.getElementById('post-content-body').innerHTML = response.data["html"]
+        document.getElementById('post-content-body').innerHTML = response.data['html']
         twttr.widgets.load()
         hljs.initHighlighting.called = false
         hljs.initHighlighting()
@@ -91,7 +91,7 @@ var viewModel = new Vue({
         var page = requestPage
       }
 
-      axios.get(makeRequestURL("/api/images"), {
+      axios.get(makeRequestURL('/api/images'), {
         params: {
           page: page
         }
@@ -120,7 +120,7 @@ var viewModel = new Vue({
       data.append('image_file_data', e.target.files[0])
       data.append('csrf-token', csrfToken)
 
-      axios.post(makeRequestURL("/api/images"), data)
+      axios.post(makeRequestURL('/api/images'), data)
       .then(function (response) {
         receiver.request(1)
       })
@@ -149,7 +149,7 @@ var viewModel = new Vue({
     selectedTag: function (e) {
 
       var text = this.tagString
-      var tags = text.split(",")
+      var tags = text.split(',')
 
       var sameTags = tags.filter(function(tag) {
         return tag === e.target.textContent
@@ -161,7 +161,7 @@ var viewModel = new Vue({
 
       tags.push(e.target.textContent)
       var emptyRemoved = tags.filter(function(tag) {
-        return tag !== ""
+        return tag !== ''
       })
 
       this.tags = emptyRemoved

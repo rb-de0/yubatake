@@ -30,12 +30,14 @@ final class AdminImageViewController: EditableResourceRepresentable {
         )
     }
     
+    static let hasNotFoundKey = "has_not_found"
+    
     private lazy var imageRepository = resolve(ImageRepository.self)
     
     func index(request: Request) throws -> ResponseRepresentable {
         var json = JSON()
         let hasNotFound = try Image.all().filter { image in !imageRepository.isExist(at: image.path) }.count > 0
-        try json.set("has_not_found", hasNotFound)
+        try json.set(AdminImageViewController.hasNotFoundKey, hasNotFound)
         return try ContextMaker.makeIndexView().makeResponse(context: json, for: request)
     }
     

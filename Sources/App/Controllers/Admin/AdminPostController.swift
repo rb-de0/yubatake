@@ -33,6 +33,10 @@ final class AdminPostController: EditableResourceRepresentable {
         )
     }
     
+    static let shouldTweetKey = "should-tweet"
+    static let tagsKey = "tags"
+    static let categoriesKey = "categories"
+    
     private lazy var repository = resolve(TwitterRepository.self)
     
     func index(request: Request) throws -> ResponseRepresentable {
@@ -71,7 +75,7 @@ final class AdminPostController: EditableResourceRepresentable {
             
             let id = try post.assertId()
             
-            if let _ = request.data["should-tweet"]?.string {
+            if let _ = request.data[AdminPostController.shouldTweetKey]?.string {
                 let user = try request.auth.assertAuthenticated(User.self)
                 try repository.tweetNewPost(post, from: user, on: request)
             }
@@ -140,6 +144,6 @@ final class AdminPostController: EditableResourceRepresentable {
     private func tagsAndCategories() throws -> JSON {
         let tags = try Tag.all().makeJSON()
         let categories = try Category.all().makeJSON()
-        return JSON(["tags": tags, "categories": categories])
+        return JSON([AdminPostController.tagsKey: tags, AdminPostController.categoriesKey: categories])
     }
 }
