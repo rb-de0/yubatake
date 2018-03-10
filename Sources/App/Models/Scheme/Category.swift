@@ -57,7 +57,7 @@ final class Category: Model {
         
         return
             try Category.all().flatMap {
-                return NumberOfPosts(category: $0, count: try $0.posts.makeQuery().count())
+                return NumberOfPosts(category: $0, count: try $0.posts.makeQuery().publicAll().count())
             }
             .filter { $0.count > 0 }
             .sorted(by: { $0.count > $1.count })

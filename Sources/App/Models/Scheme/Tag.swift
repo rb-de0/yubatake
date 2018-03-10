@@ -74,7 +74,7 @@ final class Tag: Model {
         
         return
             try Tag.all().flatMap {
-                return NumberOfPosts(tag: $0, count: try $0.posts.makeQuery().count())
+                return NumberOfPosts(tag: $0, count: try $0.posts.makeQuery().publicAll().count())
             }
             .filter { $0.count > 0 }
             .sorted(by: { $0.count > $1.count })
