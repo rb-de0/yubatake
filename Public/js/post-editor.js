@@ -32,7 +32,7 @@ var viewModel = new Vue({
       preview.style.display = 'block'
       preview.style.height = window.innerHeight + 'px'
 
-      this.latestScrollOffset = window.scrollY
+      this.latestScrollOffset = document.getElementById('content').scrollTop
       document.querySelector('.pure-form').style.display = 'none'
 
       var content = document.getElementById('admin-post-contents').value
@@ -54,7 +54,7 @@ var viewModel = new Vue({
       e.preventDefault()
       document.getElementById('admin-content-preview').style.display = 'none'
       document.querySelector('.pure-form').style.display = 'block'
-      window.scrollTo(0, this.latestScrollOffset)
+      document.getElementById('content').scrollTo(0, this.latestScrollOffset)
     },
     showPickerView: function (e) {
 
@@ -128,7 +128,8 @@ var viewModel = new Vue({
     selectImage: function (image) {
 
       document.getElementById('admin-image-picker').style.display = 'none'
-      document.body.style.overflow = 'scroll'
+      document.getElementById('content').style.overflow = 'scroll'
+      document.getElementById('menu').style.overflow = 'scroll'
 
       var textarea = document.querySelector('textarea')
 
