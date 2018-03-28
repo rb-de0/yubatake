@@ -33,7 +33,7 @@ $ swiftenv install 4.0.3
 
 #### 2. Install MySQL
 
-note supports MySQL and In Memory Database of SQLite as a database. When using MySQL, installation of MySQL server and client library is required.
+Since note supports MySQL only, installation of MySQL server and client library is required.
 
 For details, refer to the official Vapor 's document.
 
