@@ -3,7 +3,7 @@ os:
   - osx
 language: generic
 sudo: required
-dist: xenial
+dist: trusty
 
 services:
   - mysql
@@ -20,11 +20,10 @@ before_install:
       brew update;
       brew tap vapor/tap;
       brew update;
-      xcode-select --install;
-      bundle install --path vendor/bundle;
       brew install vapor;
       brew install cmysql;
       mysql.server start;
+      bundle install --path vendor/bundle;
     else
       eval "$(curl -sL https://apt.vapor.sh)";
       sudo apt-get install vapor;
@@ -37,8 +36,13 @@ before_install:
   - mysql -u root -e "grant all on note_tests.* TO 'test'@'localhost'";
 
 script:
-  - swift build;
-  - swift test;
+  - if [ $TRAVIS_OS_NAME == "osx" ]; then
+      swift build;
+      swift test;
+    else
+      swift build -Xswiftc -DNOJSON;
+      swift test -Xswiftc -DNOJSON;
+    fi
 
 after_success:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
