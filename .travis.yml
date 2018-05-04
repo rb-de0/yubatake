@@ -30,6 +30,7 @@ before_install:
       sudo chmod -R a+rx /usr/;
     fi
   - mysql -u root -e "set global max_connections = 1000";
+  - mysql -u root -e "create database note_tests default character set utf8";
 
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
