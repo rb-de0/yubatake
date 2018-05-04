@@ -10,7 +10,8 @@ services:
 
 env:
   global:
-    - MYSQL_PASSWORD=''
+    - MYSQL_USER=test
+    - MYSQL_PASSWORD=note
     - MYSQL_PORT=3306
 
 osx_image: xcode9.3
@@ -31,6 +32,8 @@ before_install:
     fi
   - mysql -u root -e "set global max_connections = 1000";
   - mysql -u root -e "create database note_tests default character set utf8";
+  - mysql -u root -e "create user 'test'@'localhost' IDENTIFIED BY 'note'"
+  - mysql -u root -e "grant all on note_tests.* TO 'test'@'localhost'"
 
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
