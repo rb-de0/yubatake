@@ -37,8 +37,8 @@ before_install:
 
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      swift build;
-      swift test;
+      swift package generate-xcodeproj;
+      bundle exec fastlane send_coverage;
     else
       swift build -Xswiftc -DNOJSON;
       swift test -Xswiftc -DNOJSON;
