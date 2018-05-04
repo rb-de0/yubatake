@@ -1,0 +1,73 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+create_table "categorys", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.string "name", null: false
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+  t.index ["name"], name: "name", unique: true
+end
+
+create_table "fluent", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.string "name", null: false
+  t.integer "batch", null: false
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+end
+
+create_table "images", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.string "path", null: false
+  t.string "alt_description", null: false
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+  t.index ["path"], name: "path", unique: true
+end
+
+create_table "post_tag", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.integer "post_id", null: false, unsigned: true
+  t.integer "tag_id", null: false, unsigned: true
+  t.index ["post_id"], name: "_fluent_fk_post_tag.post_id-posts.id"
+  t.index ["tag_id"], name: "_fluent_fk_post_tag.tag_id-tags.id"
+end
+
+create_table "posts", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.string "title", null: false
+  t.string "content", limit: 8192, null: false
+  t.boolean "is_publish", null: false, unsigned: true
+  t.integer "category_id", unsigned: true
+  t.integer "user_id", unsigned: true
+  t.datetime "createdAt", null: false
+  t.datetime "updatedAt", null: false
+  t.boolean "is_static", default: false, null: false, unsigned: true
+  t.string "html_content", limit: 8192, null: false
+  t.string "part_of_content", limit: 150, null: false
+  t.index ["category_id"], name: "_fluent_fk_posts.category_id-categorys.id"
+  t.index ["user_id"], name: "_fluent_fk_posts.user_id-users.id"
+end
+
+create_table "site_infos", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.string "name", null: false
+  t.string "description", null: false
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+end
+
+create_table "tags", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.string "name", null: false
+  t.datetime "created_at", null: false
+  t.datetime "updated_at", null: false
+  t.index ["name"], name: "name", unique: true
+end
+
+create_table "users", id: :integer, unsigned: true, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  t.string "name", null: false
+  t.string "password", null: false
+  t.string "api_key", null: false
+  t.string "api_secret", null: false
+  t.string "access_token", null: false
+  t.string "access_token_secret", null: false
+end
+
+add_foreign_key "post_tag", "posts", name: "_fluent_fk_post_tag.post_id-posts.id", on_delete: :cascade
+add_foreign_key "post_tag", "tags", name: "_fluent_fk_post_tag.tag_id-tags.id"
+add_foreign_key "posts", "categorys", name: "_fluent_fk_posts.category_id-categorys.id"
+add_foreign_key "posts", "users", name: "_fluent_fk_posts.user_id-users.id"
