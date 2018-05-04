@@ -1,14 +1,13 @@
 @testable import App
-import HTTP
 import Vapor
 import XCTest
 
-final class AdminSiteInfoControllerTests: ControllerTestCase {
-
+final class AdminSiteInfoControllerTests: ControllerTestCase, AdminTestCase {
+    
     func testCreateSharedSiteInfo() throws {
-        
-        let count = try SiteInfo.all().count
-        let sharedSiteInfo = try SiteInfo.all().first
+
+        let count = try SiteInfo.query(on: conn).count().wait()
+        let sharedSiteInfo = try SiteInfo.query(on: conn).all().wait().first
         
         XCTAssertEqual(count, 1)
         XCTAssertEqual(sharedSiteInfo?.name, "SiteTitle")
@@ -17,43 +16,36 @@ final class AdminSiteInfoControllerTests: ControllerTestCase {
     
     func testCanViewCreateView() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/siteinfo/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/siteinfo/edit")
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("name")?.string, "SiteTitle")
+        XCTAssertEqual(view.get("description")?.string, "Please set up a sentence describing your site.")
     }
     
     func testCanUpdateASiteInfo() throws {
-        
-        let requestData = try login()
-        
-        var request: Request!
+
         var response: Response!
         
-        let json: JSON = [
-            "name": "note",
-            "description": "UpdateTest"
-        ]
+        let form = ["name": "app", "description": "UpdateTest"]
         
-        request = Request(method: .post, uri: "/admin/siteinfo/edit")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/siteinfo/edit") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/siteinfo/edit")
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/siteinfo/edit")
         
-        let count = try SiteInfo.all().count
-        let sharedSiteInfo = try SiteInfo.all().first
+        let sharedSiteInfo = try SiteInfo.query(on: conn).all().wait().first
         
-        XCTAssertEqual(count, 1)
-        XCTAssertEqual(sharedSiteInfo?.name, "note")
+        response = try waitResponse(method: .GET, url: "/admin/siteinfo/edit")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("name")?.string, "app")
+        XCTAssertEqual(view.get("description")?.string, "UpdateTest")
+        XCTAssertEqual(sharedSiteInfo?.name, "app")
         XCTAssertEqual(sharedSiteInfo?.description, "UpdateTest")
     }
 }

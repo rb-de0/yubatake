@@ -1,388 +1,272 @@
 @testable import App
-import HTTP
 import Vapor
 import XCTest
 
-final class AdminPostControllerTests: ControllerTestCase {
+final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
     
     func testCanViewIndex() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts")
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .ok)
         
-        try DataMaker.makePost().save()
+        _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts")
         
-        XCTAssertEqual(response.status, .ok)
-        
-        XCTAssertEqual(view.get("page.position.max"), 1)
-        XCTAssertEqual(view.get("page.position.current"), 1)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 1)
+        XCTAssertEqual(view.get("page.position.current")?.int, 1)
         XCTAssertNil(view.get("page.position.next"))
         XCTAssertNil(view.get("page.position.previous"))
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
-    }
-
-    func testCanViewPageButtonAtOnePage() throws {
-        
-        let requestData = try login()
-        
-        try (1...10).forEach { _ in
-            try DataMaker.makePost().save()
-        }
-        
-        var request: Request!
-        var response: Response!
-        
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.max"), 1)
-        XCTAssertEqual(view.get("page.position.current"), 1)
-        XCTAssertNil(view.get("page.position.next"))
-        XCTAssertNil(view.get("page.position.previous"))
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
+        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 1)
     }
     
     func testCanViewPageButtonAtTwoPages() throws {
         
-        let requestData = try login()
-        
         try (1...11).forEach { _ in
-            try DataMaker.makePost().save()
+            _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         }
         
-        var request: Request!
+        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 11)
+        
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts")
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.max"), 2)
-        XCTAssertEqual(view.get("page.position.current"), 1)
-        XCTAssertEqual(view.get("page.position.next"), 2)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 2)
+        XCTAssertEqual(view.get("page.position.current")?.int, 1)
+        XCTAssertEqual(view.get("page.position.next")?.int, 2)
         XCTAssertNil(view.get("page.position.previous"))
+        XCTAssertEqual(view.get("data")?.array?.count, 10)
         
-        request = Request(method: .get, uri: "/posts?page=2")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts?page=2")
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.current"), 2)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 2)
+        XCTAssertEqual(view.get("page.position.current")?.int, 2)
         XCTAssertNil(view.get("page.position.next"))
-        XCTAssertEqual(view.get("page.position.previous"), 1)
+        XCTAssertEqual(view.get("page.position.previous")?.int, 1)
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
     }
     
     func testCanViewPageButtonAtThreePages() throws {
         
-        let requestData = try login()
-        
         try (1...21).forEach { _ in
-            try DataMaker.makePost().save()
+            _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         }
         
-        var request: Request!
-        var response: Response!
+        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 21)
+
+        let response = try waitResponse(method: .GET, url: "/admin/posts?page=2")
         
-        request = Request(method: .get, uri: "/admin/posts?page=2")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.max"), 3)
-        XCTAssertEqual(view.get("page.position.current"), 2)
-        XCTAssertEqual(view.get("page.position.next"), 3)
-        XCTAssertEqual(view.get("page.position.previous"), 1)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 3)
+        XCTAssertEqual(view.get("page.position.current")?.int, 2)
+        XCTAssertEqual(view.get("page.position.next")?.int, 3)
+        XCTAssertEqual(view.get("page.position.previous")?.int, 1)
+        XCTAssertEqual(view.get("data")?.array?.count, 10)
     }
     
     func testCanViewStaticContent() throws {
         
-        let requestData = try login()
+        _ = try DataMaker.makePost(isStatic: true, on: app, conn: conn).save(on: conn).wait()
         
-        try DataMaker.makePost(isStatic: true).save()
+        let response = try waitResponse(method: .GET, url: "/admin/static-contents")
         
-        var request: Request!
-        var response: Response!
-        
-        request = Request(method: .get, uri: "/admin/static-contents")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.max"), 1)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 1)
+        XCTAssertEqual(view.get("page.position.current")?.int, 1)
+        XCTAssertNil(view.get("page.position.next"))
+        XCTAssertNil(view.get("page.position.previous"))
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
     }
     
     func testCanViewCreateView() throws {
-        
-        let requestData = try login()
-        
-        var request: Request!
-        var response: Response!
-        
-        request = Request(method: .get, uri: "/admin/posts/create")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
+        let response = try waitResponse(method: .GET, url: "/admin/posts/create")
+        XCTAssertEqual(response.http.status, .ok)
     }
     
     func testCanViewEditView() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/posts/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
         
-        XCTAssertEqual(response.status, .notFound)
+        XCTAssertEqual(response.http.status, .internalServerError)
         
-        try DataMaker.makePost().save()
+        _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         
-        request = Request(method: .get, uri: "/admin/posts/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .ok)
     }
     
     func testCanDestroyPosts() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        try DataMaker.makePost().save()
+        _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/posts/delete") { request in
+            try request.setFormData(["posts": [1]], csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts")
         
-        let json: JSON = ["posts": [1]]
-        request = Request(method: .post, uri: "/admin/posts/delete")
-        try request.setFormData(json, requestData.csrfToken)
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts")
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/posts")
-        
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 0)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("data")?.array?.count, 0)
+        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 0)
     }
     
     func testCanDestroyStaticContents() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        try DataMaker.makePost(isStatic: true).save()
+        _ = try DataMaker.makePost(isStatic: true, on: app, conn: conn).save(on: conn).wait()
         
-        request = Request(method: .get, uri: "/admin/static-contents")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/posts/delete") { request in
+            try request.setFormData(["posts": [1]], csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/static-contents")
         
-        let json: JSON = ["posts": [1]]
-        request = Request(method: .post, uri: "/admin/posts/delete")
-        try request.setFormData(json, requestData.csrfToken)
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/static-contents")
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/static-contents")
-        
-        request = Request(method: .get, uri: "/admin/static-contents")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 0)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("data")?.array?.count, 0)
+        XCTAssertEqual(try Post.query(on: conn).staticAll().count().wait(), 0)
     }
     
     // MARK: - Store/Update
     
     func testCanStoreAPost() throws {
         
-        let requestData = try login()
+        _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
         
-        var request: Request!
         var response: Response!
         
-        var json = DataMaker.makePostJSON()
-        try json.set("tags", "Swift,iOS")
+        let form = try DataMaker.makePostFormForTest(title: "title", content: "content", categoryId: 1, tags: "Swift,iOS")
         
-        request = Request(method: .post, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/posts") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/posts/1/edit")
-        XCTAssertEqual(try Post.count(), 1)
-        XCTAssertEqual(try Tag.count(), 2)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
+        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 1)
+        XCTAssertEqual(try Tag.query(on: conn).count().wait(), 2)
         
-        request = Request(method: .get, uri: "/admin/posts/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("post.tags_string"), "Swift,iOS")
-        XCTAssertEqual(try view.context?["tags"]?.array?.flatMap { try $0.get("name") } ?? [], ["Swift", "iOS"])
+        let post = try Post.query(on: conn).first().wait()
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.title")?.string, "title")
+        XCTAssertEqual(view.get("post.content")?.string, "content")
+        XCTAssertEqual(view.get("post.category.id")?.int, 1)
+        XCTAssertEqual(view.get("post.tags_string")?.string, "Swift,iOS")
+        
+        XCTAssertEqual(post?.title, "title")
+        XCTAssertEqual(post?.content, "content")
+        XCTAssertEqual(post?.categoryId, 1)
     }
-
+    
     func testCannotStoreAPostHasInvalidCategory() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        var json = DataMaker.makePostJSON()
-        try json.set("category", 10)
+        let form = try DataMaker.makePostFormForTest(title: "title", content: "content", categoryId: 10, tags: "Swift,iOS")
         
-        request = Request(method: .post, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/posts") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/posts/create")
-        XCTAssertEqual(try Post.count(), 0)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/create")
+        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 0)
     }
     
     func testCanStoreAPostHasNotInsertedTags() throws {
         
-        try DataMaker.makeTag("Swift").save()
-        try DataMaker.makeTag("iOS").save()
+        _ = try DataMaker.makeTag("Swift").save(on: conn).wait()
+        _ = try DataMaker.makeTag("iOS").save(on: conn).wait()
         
-        let requestData = try login()
+        let form = try DataMaker.makePostFormForTest(title: "title", content: "content", tags: "Vapor")
         
-        var request: Request!
-        var response: Response!
-        var json: JSON!
-
-        XCTAssertEqual(try Tag.count(), 2)
+        let response = try waitResponse(method: .POST, url: "/admin/posts") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        json = DataMaker.makePostJSON()
-        try json.set("tags", "Vapor")
-        
-        request = Request(method: .post, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/posts/1/edit")
-        XCTAssertEqual(try Post.count(), 1)
-        XCTAssertEqual(try Tag.count(), 3)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
+        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 1)
+        XCTAssertEqual(try Tag.query(on: conn).count().wait(), 3)
     }
     
     func testCanUpdateAPost() throws {
         
-        let post = try DataMaker.makePost(title: "beforeUpdate")
-        try post.save()
+        _ = try DataMaker.makePost(title: "beforeUpdate", isStatic: true, on: app, conn: conn).save(on: conn).wait()
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
-        var json: JSON!
         
-        request = Request(method: .get, uri: "/posts/1")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        let form = try DataMaker.makePostFormForTest(title: "afterUpdate", content: "content", tags: "")
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("title"), "beforeUpdate")
+        response = try waitResponse(method: .POST, url: "/admin/posts/1/edit") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        json = DataMaker.makePostJSON()
-        try json.set("title", "afterUpdate")
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
         
-        request = Request(method: .post, uri: "/admin/posts/1/edit")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/posts/1/edit")
-        
-        request = Request(method: .get, uri: "/posts/1")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("title"), "afterUpdate")
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.title")?.string, "afterUpdate")
+        XCTAssertEqual(try Post.query(on: conn).first().wait()?.title, "afterUpdate")
     }
     
     func testCanAddTagsOnUpdate() throws {
         
-        let tag = try DataMaker.makeTag("Swift")
-        try tag.save()
+        let tag = try DataMaker.makeTag("Swift").save(on: conn).wait()
+        let post = try DataMaker.makePost(title: "beforeUpdate", isStatic: true, on: app, conn: conn).save(on: conn).wait()
+        _ = try post.tags.attach(tag, on: conn).wait()
         
-        let post = try DataMaker.makePost(title: "beforeUpdate")
-        try post.save()
-        try post.tags.add(tag)
-        
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
-        var json: JSON!
         
-        request = Request(method: .get, uri: "/admin/posts/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("post.tags_string"), "Swift")
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.tags_string")?.string, "Swift")
         
-        json = DataMaker.makePostJSON()
-        try json.set("tags", "Swift,iOS")
+        let form = try DataMaker.makePostFormForTest(title: "afterUpdate", content: "content", tags: "Swift,iOS")
+
+        response = try waitResponse(method: .POST, url: "/admin/posts/1/edit") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        request = Request(method: .post, uri: "/admin/posts/1/edit")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
+        XCTAssertEqual(try Tag.query(on: conn).count().wait(), 2)
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/posts/1/edit")
-        XCTAssertEqual(try Tag.count(), 2)
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.tags_string")?.string, "Swift,iOS")
     }
 }
 
 extension AdminPostControllerTests {
     public static let allTests = [
         ("testCanViewIndex", testCanViewIndex),
-        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
         ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
         ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
         ("testCanViewStaticContent", testCanViewStaticContent),

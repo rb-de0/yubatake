@@ -1,12 +1,12 @@
 {
     "tweetFormat": "New Post %1$@ on %2$@",
-    "hostname": "",
+    "hostName": "",
     "dateFormat": "yyyy-MM-dd HH:mm",
     "meta": {
-        "page_description": "note",
-        "page_image": "imageURL",
+        "pageDescription": "note",
+        "pageImage": "imageURL",
         "twitter": {
-            "image_alt": "imageAlt",
+            "imageAlt": "imageAlt",
             "username": "rb_de0"
         }
     }

@@ -1,112 +1,60 @@
-import Crypto
-import FluentProvider
-import HTTP
-import ValidationProvider
+import FluentMySQL
+import Pagination
 import Vapor
 
-final class Image: Model {
+final class Image: DatabaseModel, Content {
     
-    static let idKey = "id"
-    static let nameKey = "name"
-    static let pathKey = "path"
-    static let altDescriptionKey = "alt_description"
+    static let pageSize = 32
     
-    private lazy var imageRepository = resolve(ImageRepository.self)
+    struct Public: PageResponse {
+        
+        private enum CodingKeys: String, CodingKey {
+            case name
+        }
+        
+        let image: Image
+        let name: String
+        
+        func encode(to encoder: Encoder) throws {
+            try image.encode(to: encoder)
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(name, forKey: .name)
+        }
+    }
     
-    let storage = Storage()
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case path
+        case altDescription = "alt_description"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
     
+    var id: Int?
     var path: String
     var altDescription: String
+    var createdAt: Date?
+    var updatedAt: Date?
     
-    init(data: ImageData) throws {
-        path = data.path
-        altDescription = data.name
+    init(from form: ImageUploadForm, on container: Container) throws {
+        let relativePath = try container.make(ImageRepository.self).relativePath
+        self.path = relativePath.started(with: "/").finished(with: "/").appending(form.name)
+        self.altDescription = form.name
     }
     
-    init(row: Row) throws {
-        path = try row.get(Image.pathKey)
-        altDescription = try row.get(Image.altDescriptionKey)
-    }
-
-    func makeRow() throws -> Row {
-        var row = Row()
-        try row.set(Image.pathKey, path)
-        try row.set(Image.altDescriptionKey, altDescription)
-        return row
+    func formPublic(on container: Container) throws -> Public {
+        let relativePath = try container.make(ImageRepository.self).relativePath
+        let basePath = relativePath.started(with: "/").finished(with: "/")
+        return Public(image: self, name: String(path.dropFirst(basePath.count)))
     }
     
-    func deleteImageData() throws {
-        try imageRepository.deleteImage(at: path)
+    func apply(form: ImageForm, on container: Container) throws -> Self {
+        let relativePath = try container.make(ImageRepository.self).relativePath
+        self.path = relativePath.started(with: "/").finished(with: "/").appending(form.name)
+        self.altDescription = form.altDescription
+        return self
     }
 }
-
-// MARK: - Preparation
-extension Image: Preparation {
-    
-    static func prepare(_ database: Database) throws {
-        
-        try database.create(self) { builder in
-            builder.id()
-            builder.string(Image.pathKey, unique: true)
-            builder.string(Image.altDescriptionKey)
-        }
-    }
-    
-    static func revert(_ database: Database) throws {
-        try database.delete(self)
-    }
-}
-
-// MARK: - JSONRepresentable
-extension Image: JSONRepresentable {
-    
-    func makeJSON() throws -> JSON {
-        
-        let config = Configs.resolve(FileConfig.self)
-        let basePath = config.imageRelativePath.started(with: "/").finished(with: "/")
-        
-        var row = try makeRow()
-        try row.set(Image.idKey, id)
-        try row.set(Image.nameKey, String(path.dropFirst(basePath.count)))
-        
-        return JSON(row)
-    }
-}
-
-// MARK: - SiteInfo
-extension Image: ResponseRepresentable {}
-
-// MARK: - Timestampable
-extension Image: Timestampable {}
 
 // MARK: - Paginatable
-extension Image: Paginatable {
-    
-    static var defaultPageSize: Int {
-        return 32
-    }
-}
-
-// MARK: - Updateable
-extension Image: Updateable {
-    
-    func update(for req: Request) throws {
-        
-        guard let _name = req.data[ImageData.imageNameKey]?.string,
-            let _altDescription = req.data[Image.altDescriptionKey]?.string else {
-                
-            throw Abort(.badRequest)
-        }
-        
-        let config = Configs.resolve(FileConfig.self)
-        let afterPath = config.imageRelativePath.started(with: "/").finished(with: "/").appending(_name)
-        
-        path = afterPath
-        altDescription = _altDescription
-    }
-    
-    static var updateableKeys: [UpdateableKey<Image>] {
-        return []
-    }
-}
-
+extension Image: Paginatable {}

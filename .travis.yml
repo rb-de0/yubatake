@@ -3,7 +3,7 @@ os:
   - osx
 language: generic
 sudo: required
-dist: trusty
+dist: xenial
 
 services:
   - mysql
@@ -13,7 +13,7 @@ env:
     - MYSQL_PASSWORD=''
     - MYSQL_PORT=3306
 
-osx_image: xcode9.2
+osx_image: xcode9.3
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       brew update;

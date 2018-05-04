@@ -1,33 +1,24 @@
-import AuthProvider
-import HTTP
+import Authentication
 import Vapor
 
-final class LoginController: ResourceRepresentable {
+final class LoginController {
     
-    func makeResource() -> Resource<String> {
-        return Resource(
-            index: index,
-            store: store
-        )
-    }
-    
-    func index(request: Request) throws -> ResponseRepresentable {
+    func index(request: Request) throws -> Future<View> {
         return try PublicViewContext(path: "public/login", title: "Login").makeResponse(for: request)
     }
-    
-    func store(request: Request) throws -> ResponseRepresentable {
+
+    func store(request: Request, form: LoginForm) throws -> Future<Response> {
         
-        do {
-            
-            let credential = try request.userNamePassword()
-            let user = try User.authenticate(credential)
-            try user.persist(for: request)
-            
-            return Response(redirect: "admin/posts")
-            
-        } catch {
-            
-            return Response(redirect: "login", with: FormError(error: error), for: request)
-        }
+        let verifier = try request.make(PasswordVerifier.self)
+        
+        return User.authenticate(username: form.name, password: form.password, using: verifier, on: request)
+            .unwrap(or: Abort(.unauthorized))
+            .map { user -> Response in
+                try request.authenticate(user)
+                return request.redirect(to: "admin/posts")
+            }
+            .catchMap { error in
+                return try request.redirect(to: "login", with: error.localizedDescription)
+            }
     }
 }

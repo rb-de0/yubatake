@@ -1,24 +1,22 @@
-#extend("base/admin-base")
-
-#export("additional-resources") {
+#set("additional-resources") {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script async src="https://platform.twitter.com/widgets.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 }
 
-#export("script") {
+#set("script") {
   <script src="/js/post-editor.js"></script>
 }
 
-#export("content") {
+#set("content") {
 
-  <div id="admin-page-title">#if(post.id) {Edit Post} ##else() {New Post}</div>
+  <div id="admin-page-title">#if(post.id) {Edit Post} else {New Post}</div>
 
   <form class="pure-form" action="/admin/posts#if(post.id) {/#(post.id)/edit}" method="post">
 
     <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
-    <div class="field-error">#(request.storage.error_message)</div>
+    <div class="field-error">#(error_message)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -37,14 +35,13 @@
             <ul class="admin-supplement-list">
               <li>
                 <label for="non-categorized" class="admin-supplement-category-item pure-radio">
-                  <input id="non-categorized" type="radio" name="category" #if(post.category) {} ##else() {checked}>
-                  NonCategorized
+                  <input id="non-categorized" type="radio" name="category" #if(post.category) {} else {checked}>NonCategorized
                 </label>
               </li>
-              #loop(categories, "category") {
+              #for(category in categories) {
                 <li>
                   <label for="#(category.name)" class="admin-supplement-category-item pure-radio">
-                    <input id="#(category.name)" type="radio" name="category" value="#(category.id)" #equal(category.id, post.category.id) {checked}>
+                    <input id="#(category.name)" type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id) {checked}>
                     #(category.name)
                   </label>
                 </li>
@@ -64,8 +61,8 @@
           <input id="admin-tag-text" v-model="tagString" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
           <div class="admin-supplement-list-container">
             <ul class="admin-supplement-list">
-              #loop(tags, "tag") {
-                <li class="admin-supplement-tag-item" v-bind:class="{ selected: isSelectedTag('#(tag.name)') }" v-on:click="selectedTag">#(tag.name)</li>
+              #for(tag in tags) {
+                <li class="admin-supplement-tag-item" v-bind:class="[ isSelectedTag('#(tag.name)') ? selectedClass : '' ]" v-on:click="selectedTag">#(tag.name)</li>
               }
             </ul>
           </div>
@@ -79,10 +76,10 @@
       </div>
 
       <fieldset class="pure-group">
-        #if(post.id) {} ##else() {
+        #if(post.id) {} else {
           <div class="admin-option-item">
             <label for="admin-post-should-tweet" class="pure-form-item-inline">
-              <input id="admin-post-should-tweet" name="should-tweet" type="checkbox"/> Share to Twitter
+              <input id="admin-post-should-tweet" name="should_tweet" type="checkbox"/> Share to Twitter
             </label>
           </div>
         }
@@ -106,7 +103,7 @@
     </fieldset>
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
-      #if(post.id) {Update} ##else() {Post}
+      #if(post.id) {Update} else {Post}
     </button>
   </form>
 
@@ -138,7 +135,7 @@
       </div>
 
       <div id="admin-image-picker-footer">
-        <div v-show="hasImages" id="admin-image-picker-page"> {{ page }}/{{ totalPage }} </div>
+        <div v-show="hasImages" id="admin-image-picker-page"> [[ page ]]/[[ totalPage ]] </div>
         <div>
           <button v-if="hasPrevious" class="pure-button" v-on:click="requestPrevious">Previous</button>
           <button v-if="hasNext" class="pure-button" v-on:click="requestNext">Next</button>
@@ -148,3 +145,5 @@
     </div>
   </div>
 }
+
+#embed("base/admin-base")

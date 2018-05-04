@@ -664,7 +664,6 @@ ol {
 }
 
 #admin-image-picker-items {
-
   padding: .5rem 1rem 1rem;
 }
 
@@ -747,139 +746,6 @@ ol {
 }
 
 /* --------------------------
-* Editor
-* --------------------------
-*/
-
-#theme-list {
-  min-height: 0px;
-  background-color: #fff;
-}
-
-#file-list {
-  margin-bottom: 2rem;
-}
-
-#theme-content {
-  margin: 0;
-  background-color: #fff;
-}
-
-#theme-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 1rem 0;
-  padding: .25rem;
-  height: 44px;
-  background-color: #fff;
-}
-
-#theme-header input[type=text] {
-  padding: .2rem .5rem;
-}
-
-#file-editor-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: .5rem;
-}
-
-#file-name {
-  display: flex;
-  margin-right: .5rem;
-  font-size: 1.1rem;
-}
-
-#file-name-container {
-  display: flex;
-  align-items: center;
-}
-
-#file-save-button-container {
-  display: flex;
-  align-items: flex-end;
-}
-
-#file-save-button-container .button-delete {
-  margin-left: .25rem;
-}
-
-#file-editor-container {
-  background-color: #f1f1f1;
-}
-
-#file-editor-container-inner {
-  padding: .5rem 0;
-}
-
-#file-editor {
-  height: 540px;
-  margin-bottom: 1rem;
-}
-
-.theme-list-item {
-  font-size: .9rem;
-  padding: .5rem 1rem;
-}
-
-.theme-list-item.selected {
-  background-color: #f7f7f7;
-}
-
-.theme-list-item-header {
-  font-size: 1rem;
-  font-weight: bold;
-  margin: 1rem 0 .25rem .75rem;
-}
-
-.selected-theme {
-  font-size: 1.125rem;
-  font-weight: bold;
-  margin-left: .5rem;
-}
-
-.file-list-group {
-  font-size: 1rem;
-  font-weight: bold;
-  margin: 1rem 0 .25rem .75rem;
-}
-
-.file-list-item {
-  position: relative;
-}
-
-.file-list-item .pure-menu-link {
-  font-size: .75rem;
-  padding: .5rem 1rem;
-}
-
-.file-list-item.selected {
-  background-color: #f7f7f7;
-}
-
-.file-customized-icon {
-  position: absolute;
-  left: 4px;
-  top: 50%;
-  margin-top: -4px;
-}
-
-.file-body-tab {
-  font-size: .75rem;
-  background-color: #ccc;
-  cursor: pointer;
-}
-
-.file-body-tab-inner {
-  margin: .25rem .75rem;
-}
-
-.file-body-tab.selected {
-  background-color: #fff;
-}
-
-/* --------------------------
 * Login
 * --------------------------
 */
@@ -917,31 +783,6 @@ ol {
 
   #post-content-header-date {
     display: flex;
-  }
-
-  #theme-list {
-    min-height: 640px;
-  }
-
-  #theme-content {
-    margin: 1rem 1rem 0 1rem;
-  }
-
-  #theme-header {
-    margin: 0 1rem;
-  }
-
-  #file-editor-container-inner {
-    padding: 0 0 0 1rem;
-  }
-
-  #file-editor {
-    height: 780px;
-    margin-bottom: 0px;
-  }
-
-  #file-list {
-    margin-bottom: 1rem;
   }
 }
 

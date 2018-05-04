@@ -1,10 +1,8 @@
-#extend("base/admin-base")
-
-#export("script") {
+#set("script") {
   <script src="/js/admin-table.js"></script>
 }
 
-#export("content") {
+#set("content") {
   <div id="admin-page-title">All Tags</div>
 
   <form id="admin-selectable-form" action="/admin/tags/delete" method="post">
@@ -20,7 +18,7 @@
       </thead>
 
       <tbody>
-        #loop(data, "tag") {
+        #for(tag in data) {
           <tr>
             <td class="tags-table-checkbox">
               <input class="one-checkbox" type="checkbox" name="tags[]" value="#(tag.id)" v-on:click="selectOne"/>
@@ -49,3 +47,5 @@
     </div>
   </form>
 }
+
+#embed("base/admin-base")
