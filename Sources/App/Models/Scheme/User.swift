@@ -1,9 +1,9 @@
-import FluentMySQL
+import Authentication
 import Crypto
+import FluentMySQL
+import Foundation
 import Poppo
 import Vapor
-import Foundation
-import Authentication
 
 final class User: DatabaseModel {
     
