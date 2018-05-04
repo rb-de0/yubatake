@@ -20,7 +20,7 @@ before_install:
       brew update;
       brew tap vapor/tap;
       brew update;
-      xcode-select --install
+      xcode-select --install;
       bundle install --path vendor/bundle;
       brew install vapor;
       brew install cmysql;

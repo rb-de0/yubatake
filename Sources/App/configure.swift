@@ -87,6 +87,8 @@ public func configure(
     try services.register(FluentMySQLProvider())
     config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
     
+    services.register(DatabaseConnectionPoolConfig(maxConnections: 100))
+    
     services.register { container -> MySQLDatabaseConfig in
         return try container.make(ConfigProvider.self).make(MySQLDatabaseConfig.self)
     }
