@@ -1,39 +1,29 @@
-import HTTP
 import Vapor
-import Validation
 
-final class AdminSiteInfoController: ResourceRepresentable {
+final class AdminSiteInfoController {
     
-    struct ContextMaker {
+    private struct ContextMaker {
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-siteInfo", menuType: .siteInfo, formDataDeliverer: SiteInfo.self)
+            return AdminViewContext(path: "admin/edit-siteInfo", menuType: .siteInfo)
         }
     }
     
-    func makeResource() -> Resource<SiteInfo> {
-        return Resource(index: index, store: store)
-    }
-
-    func index(request: Request) throws -> ResponseRepresentable {
-        let siteInfo = try SiteInfo.shared()
-        return try ContextMaker.makeCreateView().makeResponse(context: siteInfo.makeJSON(), for: request)
+    func index(request: Request) throws -> Future<View> {
+        return try SiteInfo.shared(on: request).flatMap { siteInfo in
+            return try ContextMaker.makeCreateView().makeResponse(context: siteInfo, formDataType: SiteInfoForm.self, for: request)
+        }
     }
     
-    func store(request: Request) throws -> ResponseRepresentable {
-        
-        let siteInfo = try SiteInfo.shared()
-        
-        do {
-        
-            try siteInfo.update(for: request)
-            try siteInfo.save()
-            
-            return Response(redirect: "/admin/siteinfo/edit")
-            
-        } catch {
-            
-            return Response(redirect: "/admin/siteinfo/edit",with: FormError(error: error, deliverer: SiteInfo.self), for: request)
+    func store(request: Request, form: SiteInfoForm) throws -> Future<Response> {
+        return try SiteInfo.shared(on: request).flatMap { siteInfo in
+            try siteInfo.apply(form: form).save(on: request).transform(to: ())
+        }
+        .map {
+            return request.redirect(to: "/admin/siteinfo/edit")
+        }
+        .catchMap { error in
+            return try request.redirect(to: "/admin/siteinfo/edit", with: FormError(error: error, formData: form))
         }
     }
 }

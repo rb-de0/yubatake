@@ -1,277 +1,194 @@
 @testable import App
-import HTTP
 import Vapor
 import XCTest
 
-final class AdminCategoryControllerTests: ControllerTestCase {
-    
+final class AdminCategoryControllerTests: ControllerTestCase, AdminTestCase {
+
     func testCanViewIndex() throws {
-        
-        let requestData = try login()
-        
-        var request: Request!
+
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/categories")
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .ok)
         
-        try DataMaker.makeCategory("Programming").save()
+        _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
         
-        request = Request(method: .get, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/categories")
         
-        XCTAssertEqual(response.status, .ok)
-        
-        XCTAssertEqual(view.get("page.position.max"), 1)
-        XCTAssertEqual(view.get("page.position.current"), 1)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 1)
+        XCTAssertEqual(view.get("page.position.current")?.int, 1)
         XCTAssertNil(view.get("page.position.next"))
         XCTAssertNil(view.get("page.position.previous"))
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
-    }
-    
-    func testCanViewPageButtonAtOnePage() throws {
-        
-        let requestData = try login()
-        
-        try (1...10).forEach { i in
-            try DataMaker.makeCategory(String(i)).save()
-        }
-        
-        var request: Request!
-        var response: Response!
-        
-        request = Request(method: .get, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.max"), 1)
-        XCTAssertEqual(view.get("page.position.current"), 1)
-        XCTAssertNil(view.get("page.position.next"))
-        XCTAssertNil(view.get("page.position.previous"))
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 1)
     }
     
     func testCanViewPageButtonAtTwoPages() throws {
         
-        let requestData = try login()
-        
+        var response: Response!
+
         try (1...11).forEach { i in
-            try DataMaker.makeCategory(String(i)).save()
+            _ = try DataMaker.makeCategory(String(i)).save(on: conn).wait()
         }
         
-        var request: Request!
-        var response: Response!
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 11)
         
-        request = Request(method: .get, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/categories")
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.max"), 2)
-        XCTAssertEqual(view.get("page.position.current"), 1)
-        XCTAssertEqual(view.get("page.position.next"), 2)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 2)
+        XCTAssertEqual(view.get("page.position.current")?.int, 1)
+        XCTAssertEqual(view.get("page.position.next")?.int, 2)
         XCTAssertNil(view.get("page.position.previous"))
+        XCTAssertEqual(view.get("data")?.array?.count, 10)
         
-        request = Request(method: .get, uri: "/admin/categories?page=2")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/categories?page=2")
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.current"), 2)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 2)
+        XCTAssertEqual(view.get("page.position.current")?.int, 2)
         XCTAssertNil(view.get("page.position.next"))
-        XCTAssertEqual(view.get("page.position.previous"), 1)
+        XCTAssertEqual(view.get("page.position.previous")?.int, 1)
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
     }
     
     func testCanViewPageButtonAtThreePages() throws {
         
-        let requestData = try login()
-        
-        try (1...21).forEach { i in
-            try DataMaker.makeCategory(String(i)).save()
-        }
-        
-        var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/categories?page=2")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        try (1...21).forEach { i in
+            _ = try DataMaker.makeCategory(String(i)).save(on: conn).wait()
+        }
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("page.position.max"), 3)
-        XCTAssertEqual(view.get("page.position.current"), 2)
-        XCTAssertEqual(view.get("page.position.next"), 3)
-        XCTAssertEqual(view.get("page.position.previous"), 1)
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 21)
+        
+        response = try waitResponse(method: .GET, url: "/admin/categories?page=2")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("page.position.max")?.int, 3)
+        XCTAssertEqual(view.get("page.position.current")?.int, 2)
+        XCTAssertEqual(view.get("page.position.next")?.int, 3)
+        XCTAssertEqual(view.get("page.position.previous")?.int, 1)
+        XCTAssertEqual(view.get("data")?.array?.count, 10)
     }
     
     func testCanViewCreateView() throws {
-        
-        let requestData = try login()
-        
-        var request: Request!
-        var response: Response!
-        
-        request = Request(method: .get, uri: "/admin/categories/create")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
+        let response = try waitResponse(method: .GET, url: "/admin/categories/create")
+        XCTAssertEqual(response.http.status, .ok)
     }
     
     func testCanViewEditView() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/categories/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/categories/1/edit")
         
-        XCTAssertEqual(response.status, .notFound)
+        XCTAssertEqual(response.http.status, .internalServerError)
         
-        try DataMaker.makeCategory("Programming").save()
+        _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
         
-        request = Request(method: .get, uri: "/admin/categories/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/categories/1/edit")
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("name")?.string, "Programming")
     }
     
-    func testCanDestroyCategories() throws {
-        
-        let requestData = try login()
-        
-        var request: Request!
+    func testCanDestroyACategory() throws {
+
         var response: Response!
         
-        try DataMaker.makeCategory("Programming").save()
+         _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
         
-        request = Request(method: .get, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 1)
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 1)
-        
-        let json: JSON = ["categories": [1]]
-        request = Request(method: .post, uri: "/admin/categories/delete")
-        try request.setFormData(json, requestData.csrfToken)
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/categories")
-        
-        request = Request(method: .get, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual((view.get("data") as Node?)?.array?.count, 0)
+        response = try waitResponse(method: .POST, url: "/admin/categories/delete") { request in
+             try request.setFormData(["categories": [1]], csrfToken: self.csrfToken)
+        }
+
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/categories")
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 0)
     }
     
     // MARK: - Store/Update
     
     func testCanStoreACategory() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        let json = DataMaker.makeCategoryJSON(name: "Programming")
+        let form = DataMaker.makeCategoryFormForTest("Programming")
+
+        response = try waitResponse(method: .POST, url: "/admin/categories") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        request = Request(method: .post, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/categories/1/edit")
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 1)
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/categories/1/edit")
-        XCTAssertEqual(try App.Category.count(), 1)
+        response = try waitResponse(method: .GET, url: "/admin/categories/1/edit")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("name")?.string, "Programming")
+        XCTAssertEqual(try App.Category.query(on: conn).first().wait()?.name, "Programming")
     }
     
     func testCannotCreateCategoryAtAlreadyExist() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        let json = DataMaker.makeCategoryJSON(name: "Programming")
+        let form = DataMaker.makeCategoryFormForTest("Programming")
         
-        request = Request(method: .post, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/categories") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/categories/1/edit")
-        XCTAssertEqual(try App.Category.count(), 1)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/categories/1/edit")
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 1)
         
-        request = Request(method: .post, uri: "/admin/categories")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/categories") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/categories/create")
-        XCTAssertEqual(try App.Category.count(), 1)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/categories/create")
+        XCTAssertEqual(try App.Category.query(on: conn).count().wait(), 1)
     }
     
     func testCanUpdateACategory() throws {
         
-        let category = try DataMaker.makeCategory("Programming")
-        try category.save()
-        
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
-        var json: JSON!
         
-        request = Request(method: .get, uri: "/admin/categories/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
         
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("name"), "Programming")
+        let form = DataMaker.makeCategoryFormForTest("FX")
         
-        json = DataMaker.makeCategoryJSON(name: "FX")
+        response = try waitResponse(method: .POST, url: "/admin/categories/1/edit") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        request = Request(method: .post, uri: "/admin/categories/1/edit")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/categories/1/edit")
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/categories/1/edit")
+        response = try waitResponse(method: .GET, url: "/admin/categories/1/edit")
         
-        request = Request(method: .get, uri: "/admin/categories/1/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
-        XCTAssertEqual(view.get("name"), "FX")
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("name")?.string, "FX")
+        XCTAssertEqual(try App.Category.query(on: conn).first().wait()?.name, "FX")
     }
 }
 
 extension AdminCategoryControllerTests {
     public static let allTests = [
         ("testCanViewIndex", testCanViewIndex),
-        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
         ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
         ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
         ("testCanViewCreateView", testCanViewCreateView),
         ("testCanViewEditView", testCanViewEditView),
-        ("testCanDestroyCategories", testCanDestroyCategories),
+        ("testCanDestroyACategory", testCanDestroyACategory),
         ("testCanStoreACategory", testCanStoreACategory),
         ("testCannotCreateCategoryAtAlreadyExist", testCannotCreateCategoryAtAlreadyExist),
         ("testCanUpdateACategory", testCanUpdateACategory)

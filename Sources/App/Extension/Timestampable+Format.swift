@@ -1,5 +1,5 @@
+import Fluent
 import Foundation
-import FluentProvider
 
 extension Timestampable {
     
@@ -8,7 +8,7 @@ extension Timestampable {
         let formatter = DateFormatter()
         formatter.dateFormat = dateFormat
         
-        return createdAt.map { formatter.string(from: $0) }
+        return fluentCreatedAt.map { formatter.string(from: $0) }
     }
     
     func formattedUpdatedAt(dateFormat: String) -> String? {
@@ -16,6 +16,6 @@ extension Timestampable {
         let formatter = DateFormatter()
         formatter.dateFormat = dateFormat
         
-        return updatedAt.map { formatter.string(from: $0) }
+        return fluentUpdatedAt.map { formatter.string(from: $0) }
     }
 }

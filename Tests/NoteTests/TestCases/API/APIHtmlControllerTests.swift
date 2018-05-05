@@ -1,39 +1,25 @@
 @testable import App
-import Cookies
-import HTTP
 import Vapor
 import XCTest
 
-final class APIHtmlControllerTests: ControllerTestCase {
+final class APIHtmlControllerTests: ControllerTestCase, AdminTestCase {
     
     func testCanViewIndex() throws {
         
-        let requestData = try login()
+        let response = try waitResponse(method: .POST, url: "/api/converted_markdown") { request in
+            try request.setJSONData(["content": "#hoge"], csrfToken: self.csrfToken)
+        }
         
-        var request: Request!
-        var response: Response!
-        
-        request = Request(method: .post, uri: "/api/converted_markdown")
-        request.cookies.insert(requestData.cookie)
-        try request.setJSONData(["content": "#hoge"], requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .ok)
     }
     
     func testCannotContinueConvertingOnNoContent() throws {
         
-        let requestData = try login()
+        let response = try waitResponse(method: .POST, url: "/api/converted_markdown") { request in
+            try request.setJSONData([String: String](), csrfToken: self.csrfToken)
+        }
         
-        var request: Request!
-        var response: Response!
-        
-        request = Request(method: .post, uri: "/api/converted_markdown")
-        request.cookies.insert(requestData.cookie)
-        try request.setJSONData([:], requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .badRequest)
+        XCTAssertEqual(response.http.status, .badRequest)
     }
 }
 

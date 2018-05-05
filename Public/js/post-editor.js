@@ -1,5 +1,6 @@
 var viewModel = new Vue({
   el: '#content',
+  delimiters: ['[[', ']]'],
   data: {
     page: 1,
     images: [],
@@ -8,7 +9,8 @@ var viewModel = new Vue({
     totalPage: 0,
     latestScrollOffset: 0,
     tagString: '',
-    tags: []
+    tags: [],
+    selectedClass: 'selected'
   },
   computed: {
     hasImages: function() {

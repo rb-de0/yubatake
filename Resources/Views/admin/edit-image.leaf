@@ -1,9 +1,7 @@
-#extend("base/admin-base")
-
-#export("content") {
+#set("content") {
 
   <div id="admin-page-title">Edit Image</div>
-  <div class="field-error">#(request.storage.error_message)</div>
+  <div class="field-error">#(error_message)</div>
 
   <div id="image-editor" class="pure-g">
 
@@ -19,14 +17,13 @@
       <form class="pure-form" method="post">
 
         <input type="hidden" name="csrf-token" value="#(csrf_token)">
-        <input type="hidden" name="images[]" value="#(id)"/>
 
         <fieldset class="pure-group">
 
           <div class="form-label">
             <label for="admin-image-name">Image Name</label>
           </div>
-          <input id="admin-image-name" class="pure-input-1" name="image_file_name" value="#(name)" type="text">
+          <input id="admin-image-name" class="pure-input-1" name="name" value="#(name)" type="text">
 
           <div class="form-label">
             <label for="admin-alt-title">Alt Description</label>
@@ -37,13 +34,12 @@
         <div class="pure-g">
           <button type="submit" class="pure-button pure-input-1-4 pure-button-primary" formaction="/admin/images/#(id)/edit">Update</button>
           <div class="pure-u-1-2"></div>
-          <button type="submit" class="button-delete pure-button pure-input-1-4" formaction="/admin/images/delete">Delete</button>
+          <button type="submit" class="button-delete pure-button pure-input-1-4" formaction="/admin/images/#(id)/delete">Delete</button>
         </div>
       </form>
     </div>
 
   </div>
-
-
-
 }
+
+#embed("base/admin-base")

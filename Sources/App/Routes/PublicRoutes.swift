@@ -1,27 +1,20 @@
-import AuthProvider
 import Vapor
 
-final class PublicRoutes: RouteCollection, EmptyInitializable {
+final class PublicRoutes: RouteCollection {
     
-    func build(_ builder: RouteBuilder) throws {
+    func boot(router: Router) throws {
         
-        let controller = PostController()
-        
-        builder.resource("", controller)
-        builder.resource("posts", controller)
-        
-        builder.get("tags", Tag.parameter, "posts") { request in
-            let tag = try request.parameters.next(Tag.self)
-            return try controller.index(request: request, inTag: tag)
-        }
-        
-        builder.get("categories", Category.parameter, "posts") { request in
-            let category = try request.parameters.next(Category.self)
-            return try controller.index(request: request, inCategory: category)
-        }
-        
-        builder.get("categories/noncategorized/posts") { request in
-            return try controller.indexNoCategory(request: request)
+        // posts
+        do {
+            let controller = PostController()
+            router.get("", use: controller.index)
+            router.get("posts", use: controller.index)
+            router.get("tags", Tag.parameter, "posts", use: controller.indexInTag)
+            router.get("categories", Category.parameter, "posts", use: controller.indexInCategory)
+            router.get("categories/noncategorized/posts", use: controller.indexNoCategory)
+            
+            router.get(Post.parameter, use: controller.show)
+            router.get("posts", Post.parameter, use: controller.show)
         }
     }
 }

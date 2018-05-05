@@ -1,10 +1,8 @@
-#extend("base/admin-base")
-
-#export("script") {
+#set("script") {
   <script src="/js/admin-table.js"></script>
 }
 
-#export("content") {
+#set("content") {
   <div id="admin-page-title">All Categories</div>
 
   <form id="admin-selectable-form" action="/admin/categories/delete" method="post">
@@ -20,7 +18,7 @@
       </thead>
 
       <tbody>
-        #loop(data, "category") {
+        #for(category in data) {
           <tr>
             <td class="tags-table-checkbox">
               <input class="one-checkbox" type="checkbox" name="categories[]" value="#(category.id)" v-on:click="selectOne"/>
@@ -39,10 +37,10 @@
 
       <div id="page-navigator">
         #if(page.position.previous) {
-          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.previous)">Previous</a>
+          <a class="pure-button" href="?page=#(page.position.previous)">Previous</a>
         }
         #if(page.position.next) {
-          <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
+          <a class="pure-button" href="?page=#(page.position.next)">Next</a>
         }
       </div>
       <div class="clearfix"></div>
@@ -50,3 +48,5 @@
 
   </form>
 }
+
+#embed("base/admin-base")

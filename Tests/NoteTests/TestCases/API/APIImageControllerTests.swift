@@ -1,58 +1,46 @@
 @testable import App
-import Cookies
-import HTTP
-import Swinject
 import Vapor
 import XCTest
 
-final class APIImageControllerTests: ControllerTestCase {
+final class APIImageControllerTests: ControllerTestCase, AdminTestCase {
     
-    struct RepositoryAssembly: Assembly {
-        
-        func assemble(container: Container) {
-            
-            container.register(ImageRepository.self) { _ in
-                return TestImageFileRepository()
-            }.inObjectScope(.container)
-        }
+    override func buildApp() throws -> Application {
+        var config = Config.default()
+        var services = Services.default()
+        services.register(TestImageFileRepository(), as: ImageRepository.self)
+        config.prefer(TestImageFileRepository.self, for: ImageRepository.self)
+        return try ApplicationBuilder.build(forAdminTests: true, configForTest: config, servicesForTest: services)
     }
     
     override func setUp() {
         super.setUp()
-        App.register(assembly: RepositoryAssembly())
         TestImageFileRepository.imageFiles.removeAll()
     }
     
     func testCanViewIndex() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
         var response: Response!
         
-        request = Request(method: .get, uri: "/api/images")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/api/images")
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .ok)
         
-        let image = try DataMaker.makeImage("favicon")
-        try image.0.save()
-        try image.1.save()
+        let repository = try app.make(ImageRepository.self)
         
-        request = Request(method: .get, uri: "/api/images")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        let image = try DataMaker.makeImage("favicon", on: app)
+        let form = image.0
+        let imageModel = image.1
         
-        XCTAssertEqual(response.status, .ok)
+        try repository.save(image: form.data, for: form.name)
+        _ = try imageModel.save(on: conn).wait()
         
-        let responseJSON = response.json
+        response = try waitResponse(method: .GET, url: "/api/images")
         
-        XCTAssertEqual(try responseJSON?.get("page.position.max"), 1)
-        XCTAssertEqual(try responseJSON?.get("page.position.current"), 1)
-        XCTAssertNil(try responseJSON?.get("page.position.next"))
-        XCTAssertNil(try responseJSON?.get("page.position.previous"))
-        XCTAssertEqual((try responseJSON?.get("data") as Node?)?.array?.count, 1)
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(try response.content.syncGet(at: "page", "position", "max") as Int, 1)
+        XCTAssertEqual(try response.content.syncGet(at: "page", "position", "current") as Int, 1)
+        XCTAssertThrowsError(try response.content.syncGet(at: "page", "position", "next") as Int)
+        XCTAssertThrowsError(try response.content.syncGet(at: "page", "position", "previous") as Int)
     }
 }
 

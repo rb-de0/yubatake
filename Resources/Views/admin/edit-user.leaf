@@ -1,12 +1,10 @@
-#extend("base/admin-base")
-
-#export("content") {
+#set("content") {
   <div id="admin-page-title">Edit User</div>
 
   <form class="pure-form" action="/admin/user/edit" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
-    <div class="field-error">#(request.storage.error_message)</div>
+    <div class="field-error">#(error_message)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -43,5 +41,6 @@
       Update
     </button>
   </form>
-
 }
+
+#embed("base/admin-base")

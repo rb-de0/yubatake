@@ -1,31 +1,59 @@
 @testable import App
 import Vapor
 import XCTest
-import Foundation
 
-final class ImageRepositoryTests: FileHandleTestCase {
+final class ImageRepositoryTests: XCTestCase {
+    
+    private static let workDir = DirectoryConfig.detect().workDir + "/test"
+    private static let config = DirectoryConfig(workDir: workDir)
+    
+    private var app: Application!
+    private let fm = FileManager.default
+    
+    private var workDir: String {
+        return ImageRepositoryTests.workDir
+    }
+    
+    override func setUp() {
+        
+        try! ApplicationBuilder.clear()
+        
+        if !fm.fileExists(atPath: workDir) {
+            try! fm.createDirectory(atPath: workDir, withIntermediateDirectories: true, attributes: nil)
+        }
+        
+        var services = Services.default()
+        services.register(ImageRepositoryTests.config, as: DirectoryConfig.self)
+        app = try! ApplicationBuilder.build(forAdminTests: false, servicesForTest: services)
+    }
+    
+    override func tearDown() {
+        if fm.fileExists(atPath: workDir) {
+            try! fm.removeItem(atPath: workDir)
+        }
+    }
     
     func testCanSaveAndDeleteImage() throws {
         
-        let repository = ImageRepositoryImpl()
+        let repository = try app.make(ImageRepositoryDefault.self)
         
-        try repository.saveImage(data: "image".data(using: .utf8)!, at: "/documents/imgs/test.png")
-        XCTAssertTrue(repository.isExist(at: "/documents/imgs/test.png"))
+        try repository.save(image: "image".data(using: .utf8)!, for: "test.png")
+        XCTAssertTrue(repository.isExist(at: "test.png"))
         
-        try repository.deleteImage(at: "/documents/imgs/test.png")
-        XCTAssertFalse(repository.isExist(at: "/documents/imgs/test.png"))
+        try repository.delete(at: "test.png")
+        XCTAssertFalse(repository.isExist(at: "test.png"))
     }
     
     func testCanRenameImage() throws {
         
-        let repository = ImageRepositoryImpl()
+        let repository = try app.make(ImageRepositoryDefault.self)
         
-        try repository.saveImage(data: "image".data(using: .utf8)!, at: "/documents/imgs/test.png")
-        XCTAssertTrue(repository.isExist(at: "/documents/imgs/test.png"))
+        try repository.save(image: "image".data(using: .utf8)!, for: "test.png")
+        XCTAssertTrue(repository.isExist(at: "test.png"))
         
-        try repository.renameImage(at: "/documents/imgs/test.png", to: "/documents/imgs/renamed.png")
-        XCTAssertFalse(repository.isExist(at: "/documents/imgs/test.png"))
-        XCTAssertTrue(repository.isExist(at: "/documents/imgs/renamed.png"))
+        try repository.rename(from: "test.png", to: "renamed.png")
+        XCTAssertTrue(repository.isExist(at: "renamed.png"))
+        XCTAssertFalse(repository.isExist(at: "test.png"))
     }
 }
 
