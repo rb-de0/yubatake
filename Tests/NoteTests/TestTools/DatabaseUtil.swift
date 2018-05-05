@@ -20,6 +20,6 @@ final class DB {
     }
     
     class var port: Int {
-        return processInfo.environment["MYSQL_PORT"]?.intValue ?? 3307
+        return processInfo.environment["MYSQL_PORT"].flatMap { Int($0) } ?? 3307
     }
 }

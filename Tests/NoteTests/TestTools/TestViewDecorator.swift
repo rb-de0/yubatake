@@ -13,6 +13,7 @@ final class TestViewDecorator: ViewDecorator, Service {
     
     func get(_ key: String) -> TemplateData? {
         let codingPath = key.components(separatedBy: ".")
-        return currentContext?.get(at: codingPath)
+        let codingKeys = codingPath.map { BasicKey($0) }
+        return currentContext?.get(at: codingKeys)
     }
 }

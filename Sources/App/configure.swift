@@ -70,7 +70,6 @@ public func configure(
     middlewares.use(MessageDeliveryMiddleware.self)
     middlewares.use(SessionsMiddleware.self)
     middlewares.use(FileMiddleware.self)
-    middlewares.use(DateMiddleware.self)
     middlewares.use(ErrorMiddleware.self)
     services.register(middlewares)
     
