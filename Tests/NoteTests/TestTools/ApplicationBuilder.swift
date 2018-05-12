@@ -34,12 +34,12 @@ final class ApplicationBuilder {
             services.register(AlwaysAuthMiddleware())
         
             var middlewares = MiddlewareConfig()
-            middlewares.use(AlwaysAuthMiddleware.self)
-            middlewares.use(CSRF.self)
-            middlewares.use(MessageDeliveryMiddleware.self)
-            middlewares.use(SessionsMiddleware.self)
-            middlewares.use(FileMiddleware.self)
             middlewares.use(ErrorMiddleware.self)
+            middlewares.use(FileMiddleware.self)
+            middlewares.use(SessionsMiddleware.self)
+            middlewares.use(MessageDeliveryMiddleware.self)
+            middlewares.use(CSRF.self)
+            middlewares.use(AlwaysAuthMiddleware.self)
             services.register(middlewares)
         }
 

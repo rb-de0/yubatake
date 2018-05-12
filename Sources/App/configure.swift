@@ -66,11 +66,12 @@ public func configure(
     services.register(MessageDeliveryMiddleware())
     
     var middlewares = MiddlewareConfig()
-    middlewares.use(CSRF.self)
-    middlewares.use(MessageDeliveryMiddleware.self)
-    middlewares.use(SessionsMiddleware.self)
-    middlewares.use(FileMiddleware.self)
     middlewares.use(ErrorMiddleware.self)
+    middlewares.use(FileMiddleware.self)
+    middlewares.use(SessionsMiddleware.self)
+    middlewares.use(MessageDeliveryMiddleware.self)
+    middlewares.use(CSRF.self)
+    
     services.register(middlewares)
     
     // repository
