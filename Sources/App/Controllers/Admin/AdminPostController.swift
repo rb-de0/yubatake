@@ -11,11 +11,11 @@ final class AdminPostController {
     private struct ContextMaker {
         
         static func makeIndexView(menuType: AdminMenuType = .posts) -> AdminViewContext {
-            return AdminViewContext(path: "admin/posts", menuType: menuType)
+            return AdminViewContext(path: "posts", menuType: menuType)
         }
         
         static func makeCreateView(menuType: AdminMenuType = .posts) -> AdminViewContext {
-            return AdminViewContext(path: "admin/new-post", menuType: menuType)
+            return AdminViewContext(path: "new-post", menuType: menuType)
         }
     }
     

@@ -53,6 +53,6 @@ final class AdminViewContext {
             formData: formData
         )
         
-        return try request.make(ViewCreator.self).make(path, renderingContext, for: request)
+        return try request.make(ViewCreator.self).make(path, renderingContext, for: request, forAdmin: true)
     }
 }

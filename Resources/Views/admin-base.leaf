@@ -3,9 +3,10 @@
 
 <head>
   <title>#(page_title)</title>
-  #embed("embeds/meta")
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   #embed("embeds/resources")
-  #get(additional-resources)
+  #get(resources)
 </head>
 
 <body>

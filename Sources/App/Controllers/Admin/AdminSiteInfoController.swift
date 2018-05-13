@@ -5,7 +5,7 @@ final class AdminSiteInfoController {
     private struct ContextMaker {
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-siteInfo", menuType: .siteInfo)
+            return AdminViewContext(path: "edit-siteInfo", menuType: .siteInfo)
         }
     }
     

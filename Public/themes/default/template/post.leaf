@@ -1,4 +1,4 @@
-#set("additional-resources") {
+#set("resources") {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script async src="https://platform.twitter.com/widgets.js"></script>
@@ -46,4 +46,4 @@
   <script>hljs.initHighlightingOnLoad()</script>
 }
 
-#embed("base/base")
+#embed("base")

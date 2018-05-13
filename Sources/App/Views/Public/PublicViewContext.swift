@@ -9,6 +9,7 @@ final class PublicViewContext {
         let pageTitle: String?
         let pageURL: String
         let config: ApplicationConfig
+        let fileConfig: FileConfig
         let siteInfo: Future<SiteInfo>
         let recentPosts: Future<[Post]>
         let staticContents: Future<[Post]>
@@ -24,6 +25,7 @@ final class PublicViewContext {
             case meta = "meta"
             case tags = "all_tags"
             case categories = "all_categories"
+            case root
         }
         
         func encode(to encoder: Encoder) throws {
@@ -31,6 +33,7 @@ final class PublicViewContext {
             var container = encoder.container(keyedBy: CodingKeys.self)
             
             let title = siteInfo.map { self.pageTitle ?? $0.name }
+            let root = siteInfo.map { self.fileConfig.themeRoot.finished(with: "/").appending($0.selectedTheme) }
             try container.encode(title, forKey: .pageTitle)
             try container.encode(pageURL, forKey: .pageURL)
             try container.encode(siteInfo, forKey: .siteInfo)
@@ -39,6 +42,7 @@ final class PublicViewContext {
             try container.encode(tags, forKey: .tags)
             try container.encode(categories, forKey: .categories)
             try container.encodeIfPresent(config.meta, forKey: .meta)
+            try container.encode(root, forKey: .root)
         }
     }
     
@@ -53,6 +57,7 @@ final class PublicViewContext {
     func makeResponse(context: Encodable = [String: String](), for request: Request) throws -> Future<View> {
         
         let config = try request.make(ApplicationConfig.self)
+        let fileConfig = try request.make(FileConfig.self)
         let siteInfo = try SiteInfo.shared(on: request)
         let recentPosts = try Post.recentPosts(on: request)
         let staticContents = try Post.staticContents(on: request)
@@ -64,6 +69,7 @@ final class PublicViewContext {
             pageTitle: title,
             pageURL: request.http.urlString,
             config: config,
+            fileConfig: fileConfig,
             siteInfo: siteInfo,
             recentPosts: recentPosts,
             staticContents: staticContents,
@@ -71,6 +77,6 @@ final class PublicViewContext {
             categories: categories
         )
         
-        return try request.make(ViewCreator.self).make(path, renderingContext, for: request)
+        return try request.make(ViewCreator.self).make(path, renderingContext, for: request, forAdmin: false)
     }
 }

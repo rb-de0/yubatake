@@ -5,7 +5,7 @@
   <title>#(page_title)</title>
   #embed("embeds/meta")
   #embed("embeds/resources")
-  #get(additional-resources)
+  #get(resources)
 </head>
 
 <body>

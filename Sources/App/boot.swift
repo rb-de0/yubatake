@@ -1,9 +1,14 @@
 import Vapor
 
 public func boot(_ app: Application) throws {
-    let createRootUser = try createRootUserIfNeeded(using: app)
-    let createSiteInfo = try createSiteInfoIfNeeded(using: app)
-    try createRootUser.and(createSiteInfo).transform(to: ()).wait()
+    try createRootUserIfNeeded(using: app)
+        .flatMap {
+            try createSiteInfoIfNeeded(using: app)
+        }
+        .flatMap {
+            try initializeTemplateDirectory(using: app)
+        }
+        .wait()
 }
 
 private func createRootUserIfNeeded(using app: Application) throws -> Future<Void> {
@@ -41,5 +46,16 @@ private func createSiteInfoIfNeeded(using app: Application) throws -> Future<Voi
                 }
                 return conn.eventLoop.newSucceededFuture(result: ())
             }
+    }
+}
+
+private func initializeTemplateDirectory(using app: Application) throws -> Future<Void> {
+    
+    let viewCreator = try app.make(ViewCreator.self)
+    
+    return app.withPooledConnection(to: .mysql) { conn -> Future<Void> in
+        try SiteInfo.shared(on: conn).map { siteInfo in
+            try viewCreator.updateDirectory(to: siteInfo.selectedTheme, on: app)
+        }
     }
 }

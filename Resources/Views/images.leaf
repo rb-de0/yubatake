@@ -1,4 +1,4 @@
-#set("additional-resources") {
+#set("resources") {
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 }
 
@@ -45,4 +45,4 @@
   </form>
 }
 
-#embed("base/admin-base")
+#embed("admin-base")

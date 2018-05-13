@@ -25,7 +25,7 @@ final class ApplicationBuilder {
         services.register(TestViewDecorator())
         services.register { container -> ViewCreator in
             let original = try ViewCreator.default(container: container)
-            return ViewCreator(renderer: original.renderer, decorators: original.decorators + [try container.make(TestViewDecorator.self)])
+            return try ViewCreator.default(container: container, decorators: original.decorators + [try container.make(TestViewDecorator.self)])
         }
         
         services.register(DatabaseConnectionPoolConfig(maxConnections: 100))

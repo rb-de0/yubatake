@@ -61,8 +61,8 @@ final class AdminImageControllerTests: ControllerTestCase, AdminTestCase {
         let response = try waitResponse(method: .GET, url: "/admin/images/1/edit")
         
         XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(view.get("path")?.string, "/favicon")
-        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/favicon")
+        XCTAssertEqual(view.get("path")?.string, "/documents/imgs/favicon")
+        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/favicon")
     }
     
     func testCanCleanUp() throws {
@@ -88,7 +88,7 @@ final class AdminImageControllerTests: ControllerTestCase, AdminTestCase {
         XCTAssertEqual(response.http.status, .seeOther)
         XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/images")
         XCTAssertEqual(try Image.query(on: conn).count().wait(), 1)
-        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/sample")
+        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/sample")
     }
     
     func testCanDestroyAImage() throws {
@@ -140,13 +140,13 @@ final class AdminImageControllerTests: ControllerTestCase, AdminTestCase {
         
         XCTAssertEqual(response.http.status, .seeOther)
         XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/images/1/edit")
-        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/sample")
+        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/sample")
         
         response = try waitResponse(method: .GET, url: "/admin/images/1/edit")
         
         XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(view.get("path")?.string, "/sample")
-        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/sample")
+        XCTAssertEqual(view.get("path")?.string, "/documents/imgs/sample")
+        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/sample")
     }
 }
 

@@ -4,7 +4,7 @@ import Vapor
 final class LoginController {
     
     func index(request: Request) throws -> Future<View> {
-        return try PublicViewContext(path: "public/login", title: "Login").makeResponse(for: request)
+        return try AdminViewContext(path: "login", title: "Login").makeResponse(for: request)
     }
 
     func store(request: Request, form: LoginForm) throws -> Future<Response> {

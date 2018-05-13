@@ -53,4 +53,4 @@
   </div>
 }
 
-#embed("base/base")
+#embed("base")

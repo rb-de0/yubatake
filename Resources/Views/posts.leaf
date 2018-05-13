@@ -55,4 +55,4 @@
   </div>
 }
 
-#embed("base/admin-base")
+#embed("admin-base")

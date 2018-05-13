@@ -24,6 +24,9 @@ public func configure(
     services.register { container -> CSPConfig in
         return try container.make(ConfigProvider.self).make(CSPConfig.self)
     }
+    services.register { container -> FileConfig in
+        return FileConfig(directoryConfig: try container.make())
+    }
     
     // bcrypt
     try services.register(AuthenticationProvider())
@@ -76,7 +79,7 @@ public func configure(
     
     // repository
     services.register(ImageRepository.self) { container in
-        ImageRepositoryDefault(directoryConfig: try container.make())
+        ImageRepositoryDefault(fileConfig: try container.make())
     }
     
     services.register(TwitterRepository.self) { container in

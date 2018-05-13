@@ -43,4 +43,4 @@
   </form>
 }
 
-#embed("base/admin-base")
+#embed("admin-base")

@@ -9,8 +9,7 @@ var viewModel = new Vue({
     totalPage: 0,
     latestScrollOffset: 0,
     tagString: '',
-    tags: [],
-    selectedClass: 'selected'
+    tags: []
   },
   computed: {
     hasImages: function() {
