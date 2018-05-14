@@ -13,9 +13,7 @@ struct ImageForm: Form, Content {
     init(from decoder: Decoder) throws {
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        name = try container.decode(String.self, forKey: .name)
+        name = try container.decode(String.self, forKey: .name).requireAllowedPath()
         altDescription = try container.decode(String.self, forKey: .altDescription)
-        
-        try name.requireAllowedPath()
     }
 }

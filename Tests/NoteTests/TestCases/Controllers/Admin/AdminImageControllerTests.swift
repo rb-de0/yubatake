@@ -5,11 +5,13 @@ import XCTest
 final class AdminImageControllerTests: ControllerTestCase, AdminTestCase {
     
     override func buildApp() throws -> Application {
-        var config = Config.default()
-        var services = Services.default()
-        services.register(TestImageFileRepository(), as: ImageRepository.self)
-        config.prefer(TestImageFileRepository.self, for: ImageRepository.self)
-        return try ApplicationBuilder.build(forAdminTests: true, configForTest: config, servicesForTest: services)
+        return try ApplicationBuilder.build(forAdminTests: true) { (_config, _services) in
+            var services = _services
+            var config = _config
+            services.register(TestImageFileRepository(), as: ImageRepository.self)
+            config.prefer(TestImageFileRepository.self, for: ImageRepository.self)
+            return (config, services)
+        }
     }
     
     override func setUp() {

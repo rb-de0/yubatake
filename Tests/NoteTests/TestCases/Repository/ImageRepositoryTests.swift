@@ -4,7 +4,7 @@ import XCTest
 
 final class ImageRepositoryTests: XCTestCase {
     
-    private static let workDir = DirectoryConfig.detect().workDir + "/test"
+    private static let workDir = DirectoryConfig.detect().workDir + "/.test"
     private static let config = DirectoryConfig(workDir: workDir)
     
     private var app: Application!
@@ -22,9 +22,11 @@ final class ImageRepositoryTests: XCTestCase {
             try! fm.createDirectory(atPath: workDir, withIntermediateDirectories: true, attributes: nil)
         }
         
-        var services = Services.default()
-        services.register(ImageRepositoryTests.config, as: DirectoryConfig.self)
-        app = try! ApplicationBuilder.build(forAdminTests: false, servicesForTest: services)
+        app = try! ApplicationBuilder.build(forAdminTests: true) { (_config, _services) in
+            var services = _services
+            services.register(ImageRepositoryTests.config, as: DirectoryConfig.self)
+            return (_config, services)
+        }
     }
     
     override func tearDown() {

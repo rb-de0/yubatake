@@ -7,17 +7,23 @@ import XCTest
 
 final class ApplicationBuilder {
     
-    class func build(forAdminTests: Bool, envArgs: [String]? = nil, configForTest: Config = .default(), servicesForTest: Services = .default()) throws -> Application {
+    class func build(forAdminTests: Bool, envArgs: [String]? = nil, customize: ((Config, Services) -> (Config, Services))? = nil) throws -> Application {
         
-        var config = configForTest
+        var config = Config.default()
         var env = try Environment.detect()
-        var services = servicesForTest
+        var services = Services.default()
         
         if let environmentArgs = envArgs {
             env.arguments = environmentArgs
         }
         
         try App.configure(&config, &env, &services)
+        
+        if let _customize = customize {
+            let customized = _customize(config, services)
+            config = customized.0
+            services = customized.1
+        }
         
         let mysqlDatabaseConfig = MySQLDatabaseConfig(hostname: DB.hostName, port: DB.port, username: DB.user, password: DB.password, database: "note_tests")
         services.register(mysqlDatabaseConfig)

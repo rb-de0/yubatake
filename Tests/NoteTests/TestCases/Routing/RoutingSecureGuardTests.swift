@@ -36,6 +36,9 @@ final class RoutingSecureGuardTests: ControllerTestCase {
         try canGuard(method: .POST, uri: "/admin/images/1/delete")
         try canGuard(method: .POST, uri: "/admin/images/cleanup")
         
+        // Themes
+        try canGuard(method: .GET, uri: "/admin/themes")
+        
         // Files
         try canGuard(method: .GET, uri: "/admin/static-contents")
         
@@ -50,9 +53,18 @@ final class RoutingSecureGuardTests: ControllerTestCase {
     
     func testCanGuardAPIRequest() throws {
         
+        // Images
         try canGuardAPI(method: .GET, uri: "/api/images")
         try canGuardAPI(method: .POST, uri: "/api/images")
         
+        // Files
+        try canGuardAPI(method: .GET, uri: "/api/themes/default/files")
+        try canGuardAPI(method: .GET, uri: "/api/files")
+        try canGuardAPI(method: .POST, uri: "/api/files")
+        
+        // Themes
+        try canGuardAPI(method: .GET, uri: "/api/themes")
+        try canGuardAPI(method: .POST, uri: "/api/themes")
     }
     
     private func canGuard(method: HTTPMethod, uri: String) throws {
