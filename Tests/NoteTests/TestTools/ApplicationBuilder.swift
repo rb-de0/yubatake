@@ -44,6 +44,8 @@ final class ApplicationBuilder {
             middlewares.use(AlwaysAuthMiddleware.self)
             services.register(middlewares)
         }
+        
+        config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
 
         let app = try Application(
             config: config,

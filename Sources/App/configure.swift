@@ -30,9 +30,6 @@ public func configure(
     try services.register(AuthenticationProvider())
     config.prefer(BCryptDigest.self, for: PasswordVerifier.self)
     
-    // session store
-    // TODO: Redis
-    
     // router
     let router = EngineRouter.default()
     try routes(router)
@@ -93,8 +90,9 @@ public func configure(
     }
     
     // database
+    
     try services.register(FluentMySQLProvider())
-    config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
+    config.prefer(DatabaseKeyedCache<ConfiguredDatabase<RedisDatabase>>.self, for: KeyedCache.self)
     
     services.register(DatabaseConnectionPoolConfig(maxConnections: 100))
     
@@ -103,11 +101,21 @@ public func configure(
     }
 
     services.register { container -> DatabasesConfig in
+        
         let mysqlConfig = try container.make(MySQLDatabaseConfig.self)
         let mysql = MySQLDatabase(config: mysqlConfig)
+        
+        let redisConfig = try container.make(ConfigProvider.self).make(RedisClientConfig.self)
+        let redis = try RedisDatabase(config: redisConfig)
+        
         var databaseConfig = DatabasesConfig()
         databaseConfig.add(database: mysql, as: .mysql)
+        databaseConfig.add(database: redis, as: .redis)
         return databaseConfig
+    }
+    
+    services.register(KeyedCache.self) { container  in
+        try container.keyedCache(for: .redis)
     }
     
     var migrations = MigrationConfig()
