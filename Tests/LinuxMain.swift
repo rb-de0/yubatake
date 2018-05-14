@@ -3,7 +3,6 @@ import XCTest
 @testable import NoteTests
 
 let tests: [XCTestCaseEntry] = [
-    testCase(APIHtmlControllerTests.allTests),
     testCase(APIImageControllerTests.allTests),
     testCase(ImageRepositoryTests.allTests),
     testCase(RoutingSecureGuardTests.allTests),

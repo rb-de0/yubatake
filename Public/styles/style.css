@@ -190,15 +190,6 @@ ol {
   -webkit-overflow-scrolling: touch;
 }
 
-#content #post-content {
-  position: relative;
-  margin: -8px -24px -8px;
-  padding: 8px 24px 8px;
-  max-width: 900px;
-  color: #222222;
-  background-color: white;
-}
-
 /* --------------------------
 * Admin
 * --------------------------
@@ -342,24 +333,6 @@ ol {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-}
-
-#admin-content-preview {
-  display: none;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  background-color: #f1f1f1;
-  overflow: scroll;
-}
-
-#admin-content-preview #post-content-body {
-  margin: 8px;
-  padding: 16px 32px 16px;
-  color: #222222;
-  background-color: white;
 }
 
 #admin-image-picker {
@@ -543,10 +516,6 @@ ol {
     z-index: 1;
   }
 
-  #content #post-content {
-    margin: 0 auto;
-  }
-
   #menu {
     margin-left: 0;
   }
@@ -561,9 +530,5 @@ ol {
 
   #login-form {
     width: 480px;
-  }
-
-  #admin-content-preview {
-    left: 240px;
   }
 }

@@ -50,7 +50,6 @@ final class RoutingSecureGuardTests: ControllerTestCase {
     
     func testCanGuardAPIRequest() throws {
         
-        try canGuardAPI(method: .POST, uri: "/api/converted_markdown")
         try canGuardAPI(method: .GET, uri: "/api/images")
         try canGuardAPI(method: .POST, uri: "/api/images")
         

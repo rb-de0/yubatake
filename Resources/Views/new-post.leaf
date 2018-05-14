@@ -95,8 +95,7 @@
       <div id="admin-content-input-header">
         <label class="form-label" for="admin-post-contents">Contents</label>
         <div>
-          <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
-          <button id="admin-content-preview-button" class="pure-button pure-button-primary" v-on:click="showPreview">Preview</button>
+          <button class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
         </div>
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="24">#(post.content)</textarea>
@@ -106,11 +105,6 @@
       #if(post.id) {Update} else {Post}
     </button>
   </form>
-
-  <div id="admin-content-preview">
-    <button class="pure-button pure-button-primary admin-content-overlay-close-button" v-on:click="closePreview">Close</button>
-    <div id="post-content-body"></div>
-  </div>
 
   <div id="admin-image-picker" v-on:click="closePickerView">
     <div id="admin-image-picker-content">

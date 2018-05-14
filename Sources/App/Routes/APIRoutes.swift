@@ -9,12 +9,6 @@ final class APIRoutes: RouteCollection {
             .grouped("api")
             .grouped(AuthErrorMiddleware<User>())
         
-        // markdown
-        do {
-            let controller = API.HtmlController()
-            api.post(ConvertedMarkdownForm.self, at: "converted_markdown", use: controller.store)
-        }
-        
         // images
         do {
             let controller = API.ImageController()

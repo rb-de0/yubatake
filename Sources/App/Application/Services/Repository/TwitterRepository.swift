@@ -2,8 +2,7 @@ import Poppo
 import Vapor
 
 protocol TwitterRepository {
-    func post(_ post: Post,
-              on request: Request) throws
+    func post(_ post: Post, on request: Request) throws
 }
 
 final class TwitterRepositoryDefault: TwitterRepository, Service {
