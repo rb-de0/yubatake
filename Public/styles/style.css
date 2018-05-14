@@ -472,6 +472,108 @@ ol {
 }
 
 /* --------------------------
+* Editor
+* --------------------------
+*/
+
+#theme-list {
+  padding-bottom: 1rem;
+  background-color: #fff;
+}
+
+#theme-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#theme-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+  padding: .25rem .5rem;
+  height: 44px;
+  background-color: #fff;
+}
+
+#theme-content {
+  flex-grow: 1;
+  margin: 0;
+  height: 100%;
+}
+
+#file-list {
+  padding-bottom: 1rem;
+  background-color: #fff;
+}
+
+#file-editor-container-inner {
+  padding: .5rem 0;
+}
+
+#file-editor-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+}
+
+#file-name {
+  margin-right: .5rem;
+  font-size: 1.1rem;
+}
+
+#file-name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+#file-editor {
+  height: 540px;
+  margin-bottom: 1rem;
+}
+
+.theme-list-item {
+  font-size: .9rem;
+  padding: .5rem 1rem;
+}
+
+.theme-list-item.selected {
+  background-color: #f7f7f7;
+}
+
+.theme-list-item-header {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 1rem 0 .25rem .75rem;
+}
+
+.selected-theme {
+  font-size: 1.125rem;
+  font-weight: bold;
+  margin-left: .5rem;
+}
+
+.file-list-group {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 1rem 0 .25rem .75rem;
+}
+
+.file-list-item .pure-menu-link {
+  font-size: .75rem;
+  padding: .5rem 1rem;
+}
+
+.file-list-item.selected {
+  background-color: #f7f7f7;
+}
+
+/* --------------------------
 * Login
 * --------------------------
 */
@@ -504,6 +606,62 @@ ol {
 * PC
 * --------------------------
 */
+
+@media screen and (min-width: 64em) {
+
+  #file-editor-app {
+    height: 100%;
+  }
+  
+  #theme-list {
+    padding-bottom: 0;
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #theme-content {
+    margin: 1rem 1rem 0 1rem;
+  }
+
+  #theme-header {
+    margin: 0 1rem;
+  }
+
+  #file-list {
+    padding-bottom: 0;
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #file-editor-container {
+    height: 100%;
+  }
+
+  #file-editor-container-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 0 0 1rem;
+    height: 100%;
+  }
+
+  #file-editor-header {
+    flex-direction: row;
+  }
+
+  #file-name-container {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  #file-editor {
+    flex-grow: 1;
+    margin-bottom: 0px;
+    height: auto;
+  }
+}
 
 @media screen and (min-width: 48em) {
 

@@ -33,7 +33,7 @@ final class PublicViewContext {
             var container = encoder.container(keyedBy: CodingKeys.self)
             
             let title = siteInfo.map { self.pageTitle ?? $0.name }
-            let root = siteInfo.map { self.fileConfig.themeRoot.finished(with: "/").appending($0.selectedTheme) }
+            let root = siteInfo.map { self.fileConfig.themeRoot.started(with: "/").finished(with: "/").appending($0.selectedTheme) }
             try container.encode(title, forKey: .pageTitle)
             try container.encode(pageURL, forKey: .pageURL)
             try container.encode(siteInfo, forKey: .siteInfo)

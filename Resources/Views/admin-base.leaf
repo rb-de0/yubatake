@@ -49,6 +49,9 @@
         <li class="pure-menu-item #if(menu_type == "images") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/images">Images</a>
         </li>
+        <li class="pure-menu-item #if(menu_type == "themes") { pure-menu-selected }">
+          <a class="pure-menu-link" href="/admin/themes">Themes</a>
+        </li>
         <div class="menu-section-border"></div>
         <li class="pure-menu-item #if(menu_type == "site_info") { pure-menu-selected }">
           <a class="pure-menu-link" href="/admin/siteinfo/edit">Site</a>
