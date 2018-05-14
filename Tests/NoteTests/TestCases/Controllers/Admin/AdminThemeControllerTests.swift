@@ -10,3 +10,9 @@ final class AdminThemeControllerTests: ControllerTestCase, AdminTestCase {
         XCTAssertEqual(response.http.status, .ok)
     }
 }
+
+extension AdminThemeControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex)
+    ]
+}

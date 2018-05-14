@@ -24,3 +24,10 @@ final class PublicFileMiddlewareTests: ControllerTestCase {
         XCTAssertEqual(response.http.status, .notFound)
     }
 }
+
+extension PublicFileMiddlewareTests {
+    public static let allTests = [
+        ("testCanRespondFiles", testCanRespondFiles),
+        ("testCanProtectTemplateFiles", testCanProtectTemplateFiles)
+    ]
+}

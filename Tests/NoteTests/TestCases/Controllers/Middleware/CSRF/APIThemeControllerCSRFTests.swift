@@ -2,7 +2,7 @@
 import Vapor
 import XCTest
 
-final class APIThemeControllerTests: FileHandleTestCase, AdminTestCase {
+final class APIThemeControllerCSRFTests: FileHandleTestCase, AdminTestCase {
     
     struct Theme: Decodable {
         let name: String
@@ -15,12 +15,20 @@ final class APIThemeControllerTests: FileHandleTestCase, AdminTestCase {
         try! FileManager.default.createDirectory(atPath: fileConfig.themeDir.finished(with: "/").appending("custom"), withIntermediateDirectories: true, attributes: nil)
     }
     
-    func testCanIndexView() throws {
+    func testCanPreventCSRFChangeTheme() throws  {
+        
+        var response: Response!
+        
+        response = try waitResponse(method: .POST, url: "/api/themes") { request in
+            try request.setJSONData(["name": "custom"], csrfToken: "")
+        }
+        
+        XCTAssertEqual(response.http.status, .forbidden)
         
         let siteInfo = try SiteInfo.shared(on: conn).wait()
         XCTAssertNil(siteInfo.theme)
         
-        let response = try waitResponse(method: .GET, url: "/api/themes")
+        response = try waitResponse(method: .GET, url: "/api/themes")
         let themes = try response.content.syncDecode([Theme].self)
         
         XCTAssertEqual(response.http.status, .ok)
@@ -30,35 +38,10 @@ final class APIThemeControllerTests: FileHandleTestCase, AdminTestCase {
         XCTAssertEqual(themes.last?.name, "default")
         XCTAssertEqual(themes.last?.selected, true)
     }
-    
-    func testCanChangeTheme() throws  {
-        
-        var response: Response!
-        
-        response = try waitResponse(method: .POST, url: "/api/themes") { request in
-            try request.setJSONData(["name": "custom"], csrfToken: self.csrfToken)
-        }
-        
-        XCTAssertEqual(response.http.status, .ok)
-        
-        let siteInfo = try SiteInfo.shared(on: conn).wait()
-        XCTAssertEqual(siteInfo.theme, "custom")
-        
-        response = try waitResponse(method: .GET, url: "/api/themes")
-        let themes = try response.content.syncDecode([Theme].self)
-        
-        XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(themes.count, 2)
-        XCTAssertEqual(themes.first?.name, "custom")
-        XCTAssertEqual(themes.first?.selected, true)
-        XCTAssertEqual(themes.last?.name, "default")
-        XCTAssertEqual(themes.last?.selected, false)
-    }
 }
 
-extension APIThemeControllerTests {
+extension APIThemeControllerCSRFTests {
     public static let allTests = [
-        ("testCanIndexView", testCanIndexView),
-        ("testCanChangeTheme", testCanChangeTheme)
+        ("testCanPreventCSRFChangeTheme", testCanPreventCSRFChangeTheme)
     ]
 }

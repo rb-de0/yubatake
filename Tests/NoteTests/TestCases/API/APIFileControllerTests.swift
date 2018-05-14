@@ -78,3 +78,11 @@ final class APIFileControllerTests: FileHandleTestCase, AdminTestCase {
         XCTAssertEqual(body.body, "AfterUpdate")
     }
 }
+
+extension APIFileControllerTests {
+    public static let allTests = [
+        ("testCanIndexView", testCanIndexView),
+        ("testCanShowFileBody", testCanShowFileBody),
+        ("testCanUpdateFileBody", testCanUpdateFileBody)
+    ]
+}
