@@ -97,15 +97,19 @@ public func configure(
     services.register(DatabaseConnectionPoolConfig(maxConnections: 100))
     
     services.register { container -> MySQLDatabaseConfig in
-        return try container.make(ConfigProvider.self).make(MySQLDatabaseConfig.self)
+        try container.make(ConfigProvider.self).make(MySQLDatabaseConfig.self)
     }
 
+    services.register { container -> RedisClientConfig in
+        try container.make(ConfigProvider.self).make(RedisClientConfig.self)
+    }
+    
     services.register { container -> DatabasesConfig in
         
         let mysqlConfig = try container.make(MySQLDatabaseConfig.self)
         let mysql = MySQLDatabase(config: mysqlConfig)
         
-        let redisConfig = try container.make(ConfigProvider.self).make(RedisClientConfig.self)
+        let redisConfig = try container.make(RedisClientConfig.self)
         let redis = try RedisDatabase(config: redisConfig)
         
         var databaseConfig = DatabasesConfig()

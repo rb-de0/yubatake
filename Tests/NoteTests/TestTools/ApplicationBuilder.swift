@@ -2,6 +2,7 @@
 import CSRF
 import FluentMySQL
 import Leaf
+import Redis
 import Vapor
 import VaporSecurityHeaders
 import XCTest
@@ -22,7 +23,10 @@ final class ApplicationBuilder {
         
         let mysqlDatabaseConfig = MySQLDatabaseConfig(hostname: DB.hostName, port: DB.port, username: DB.user, password: DB.password, database: "note_tests")
         services.register(mysqlDatabaseConfig)
-
+        
+        let redisClientConfig = RedisClientConfig(url: URL(string: "redis://user:pass@localhost:6379")!)
+        services.register(redisClientConfig)
+        
         services.register(TestViewDecorator())
         services.register { container -> ViewCreator in
             let original = try ViewCreator.default(container: container)
