@@ -35,7 +35,7 @@ final class ApplicationBuilder {
         
             var middlewares = MiddlewareConfig()
             middlewares.use(ErrorMiddleware.self)
-            middlewares.use(FileMiddleware.self)
+            middlewares.use(PublicFileMiddleware.self)
             middlewares.use(SessionsMiddleware.self)
             middlewares.use(MessageDeliveryMiddleware.self)
             middlewares.use(CSRF.self)

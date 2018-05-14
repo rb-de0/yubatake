@@ -67,10 +67,13 @@ public func configure(
     let handler: TokenRetrievalHandler = { request in request.content.get(at: "csrf-token") }
     services.register(CSRF(tokenRetrieval: handler))
     services.register(MessageDeliveryMiddleware())
+    services.register { container in
+        PublicFileMiddleware(base: try container.make())
+    }
     
     var middlewares = MiddlewareConfig()
     middlewares.use(ErrorMiddleware.self)
-    middlewares.use(FileMiddleware.self)
+    middlewares.use(PublicFileMiddleware.self)
     middlewares.use(SessionsMiddleware.self)
     middlewares.use(MessageDeliveryMiddleware.self)
     middlewares.use(CSRF.self)
