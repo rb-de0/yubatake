@@ -299,6 +299,15 @@
         }
       },
       {
+        "package": "VaporSecurityHeaders",
+        "repositoryURL": "https://github.com/brokenhandsio/VaporSecurityHeaders.git",
+        "state": {
+          "branch": null,
+          "revision": "a4435a84ce1ed5558e66783d4a14e4b758b09309",
+          "version": "2.0.0"
+        }
+      },
+      {
         "package": "WebSocket",
         "repositoryURL": "https://github.com/vapor/websocket.git",
         "state": {

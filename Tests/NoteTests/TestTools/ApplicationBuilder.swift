@@ -3,6 +3,7 @@ import CSRF
 import FluentMySQL
 import Leaf
 import Vapor
+import VaporSecurityHeaders
 import XCTest
 
 final class ApplicationBuilder {
@@ -34,6 +35,7 @@ final class ApplicationBuilder {
             services.register(AlwaysAuthMiddleware())
         
             var middlewares = MiddlewareConfig()
+            middlewares.use(SecurityHeaders.self)
             middlewares.use(ErrorMiddleware.self)
             middlewares.use(FileMiddleware.self)
             middlewares.use(SessionsMiddleware.self)

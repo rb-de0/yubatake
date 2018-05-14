@@ -5,6 +5,7 @@ import FluentMySQL
 import Leaf
 import Redis
 import Vapor
+import VaporSecurityHeaders
 
 public func configure(
     _ config: inout Config,
@@ -64,8 +65,16 @@ public func configure(
     let handler: TokenRetrievalHandler = { request in request.content.get(at: "csrf-token") }
     services.register(CSRF(tokenRetrieval: handler))
     services.register(MessageDeliveryMiddleware())
+    services.register { container -> SecurityHeaders in
+        let cspConfig = try container.make(CSPConfig.self)
+        let headerValue = cspConfig.makeHeader()
+        let securityHeadersFactory = SecurityHeadersFactory()
+            .with(contentSecurityPolicy: ContentSecurityPolicyConfiguration(value: headerValue))
+        return securityHeadersFactory.build()
+    }
     
     var middlewares = MiddlewareConfig()
+    middlewares.use(SecurityHeaders.self)
     middlewares.use(ErrorMiddleware.self)
     middlewares.use(FileMiddleware.self)
     middlewares.use(SessionsMiddleware.self)
