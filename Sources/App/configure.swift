@@ -86,6 +86,10 @@ public func configure(
         try TwitterRepositoryDefault(applicationConfig: try container.make())
     }
     
+    services.register(FileRepository.self) { container in
+        FileRepositoryDefault(fileConfig: try container.make())
+    }
+    
     // database
     try services.register(FluentMySQLProvider())
     config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)

@@ -22,7 +22,7 @@ final class PublicViewContext {
             case siteInfo = "site_info"
             case recentPost = "recent_posts"
             case staticContents = "static_contents"
-            case meta = "meta"
+            case meta
             case tags = "all_tags"
             case categories = "all_categories"
             case root

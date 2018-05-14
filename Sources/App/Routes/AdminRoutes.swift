@@ -67,6 +67,12 @@ final class AdminRoutes: RouteCollection {
             admin.post("images/cleanup", use: controller.cleanup)
         }
         
+        // themes
+        do {
+            let controller = AdminThemeController()
+            admin.get("themes", use: controller.index)
+        }
+        
         // site
         do {
             let controller = AdminSiteInfoController()
