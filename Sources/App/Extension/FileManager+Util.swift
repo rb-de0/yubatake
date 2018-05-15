@@ -9,26 +9,15 @@ extension FileManager {
         
         var isDirPath: Bool {
             var isDir = ObjCBool(false)
-            FileManager.default.fileExists(atPath: absolutePath, isDirectory: &isDir)
-            
-            #if os(Linux)
-            return isDir
-            #else
+            _ = FileManager.default.fileExists(atPath: absolutePath, isDirectory: &isDir)
             return isDir.boolValue
-            #endif
         }
     }
     
     func dirExists(atPath path: String) -> Bool {
-        
         var isDir = ObjCBool(false)
         let exist = fileExists(atPath: path, isDirectory: &isDir)
-        
-        #if os(Linux)
-        return isDir && exist
-        #else
         return isDir.boolValue && exist
-        #endif
     }
     
     func enumerateFiles(in path: String, hasExtension ext: String) throws -> [File] {
