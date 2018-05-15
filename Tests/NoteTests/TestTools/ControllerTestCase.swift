@@ -30,6 +30,7 @@ class ControllerTestCase: XCTestCase {
     }
     
     override func tearDown() {
+        try! app.make(BlockingIOThreadPool.self).syncShutdownGracefully()
         conn.close()
     }
     
