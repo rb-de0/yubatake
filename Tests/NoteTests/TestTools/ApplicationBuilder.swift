@@ -2,7 +2,9 @@
 import CSRF
 import FluentMySQL
 import Leaf
+import Redis
 import Vapor
+import VaporSecurityHeaders
 import XCTest
 
 final class ApplicationBuilder {
@@ -27,7 +29,10 @@ final class ApplicationBuilder {
         
         let mysqlDatabaseConfig = MySQLDatabaseConfig(hostname: DB.hostName, port: DB.port, username: DB.user, password: DB.password, database: "note_tests")
         services.register(mysqlDatabaseConfig)
-
+        
+        let redisClientConfig = RedisClientConfig(url: URL(string: "redis://user:pass@localhost:6379")!)
+        services.register(redisClientConfig)
+        
         services.register(TestViewDecorator())
         services.register { container -> ViewCreator in
             let original = try ViewCreator.default(container: container)
@@ -40,6 +45,7 @@ final class ApplicationBuilder {
             services.register(AlwaysAuthMiddleware())
         
             var middlewares = MiddlewareConfig()
+            middlewares.use(SecurityHeaders.self)
             middlewares.use(ErrorMiddleware.self)
             middlewares.use(PublicFileMiddleware.self)
             middlewares.use(SessionsMiddleware.self)
@@ -48,6 +54,8 @@ final class ApplicationBuilder {
             middlewares.use(AlwaysAuthMiddleware.self)
             services.register(middlewares)
         }
+        
+        config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
 
         let app = try Application(
             config: config,
