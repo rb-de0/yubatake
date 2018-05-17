@@ -7,10 +7,8 @@ var viewModel = new Vue({
     hasNext: false,
     hasPrevious: false,
     totalPage: 0,
-    latestScrollOffset: 0,
     tagString: '',
-    tags: [],
-    selectedClass: 'selected'
+    tags: []
   },
   computed: {
     hasImages: function() {
@@ -26,38 +24,6 @@ var viewModel = new Vue({
     }
   },
   methods: {
-    showPreview: function (e) {
-
-      e.preventDefault()
-
-      var preview = document.getElementById('admin-content-preview')
-      preview.style.display = 'block'
-      preview.style.height = window.innerHeight + 'px'
-
-      this.latestScrollOffset = document.getElementById('content').scrollTop
-      document.querySelector('.pure-form').style.display = 'none'
-
-      var content = document.getElementById('admin-post-contents').value
-      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
-
-      axios.post(makeRequestURL('/api/converted_markdown'), {
-        content: content,
-        'csrf-token': csrfToken
-      })
-      .then(function (response) {
-        document.getElementById('post-content-body').innerHTML = response.data['html']
-        twttr.widgets.load()
-        hljs.initHighlighting.called = false
-        hljs.initHighlighting()
-      })
-    },
-    closePreview: function (e) {
-
-      e.preventDefault()
-      document.getElementById('admin-content-preview').style.display = 'none'
-      document.querySelector('.pure-form').style.display = 'block'
-      document.getElementById('content').scrollTo(0, this.latestScrollOffset)
-    },
     showPickerView: function (e) {
 
       e.preventDefault()

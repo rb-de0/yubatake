@@ -3,8 +3,6 @@ import Vapor
 
 protocol ImageRepository {
     
-    var relativePath: String { get }
-    
     func isExist(at name: String) -> Bool
     
     func save(image: Data, for name: String) throws
@@ -13,18 +11,12 @@ protocol ImageRepository {
 }
 
 final class ImageRepositoryDefault: ImageRepository, Service {
-    
-    private let publicRoot = "Public"
+
     private let directory: String
     
-    let relativePath = "documents/imgs"
-    
-    init(directoryConfig: DirectoryConfig) {
+    init(fileConfig: FileConfig) {
         
-        directory = directoryConfig.workDir.finished(with: "/")
-            .appending(publicRoot)
-            .finished(with: "/")
-            .appending(relativePath)
+        directory = fileConfig.imageDir
         
         do {
             try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true, attributes: nil)

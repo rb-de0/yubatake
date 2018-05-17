@@ -11,11 +11,11 @@ final class AdminPostController {
     private struct ContextMaker {
         
         static func makeIndexView(menuType: AdminMenuType = .posts) -> AdminViewContext {
-            return AdminViewContext(path: "admin/posts", menuType: menuType)
+            return AdminViewContext(path: "posts", menuType: menuType)
         }
         
         static func makeCreateView(menuType: AdminMenuType = .posts) -> AdminViewContext {
-            return AdminViewContext(path: "admin/new-post", menuType: menuType)
+            return AdminViewContext(path: "new-post", menuType: menuType)
         }
     }
     
@@ -93,19 +93,19 @@ final class AdminPostController {
             let newPost = try Post(from: form, on: request)
             let tags = try Tag.tags(from: form)
             
-            return Post.Database.inTransaction(on: conn) { conn in
+            return Post.Database.inTransaction(on: conn) { transaction in
                 
-                newPost.save(on: conn).flatMap { post in
+                newPost.save(on: transaction).flatMap { post in
                     
-                    return try Tag.notInsertedTags(in: tags, on: conn)
+                    return try Tag.notInsertedTags(in: tags, on: transaction)
                         .flatMap { notInsertedTags in
-                            Future<Void>.andAll(notInsertedTags.map { $0.save(on: conn).transform(to: ()) }, eventLoop: request.eventLoop)
+                            Future<Void>.andAll(notInsertedTags.map { $0.save(on: transaction).transform(to: ()) }, eventLoop: request.eventLoop)
                         }
                         .flatMap { _ in
-                            try Tag.insertedTags(in: tags, on: conn)
+                            try Tag.insertedTags(in: tags, on: transaction)
                         }
                         .flatMap { insertedTags in
-                            Future<Void>.andAll(insertedTags.map { post.tags.attach($0, on: conn).transform(to: ()) }, eventLoop: request.eventLoop)
+                            Future<Void>.andAll(insertedTags.map { post.tags.attach($0, on: transaction).transform(to: ()) }, eventLoop: request.eventLoop)
                         }
                         .transform(to: post)
                 }

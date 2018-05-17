@@ -37,19 +37,19 @@ final class Image: DatabaseModel, Content {
     var updatedAt: Date?
     
     init(from form: ImageUploadForm, on container: Container) throws {
-        let relativePath = try container.make(ImageRepository.self).relativePath
+        let relativePath = try container.make(FileConfig.self).imageRoot
         self.path = relativePath.started(with: "/").finished(with: "/").appending(form.name)
         self.altDescription = form.name
     }
     
     func formPublic(on container: Container) throws -> Public {
-        let relativePath = try container.make(ImageRepository.self).relativePath
+        let relativePath = try container.make(FileConfig.self).imageRoot
         let basePath = relativePath.started(with: "/").finished(with: "/")
         return Public(image: self, name: String(path.dropFirst(basePath.count)))
     }
     
     func apply(form: ImageForm, on container: Container) throws -> Self {
-        let relativePath = try container.make(ImageRepository.self).relativePath
+        let relativePath = try container.make(FileConfig.self).imageRoot
         self.path = relativePath.started(with: "/").finished(with: "/").appending(form.name)
         self.altDescription = form.altDescription
         return self

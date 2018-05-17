@@ -25,6 +25,9 @@ public func configure(
     services.register { container -> CSPConfig in
         return try container.make(ConfigProvider.self).make(CSPConfig.self)
     }
+    services.register { container -> FileConfig in
+        return FileConfig(directoryConfig: try container.make())
+    }
     
     // bcrypt
     try services.register(AuthenticationProvider())
@@ -62,6 +65,10 @@ public func configure(
     let handler: TokenRetrievalHandler = { request in request.content.get(at: "csrf-token") }
     services.register(CSRF(tokenRetrieval: handler))
     services.register(MessageDeliveryMiddleware())
+    services.register { container in
+        PublicFileMiddleware(base: try container.make())
+    }
+    
     services.register { container -> SecurityHeaders in
         let cspConfig = try container.make(CSPConfig.self)
         let headerValue = cspConfig.makeHeader()
@@ -73,7 +80,7 @@ public func configure(
     var middlewares = MiddlewareConfig()
     middlewares.use(SecurityHeaders.self)
     middlewares.use(ErrorMiddleware.self)
-    middlewares.use(FileMiddleware.self)
+    middlewares.use(PublicFileMiddleware.self)
     middlewares.use(SessionsMiddleware.self)
     middlewares.use(MessageDeliveryMiddleware.self)
     middlewares.use(CSRF.self)
@@ -82,11 +89,15 @@ public func configure(
     
     // repository
     services.register(ImageRepository.self) { container in
-        ImageRepositoryDefault(directoryConfig: try container.make())
+        ImageRepositoryDefault(fileConfig: try container.make())
     }
     
     services.register(TwitterRepository.self) { container in
         try TwitterRepositoryDefault(applicationConfig: try container.make())
+    }
+    
+    services.register(FileRepository.self) { container in
+        FileRepositoryDefault(fileConfig: try container.make())
     }
     
     // database

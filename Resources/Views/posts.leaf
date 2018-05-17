@@ -1,0 +1,58 @@
+#set("script") {
+  <script src="/js/admin-table.js"></script>
+}
+
+#set("content") {
+  <div id="admin-page-title">All #if(is_static) {StaticContents} else {Posts}</div>
+
+  <form id="admin-selectable-form" action="/admin/posts/delete" method="post">
+
+    <input type="hidden" name="csrf-token" value="#(csrf_token)">
+
+    <table id="admin-table" class="pure-table pure-table-horizontal">
+      <thead id="admin-table-header">
+        <tr>
+          <th id="posts-table-head-checkbox"><input id="all-checkbox" type="checkbox" v-on:click="selectAll"/></th>
+          <th id="posts-table-head-title">Title</th>
+          <th id="posts-table-head-user">User</th>
+          <th id="posts-table-head-category">Category</th>
+          <th id="posts-table-head-update">Last Update</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        #for(post in data) {
+          <tr>
+            <td class="posts-table-checkbox">
+              <input class="one-checkbox" type="checkbox" name="posts[]" value="#(post.id)" v-on:click="selectOne"/>
+            </td>
+            <td class="posts-table-title"><a href="/admin/posts/#(post.id)/edit">#(post.title)</a></td>
+            <td class="posts-table-user">#(post.user.name)</td>
+            <td class="posts-table-category">#(post.category.name)</td>
+            <td class="posts-table-update">#(post.formatted_updated_at)</td>
+          </tr>
+        }
+
+      </tbody>
+    </table>
+
+    <div id="admin-table-footer">
+      <div id="admin-edit-button-container">
+        <a class="pure-button" href="/admin/posts/create">New</a>
+        <button type="submit" class="pure-button">Delete</button>
+      </div>
+
+      <div id="page-navigator">
+        #if(page.position.previous) {
+          <a class="pure-button" href="?page=#(page.position.previous)">Previous</a>
+        }
+        #if(page.position.next) {
+          <a class="pure-button" href="?page=#(page.position.next)">Next</a>
+        }
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+}
+
+#embed("admin-base")

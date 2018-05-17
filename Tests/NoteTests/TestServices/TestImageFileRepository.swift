@@ -5,10 +5,6 @@ final class TestImageFileRepository: ImageRepository, Service {
     
     static var imageFiles = Set<String>()
     
-    var relativePath: String {
-        return ""
-    }
-    
     func isExist(at name: String) -> Bool {
         return TestImageFileRepository.imageFiles.contains(name)
     }

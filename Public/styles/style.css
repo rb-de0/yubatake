@@ -74,37 +74,10 @@ ol {
   background-color: #FF4000;
 }
 
-.category-link {
-  font-size: .9rem;
-  padding: .375rem;
-  border-radius: .25rem;
-  background-color: #0174DF;
-  color: white;
-}
-
-.tag-link {
-  font-size: .9rem;
-  padding: .375rem;
-  border-radius: .25rem;
-  background: #DF7401;
-  color: white;
-}
-
-.title-link {
-  color: #222222;
-}
-
-.clearfix::after{
+.clearfix::after {
   content: "";
   display: block;
   clear: both;
-}
-
-.circle {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #ccc;
 }
 
 /* --------------------------
@@ -128,7 +101,7 @@ ol {
   -ms-overflow-style: none;
 }
 
-#menu::-webkit-scrollbar{
+#menu::-webkit-scrollbar {
   display: none;
 }
 
@@ -159,31 +132,8 @@ ol {
 #menu-header-site-name {
   text-decoration: none;
   color: white;
-}
-
-#menu-header-site-name {
   font-size: 1.5rem;
   white-space: normal;
-}
-
-#menu-header-site-description {
-  margin-top: .5rem;
-  font-size: 0.9rem;
-  white-space: normal;
-}
-
-#menu-subcontents {
-  padding: .5em 1em;
-}
-
-#menu-subcontents .menu-subcontents-header {
-  margin-bottom: .5rem;
-  font-size: 1rem;
-}
-
-#menu-subcontents .menu-subcontents-item {
-  margin: .125rem 0px;
-  font-size: .8125rem;
 }
 
 .menu-section-border {
@@ -239,212 +189,6 @@ ol {
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
 }
-
-#content-page-title {
-  margin-top: 16px;
-  margin-bottom: 16px;
-  font-size: 1.75rem;
-}
-
-#content #post-content {
-  position: relative;
-  margin: -8px -24px -8px;
-  padding: 8px 24px 8px;
-  max-width: 900px;
-  color: #222222;
-  background-color: white;
-}
-
-/* --------------------------
-* Public
-* --------------------------
-*/
-
-.post-card {
-  position: relative;
-}
-
-.post-card-container a {
-  text-decoration: none;
-}
-
-.post-card-content {
-  padding: .5rem;
-  margin: .5rem;
-  background-color: #fff;
-}
-
-.post-card-title {
-  padding: .5rem 1rem .5rem .5rem;
-  height: 1.5rem;
-  font-size: 1.25rem;
-  font-weight: bold;
-  overflow: hidden;
-}
-
-.post-card-part-of-content-container {
-  padding: .5rem;
-  height: 72px;
-}
-
-/* ref: https://qiita.com/BYODKM/items/83442749a985cb81448e */
-.post-card-part-of-content {
-  font-size: 1rem;
-  word-break: break-word;
-  line-height: 1.5;
-  height: 4.5em;
-  background-color: #fff;
-  position: relative;
-  padding-right: 1em;
-  overflow: hidden;
-}
-
-.post-card-part-of-content:before {
-  content: "...";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  display: inline-block;
-  width: 1em;
-}
-
-.post-card-part-of-content:after {
-  content: "";
-  position: relative;
-  right: -1em;
-  float: right;
-  width: 1em;
-  height: 100%;
-  background-color: inherit;
-}
-
-.post-card-category {
-  padding: .25rem .5rem;
-  height: 1.5rem;
-  overflow: hidden;
-}
-
-.post-card-tags {
-  padding: .25rem .5rem;
-  height: 1.5rem;
-  white-space: nowrap;
-  overflow-y: hidden;
-  overflow-x: scroll;
-  -ms-overflow-style: none;
-}
-
-.post-card-tags::-webkit-scrollbar {
-  display: none;
-}
-
-.post-card-created-at {
-  padding: 0 .5rem;
-  font-size: .7rem;
-  color: #aaa;
-}
-
-#public-page-footer #page-navigator {
-  float: left;
-}
-
-#public-page-footer {
-  margin: .5rem;
-  padding-bottom: 2rem;
-}
-
-#public-page-footer .pure-button {
-  background-color: #222222;
-  color: #fff;
-}
-
-#post-content-header {
-  margin-top: .5rem;
-  margin-bottom: 2rem;
-  padding-bottom: .3rem;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-#post-content-title {
-  margin-bottom: 1rem;
-  font-size: 2rem;
-  font-weight: bold;
-  word-break: break-all;
-}
-
-#post-content-header-date {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: .4rem;
-  font-size: .75rem;
-}
-
-#post-content-header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
-#post-content-header-post-attribute {
-  margin-right: 2rem;
-  line-height: 2.4;
-}
-
-#post-content-header-post-attribute a {
-  text-decoration: none;
-}
-
-.post-content-header-text {
-  margin-right: 1rem;
-  margin-left: 0px;
-  line-height: 1.9;
-}
-
-#post-content-border {
-  margin-top: .25rem;
-  margin-bottom: 2rem;
-  border-top: 1px solid #ddd;
-}
-
-#post-content-body {
-  padding-bottom: 5rem;
-  line-height: 2.0;
-  text-align: left;
-  font-size: .9rem;
-}
-
-#post-content-body h1 {
-  margin-top: 3.5rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: .2rem;
-  font-weight: bold;
-  font-size: 1.4rem;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-#post-content-body h2 {
-  margin-top: 3rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: .2rem;
-  font-weight: 600;
-  font-size: 1.3rem;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-#post-content-body h3 {
-  margin-top: 48px;
-  margin-bottom: .5rem;
-  padding-bottom: .2rem;
-  font-size: 1.2rem;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-#post-content-body a {
-  text-decoration: none;
-  word-break: break-all;
-  color: #337ab7;
-}
-
 
 /* --------------------------
 * Admin
@@ -591,24 +335,6 @@ ol {
   align-items: flex-end;
 }
 
-#admin-content-preview {
-  display: none;
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  background-color: #f1f1f1;
-  overflow: scroll;
-}
-
-#admin-content-preview #post-content-body {
-  margin: 8px;
-  padding: 16px 32px 16px;
-  color: #222222;
-  background-color: white;
-}
-
 #admin-image-picker {
   display: none;
   justify-content: center;
@@ -746,6 +472,108 @@ ol {
 }
 
 /* --------------------------
+* Editor
+* --------------------------
+*/
+
+#theme-list {
+  padding-bottom: 1rem;
+  background-color: #fff;
+}
+
+#theme-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#theme-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1rem 0;
+  padding: .25rem .5rem;
+  height: 44px;
+  background-color: #fff;
+}
+
+#theme-content {
+  flex-grow: 1;
+  margin: 0;
+  height: 100%;
+}
+
+#file-list {
+  padding-bottom: 1rem;
+  background-color: #fff;
+}
+
+#file-editor-container-inner {
+  padding: .5rem 0;
+}
+
+#file-editor-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+}
+
+#file-name {
+  margin-right: .5rem;
+  font-size: 1.1rem;
+}
+
+#file-name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+#file-editor {
+  height: 540px;
+  margin-bottom: 1rem;
+}
+
+.theme-list-item {
+  font-size: .9rem;
+  padding: .5rem 1rem;
+}
+
+.theme-list-item.selected {
+  background-color: #f7f7f7;
+}
+
+.theme-list-item-header {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 1rem 0 .25rem .75rem;
+}
+
+.selected-theme {
+  font-size: 1.125rem;
+  font-weight: bold;
+  margin-left: .5rem;
+}
+
+.file-list-group {
+  font-size: 1rem;
+  font-weight: bold;
+  margin: 1rem 0 .25rem .75rem;
+}
+
+.file-list-item .pure-menu-link {
+  font-size: .75rem;
+  padding: .5rem 1rem;
+}
+
+.file-list-item.selected {
+  background-color: #f7f7f7;
+}
+
+/* --------------------------
 * Login
 * --------------------------
 */
@@ -781,8 +609,57 @@ ol {
 
 @media screen and (min-width: 64em) {
 
-  #post-content-header-date {
+  #file-editor-app {
+    height: 100%;
+  }
+  
+  #theme-list {
+    padding-bottom: 0;
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #theme-content {
+    margin: 1rem 1rem 0 1rem;
+  }
+
+  #theme-header {
+    margin: 0 1rem;
+  }
+
+  #file-list {
+    padding-bottom: 0;
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #file-editor-container {
+    height: 100%;
+  }
+
+  #file-editor-container-inner {
     display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0 0 0 1rem;
+    height: 100%;
+  }
+
+  #file-editor-header {
+    flex-direction: row;
+  }
+
+  #file-name-container {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  #file-editor {
+    flex-grow: 1;
+    margin-bottom: 0px;
+    height: auto;
   }
 }
 
@@ -795,10 +672,6 @@ ol {
   #content {
     left: 240px;
     z-index: 1;
-  }
-
-  #content #post-content {
-    margin: 0 auto;
   }
 
   #menu {
@@ -815,9 +688,5 @@ ol {
 
   #login-form {
     width: 480px;
-  }
-
-  #admin-content-preview {
-    left: 240px;
   }
 }

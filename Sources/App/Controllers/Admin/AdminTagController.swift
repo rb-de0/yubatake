@@ -5,11 +5,11 @@ final class AdminTagController {
     private struct ContextMaker {
         
         static func makeIndexView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/tags", menuType: .tags)
+            return AdminViewContext(path: "tags", menuType: .tags)
         }
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/new-tag", menuType: .tags)
+            return AdminViewContext(path: "new-tag", menuType: .tags)
         }
     }
     

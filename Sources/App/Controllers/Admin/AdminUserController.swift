@@ -5,7 +5,7 @@ final class AdminUserController {
     private struct ContextMaker {
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-user", menuType: .userSettings)
+            return AdminViewContext(path: "edit-user", menuType: .userSettings)
         }
     }
     

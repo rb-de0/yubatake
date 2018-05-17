@@ -9,17 +9,23 @@ import XCTest
 
 final class ApplicationBuilder {
     
-    class func build(forAdminTests: Bool, envArgs: [String]? = nil, configForTest: Config = .default(), servicesForTest: Services = .default()) throws -> Application {
+    class func build(forAdminTests: Bool, envArgs: [String]? = nil, customize: ((Config, Services) -> (Config, Services))? = nil) throws -> Application {
         
-        var config = configForTest
+        var config = Config.default()
         var env = try Environment.detect()
-        var services = servicesForTest
+        var services = Services.default()
         
         if let environmentArgs = envArgs {
             env.arguments = environmentArgs
         }
         
         try App.configure(&config, &env, &services)
+        
+        if let _customize = customize {
+            let customized = _customize(config, services)
+            config = customized.0
+            services = customized.1
+        }
         
         let mysqlDatabaseConfig = MySQLDatabaseConfig(hostname: DB.hostName, port: DB.port, username: DB.user, password: DB.password, database: "note_tests")
         services.register(mysqlDatabaseConfig)
@@ -30,7 +36,7 @@ final class ApplicationBuilder {
         services.register(TestViewDecorator())
         services.register { container -> ViewCreator in
             let original = try ViewCreator.default(container: container)
-            return ViewCreator(renderer: original.renderer, decorators: original.decorators + [try container.make(TestViewDecorator.self)])
+            return try ViewCreator.default(container: container, decorators: original.decorators + [try container.make(TestViewDecorator.self)])
         }
         
         services.register(DatabaseConnectionPoolConfig(maxConnections: 100))
@@ -41,7 +47,7 @@ final class ApplicationBuilder {
             var middlewares = MiddlewareConfig()
             middlewares.use(SecurityHeaders.self)
             middlewares.use(ErrorMiddleware.self)
-            middlewares.use(FileMiddleware.self)
+            middlewares.use(PublicFileMiddleware.self)
             middlewares.use(SessionsMiddleware.self)
             middlewares.use(MessageDeliveryMiddleware.self)
             middlewares.use(CSRF.self)

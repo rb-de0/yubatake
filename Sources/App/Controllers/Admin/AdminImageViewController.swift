@@ -5,11 +5,11 @@ final class AdminImageViewController {
     private struct ContextMaker {
         
         static func makeIndexView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/images", menuType: .images)
+            return AdminViewContext(path: "images", menuType: .images)
         }
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-image", menuType: .images)
+            return AdminViewContext(path: "edit-image", menuType: .images)
         }
     }
     

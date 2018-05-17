@@ -5,11 +5,11 @@ final class AdminCategoryController {
     private struct ContextMaker {
         
         static func makeIndexView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/categories", menuType: .categories)
+            return AdminViewContext(path: "categories", menuType: .categories)
         }
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/new-category", menuType: .categories)
+            return AdminViewContext(path: "new-category", menuType: .categories)
         }
     }
     

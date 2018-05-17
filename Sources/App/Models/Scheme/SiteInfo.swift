@@ -7,18 +7,25 @@ final class SiteInfo: DatabaseModel, Content {
         case id
         case name
         case description
+        case theme
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
     
     static let nameLength = 32
     static let descriptionLength = 128
+    static let defaultTheme = "default"
     
     var id: Int?
     var name: String
     var description: String
+    var theme: String?
     var createdAt: Date?
     var updatedAt: Date?
+    
+    var selectedTheme: String {
+        return theme ?? SiteInfo.defaultTheme
+    }
     
     init(name: String, description: String) {
         self.name = name

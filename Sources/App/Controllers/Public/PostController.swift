@@ -11,11 +11,11 @@ final class PostController {
     private struct ContextMaker {
         
         static func makeIndexView() -> PublicViewContext {
-            return PublicViewContext(path: "public/posts")
+            return PublicViewContext(path: "posts")
         }
         
         static func makeShowView(title: String) -> PublicViewContext {
-            return PublicViewContext(path: "public/post", title: title)
+            return PublicViewContext(path: "post", title: title)
         }
     }
 

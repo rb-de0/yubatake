@@ -14,8 +14,6 @@ struct ImageUploadForm: Form, Content {
         
         let container = try decoder.container(keyedBy: CodingKeys.self)
         data = try container.decode(Data.self, forKey: .data)
-        name = try container.decode(String.self, forKey: .name)
-        
-        try name.requireAllowedPath()
+        name = try container.decode(String.self, forKey: .name).requireAllowedPath()
     }
 }

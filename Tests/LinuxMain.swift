@@ -3,8 +3,9 @@ import XCTest
 @testable import NoteTests
 
 let tests: [XCTestCaseEntry] = [
-    testCase(APIHtmlControllerTests.allTests),
+    testCase(APIFileControllerTests.allTests),
     testCase(APIImageControllerTests.allTests),
+    testCase(APIThemeControllerTests.allTests),
     testCase(ImageRepositoryTests.allTests),
     testCase(RoutingSecureGuardTests.allTests),
     testCase(ValidationTests.allTests),
@@ -13,9 +14,13 @@ let tests: [XCTestCaseEntry] = [
     testCase(AdminPostControllerTests.allTests),
     testCase(AdminSiteInfoControllerTests.allTests),
     testCase(AdminTagControllerTests.allTests),
+    testCase(AdminThemeControllerTests.allTests),
     testCase(AdminUserControllerTests.allTests),
     testCase(LoginControllerTests.allTests),
+    testCase(PublicFileMiddlewareTests.allTests),
     testCase(PostControllerTests.allTests),
+    testCase(APIFileControllerCSRFTests.allTests),
+    testCase(APIThemeControllerCSRFTests.allTests),
     testCase(AdminCategoryControllerCSRFTests.allTests),
     testCase(AdminPostControllerCSRFTests.allTests),
     testCase(AdminSiteInfoControllerCSRFTests.allTests),
