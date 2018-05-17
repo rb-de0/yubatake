@@ -1,16 +1,15 @@
-#extend("base/base")
-
-#export("content") {
+#set("content") {
 
   #if(category) {
     <div id="content-page-title">Category: #(category.name)</div>
-  } ##if(tag) {
+  } 
+  #if(tag) {
     <div id="content-page-title">Tag: #(tag.name)</div>
   }
 
   <div class="pure-g">
 
-    #loop(data, "post") {
+    #for(post in data) {
       <div class="pure-u-1 pure-u-lg-1-2 pure-u-xl-1-3 post-card-container">
         <div class="post-card">
           <div class="post-card-content">
@@ -24,14 +23,14 @@
             <div class="post-card-category">
               Category: #if(post.category) {
                 <a class="category-link" href="/categories/#(post.category.id)/posts">#(post.category.name)</a>
-              } ##else() {
+              } else {
                 <a class="category-link" href="/categories/noncategorized/posts">NonCategorized</a>
               }
             </div>
             <div class="post-card-tags">
               Tags: #if(post.tags) {
-                #loop(post.tags, "tag") {<a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a>}
-              } ##else() {
+                #for(tag in post.tags) {<a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a>}
+              } else {
                 None
               }
             </div>
@@ -45,11 +44,13 @@
   <div id="public-page-footer">
     <div id="page-navigator">
       #if(page.position.previous) {
-        <a class="pure-button" href="#(request.uri.path)?page=#(page.position.previous)">Previous</a>
+        <a class="pure-button" href="?page=#(page.position.previous)">Previous</a>
       }
       #if(page.position.next) {
-        <a class="pure-button" href="#(request.uri.path)?page=#(page.position.next)">Next</a>
+        <a class="pure-button" href="?page=#(page.position.next)">Next</a>
       }
     </div>
   </div>
 }
+
+#embed("base/base")

@@ -1,124 +1,80 @@
-import FluentProvider
-import HTTP
-import ValidationProvider
+import FluentMySQL
+import Pagination
 import Vapor
 
-final class Category: Model {
+final class Category: DatabaseModel, Content {
     
-    struct NumberOfPosts: JSONRepresentable {
+    struct NumberOfPosts: Content {
         let category: Category
         let count: Int
-        
-        func makeJSON() throws -> JSON {
-            var json = JSON()
-            try json.set("category", category)
-            try json.set("count", count)
-            return json
-        }
     }
     
-    static let idKey = "id"
-    static let nameKey = "name"
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
     
-    let storage = Storage()
+    static let nameLength = 32
     
+    var id: Int?
     var name: String
+    var createdAt: Date?
+    var updatedAt: Date?
     
     private init(name: String) {
         self.name = name
     }
     
-    init(request: Request) throws {
-        
-        name = request.data[Category.nameKey]?.string ?? ""
-        
+    init(from form: CategoryForm) throws {
+        name = form.name
         try validate()
     }
     
-    init(row: Row) throws {
-        name = try row.get(Category.nameKey)
+    func apply(form: CategoryForm) throws -> Self  {
+        name = form.name
+        try validate()
+        return self
     }
     
-    func validate() throws {
-        try name.validated(by: Count.containedIn(low: 1, high: 32))
-    }
-    
-    func makeRow() throws -> Row {
-        var row = Row()
-        try row.set(Category.nameKey, name)
-        return row
+    static func numberOfPostsForAll(on conn: DatabaseConnectable) -> Future<[NumberOfPosts]> {
+        
+        return Category.query(on: conn).all()
+            .flatMap { categories in
+                let counts = try categories.compactMap { category in
+                    try category.posts.query(on: conn).publicAll().count().map {
+                        NumberOfPosts(category: category, count: $0)
+                    }
+                }
+                return counts.flatten(on: conn)
+                    .map { $0.filter { $0.count > 0 }.sorted(by: { $0.count > $1.count }) }
+                }
     }
     
     static func makeNonCategorized() -> Category {
         return Category(name: "NonCategorized")
     }
-    
-    static func numberOfPostsForAll() throws -> [NumberOfPosts] {
-        
-        return
-            try Category.all().flatMap {
-                return NumberOfPosts(category: $0, count: try $0.posts.makeQuery().publicAll().count())
-            }
-            .filter { $0.count > 0 }
-            .sorted(by: { $0.count > $1.count })
-    }
 }
 
-// MARK: - Preparation
-extension Category: Preparation {
-    
-    static func prepare(_ database: Database) throws {
-        
-        try database.create(self) { builder in
-            builder.id()
-            builder.string(Category.nameKey, unique: true)
-        }
-    }
-    
-    static func revert(_ database: Database) throws {
-        try database.delete(self)
-    }
-}
-
-// MARK: - JSONRepresentable
-extension Category: JSONRepresentable {
-    
-    func makeJSON() throws -> JSON {
-        var row = try makeRow()
-        try row.set(Category.idKey, id)
-        return JSON(row)
-    }
-}
-
-// MARK: - ResponseRepresentable
-extension Category: ResponseRepresentable {}
 
 // MARK: - Relation
 extension Category {
     
     var posts: Children<Category, Post> {
-        return children()
+        return children(\Post.categoryId)
     }
 }
-
-// MARK: - Timestampable
-extension Category: Timestampable {}
 
 // MARK: - Paginatable
 extension Category: Paginatable {}
 
-
-// MARK: - Updateable
-extension Category: Updateable {
+// MARK: - Validatable
+extension Category: Validatable {
     
-    func update(for req: Request) throws {
-        
-        name = req.data[Category.nameKey]?.string ?? ""
-        
-        try validate()
-    }
-    
-    static var updateableKeys: [UpdateableKey<Category>] {
-        return []
+    static func validations() throws -> Validations<Category> {
+        var validations = Validations(Category.self)
+        try validations.add(\.name, .count(1...Category.nameLength))
+        return validations
     }
 }

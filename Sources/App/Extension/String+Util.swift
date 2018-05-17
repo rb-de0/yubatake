@@ -1,4 +1,5 @@
 import Foundation
+import Vapor
 
 extension String {
     
@@ -16,11 +17,13 @@ extension String {
         return start + self
     }
     
-    func normalized() -> String {
-        return NSString(string: string).standardizingPath
-    }
-    
-    var deletingLastPathComponent: String {
-        return String(components(separatedBy: "/").dropLast().joined(separator: "/"))
+    @discardableResult
+    func requireAllowedPath() throws -> String {
+        
+        if contains("../") {
+            throw Abort(.forbidden)
+        }
+        
+        return self
     }
 }

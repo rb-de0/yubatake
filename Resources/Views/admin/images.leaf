@@ -1,14 +1,12 @@
-#extend("base/admin-base")
-
-#export("additional-resources") {
+#set("additional-resources") {
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 }
 
-#export("script") {
+#set("script") {
   <script src="/js/image-list.js"></script>
 }
 
-#export("content") {
+#set("content") {
   <div id="admin-page-title">All Images</div>
 
   <form id="admin-selectable-form" method="post" v-cloak>
@@ -39,10 +37,12 @@
       </div>
 
       <div id="page-navigator">
-        <a v-if="hasPrevious" class="pure-button" v-bind:href="'#(request.uri.path)?page=' + previousPage">Previous</a>
-        <a v-if="hasNext" class="pure-button" v-bind:href="'#(request.uri.path)?page=' + nextPage">Next</a>
+        <a v-if="hasPrevious" class="pure-button" v-bind:href="'?page=' + previousPage">Previous</a>
+        <a v-if="hasNext" class="pure-button" v-bind:href="'?page=' + nextPage">Next</a>
       </div>
       <div class="clearfix"></div>
     </div>
   </form>
 }
+
+#embed("base/admin-base")

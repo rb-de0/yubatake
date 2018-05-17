@@ -1,102 +1,74 @@
 @testable import App
-import Cookies
-import HTTP
+import Crypto
 import Vapor
 import XCTest
 
 final class LoginControllerTests: ControllerTestCase {
     
-    func testCreateRootUser() throws {
+    func testCanCreateRootUser() throws {
         
-        let count = try User.all().count
-        let rootUser = try User.all().first
+        let count = try User.query(on: conn).count().wait()
+        let rootUser = try User.query(on: conn).all().wait().first
         
         XCTAssertEqual(count, 1)
         XCTAssertEqual(rootUser?.name, "root")
     }
     
     func testCanViewIndex() throws {
-        
-        let loginRequest = Request(method: .get, uri: "/login")
-        let loginResponse = try drop.respond(to: loginRequest)
-        
-        XCTAssertEqual(loginResponse.status, .ok)
+        let loginResponse = try waitResponse(method: .GET, url: "/login")
+        XCTAssertEqual(loginResponse.http.status, .ok)
     }
-    
+
     func testCanLogin() throws {
         
-        let hashedPassword = try resolve(HashProtocol.self).make("passwd").makeString()
-        let user = User(name: "login", password: hashedPassword)
-        try user.save()
+        let hassedPassword = try app.make(BCryptDigest.self).hash("passwd")
+        let user = User(name: "login", password: hassedPassword)
+        _ = try user.save(on: conn).wait()
         
-        var request: Request!
-        var response: Response!
+        var response: Response
         
-        let requestData = try getCSRFToken("/login")
+        response = try waitResponse(method: .POST, url: "/login") { request in
+            try request.setFormData(["name": "login", "password": "passwd"], csrfToken: self.csrfToken)
+        }
         
-        let json: JSON = ["name": "login", "password": "passwd"]
-        request = Request(method: .post, uri: "/login")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "admin/posts")
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts")
+        
+        XCTAssertEqual(response.http.status, .ok)
 
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "admin/posts")
-        XCTAssertNotNil(response.headers[HeaderKey.setCookie])
-
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/logout")
         
-        XCTAssertEqual(response.status, .ok)
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "login")
         
-        request = Request(method: .get, uri: "/login")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .GET, url: "/admin/posts")
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "admin/posts")
-        
-        request = Request(method: .get, uri: "/logout")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "login")
-        
-        request = Request(method: .get, uri: "/admin/posts")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/login")
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/login")
     }
     
     func testCannotLoginNoPassword() throws {
+
+        let hassedPassword = try app.make(BCryptDigest.self).hash("passwd")
+        let user = User(name: "login", password: hassedPassword)
+        _ = try user.save(on: conn).wait()
         
-        let hashedPassword = try resolve(HashProtocol.self).make("passwd").makeString()
-        let user = User(name: "login", password: hashedPassword)
-        try user.save()
-        
-        var request: Request!
         var response: Response!
         
-        let requestData = try getCSRFToken("/login")
+        response = try waitResponse(method: .POST, url: "/login") { request in
+            try request.setFormData(["name": "login", "password": ""], csrfToken: self.csrfToken)
+        }
         
-        let json: JSON = ["name": "login"]
-        request = Request(method: .post, uri: "/login")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "login")
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "login")
     }
 }
 
 extension LoginControllerTests {
     public static let allTests = [
-        ("testCreateRootUser", testCreateRootUser),
+        ("testCanCreateRootUser", testCanCreateRootUser),
         ("testCanViewIndex", testCanViewIndex),
         ("testCanLogin", testCanLogin),
         ("testCannotLoginNoPassword", testCannotLoginNoPassword)

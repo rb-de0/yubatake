@@ -1,17 +1,11 @@
-import HTTP
 import Vapor
 
 extension API {
     
-    final class HtmlController: ResourceRepresentable {
+    final class HtmlController {
         
-        func makeResource() -> Resource<String> {
-            return Resource(store: store)
-        }
-        
-        func store(request: Request) throws -> ResponseRepresentable {
-            let html = try Html(request: request)
-            return try html.makeJSON()
+        func store(request: Request, form: ConvertedMarkdownForm) throws -> Html {
+            return try form.makeHtml()
         }
     }
 }

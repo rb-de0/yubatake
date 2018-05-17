@@ -1,9 +1,48 @@
-import CSRF
+import Leaf
 import Vapor
 
 final class PublicViewContext {
     
-    private var title: String?
+    private struct RenderingContext: Encodable {
+        
+        let context: Encodable
+        let pageTitle: String?
+        let pageURL: String
+        let config: ApplicationConfig
+        let siteInfo: Future<SiteInfo>
+        let recentPosts: Future<[Post]>
+        let staticContents: Future<[Post]>
+        let tags: Future<[Tag.NumberOfPosts]>
+        let categories: Future<[Category.NumberOfPosts]>
+        
+        enum CodingKeys: String, CodingKey {
+            case pageTitle = "page_title"
+            case pageURL = "page_url"
+            case siteInfo = "site_info"
+            case recentPost = "recent_posts"
+            case staticContents = "static_contents"
+            case meta = "meta"
+            case tags = "all_tags"
+            case categories = "all_categories"
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            try context.encode(to: encoder)
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            
+            let title = siteInfo.map { self.pageTitle ?? $0.name }
+            try container.encode(title, forKey: .pageTitle)
+            try container.encode(pageURL, forKey: .pageURL)
+            try container.encode(siteInfo, forKey: .siteInfo)
+            try container.encode(recentPosts, forKey: .recentPost)
+            try container.encode(staticContents, forKey: .staticContents)
+            try container.encode(tags, forKey: .tags)
+            try container.encode(categories, forKey: .categories)
+            try container.encodeIfPresent(config.meta, forKey: .meta)
+        }
+    }
+    
+    private let title: String?
     private let path: String
     
     init(path: String, title: String? = nil) {
@@ -11,33 +50,27 @@ final class PublicViewContext {
         self.title = title
     }
     
-    func addTitle(_ title: String?) -> Self {
-        self.title = title
-        return self
-    }
-    
-    func makeResponse(context: NodeRepresentable = Node(ViewContext.shared), for request: Request) throws -> View {
+    func makeResponse(context: Encodable = [String: String](), for request: Request) throws -> Future<View> {
         
-        var node = try context.makeNode(in: ViewContext.shared)
+        let config = try request.make(ApplicationConfig.self)
+        let siteInfo = try SiteInfo.shared(on: request)
+        let recentPosts = try Post.recentPosts(on: request)
+        let staticContents = try Post.staticContents(on: request)
+        let tags = Tag.numberOfPosts(on: request)
+        let categories = Category.numberOfPostsForAll(on: request)
         
-        // common data
-        let siteInfo = try SiteInfo.shared()
-        try node.set("site_info", siteInfo.makeJSON())
-        try node.set("recent_posts", try Post.recentPosts().makeJSON())
-        try node.set("static_contents", try Post.staticContents().makeJSON())
+        let renderingContext = RenderingContext(
+            context: context,
+            pageTitle: title,
+            pageURL: request.http.urlString,
+            config: config,
+            siteInfo: siteInfo,
+            recentPosts: recentPosts,
+            staticContents: staticContents,
+            tags: tags,
+            categories: categories
+        )
         
-        // page informations
-        let config = Configs.resolve(ApplicationConfig.self)
-        try node.set("page_title", title ?? siteInfo.name)
-        try node.set("page_url", request.uri.makeFoundationURL().absoluteString)
-        try node.set("meta", config.meta?.makeJSON())
-        
-        // tags
-        try node.set("all_tags", try Tag.numberOfPosts().makeJSON())
-        
-        // categories
-        try node.set("all_categories", try Category.numberOfPostsForAll().makeJSON())
-        
-        return try resolve(ViewCreator.self).make(path, node, for: request)
+        return try request.make(ViewCreator.self).make(path, renderingContext, for: request)
     }
 }

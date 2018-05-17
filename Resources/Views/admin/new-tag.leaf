@@ -1,12 +1,10 @@
-#extend("base/admin-base")
-
-#export("content") {
-  <div id="admin-page-title">#if(id) {Edit Tag} ##else() {New Tag}</div>
+#set("content") {
+  <div id="admin-page-title">#if(id) {Edit Tag} else {New Tag}</div>
 
   <form class="pure-form" action="/admin/tags#if(id) {/#(id)/edit}" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
-    <div class="field-error">#(request.storage.error_message)</div>
+    <div class="field-error">#(error_message)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -15,7 +13,8 @@
       <input id="admin-tag-title" class="pure-input-1" name="name" value="#(name)" type="text" placeholder="Name">
     </fieldset>
 
-    <button type="submit" class="pure-button pure-input-1 pure-button-primary">#if(id) {Update} ##else() {Create}</button>
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">#if(id) {Update} else {Create}</button>
   </form>
-
 }
+
+#embed("base/admin-base")

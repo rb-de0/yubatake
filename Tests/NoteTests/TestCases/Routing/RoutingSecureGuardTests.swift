@@ -1,97 +1,87 @@
 @testable import App
-import Cookies
-import HTTP
 import Vapor
 import XCTest
 
 final class RoutingSecureGuardTests: ControllerTestCase {
     
-    private var token = ""
-    
-    override func setUp() {
-        super.setUp()
-        token = try! login().csrfToken
-    }
-    
     func testCanGuardRequest() throws {
         
-        // Posts
-        canGuard(method: .get, uri: "/admin/posts")
-        canGuard(method: .get, uri: "/admin/posts/create")
-        canGuard(method: .get, uri: "/admin/posts/1/edit")
-        canGuard(method: .post, uri: "/admin/posts")
-        canGuard(method: .post, uri: "/admin/posts/1/edit")
-        canGuard(method: .post, uri: "/admin/posts/delete")
+        try canGuard(method: .GET, uri: "/admin/posts")
+        try canGuard(method: .GET, uri: "/admin/posts/create")
+        try canGuard(method: .GET, uri: "/admin/posts/1/edit")
+        try canGuard(method: .POST, uri: "/admin/posts")
+        try canGuard(method: .POST, uri: "/admin/posts/1/edit")
+        try canGuard(method: .POST, uri: "/admin/posts/delete")
         
         // Tags
-        canGuard(method: .get, uri: "/admin/tags")
-        canGuard(method: .get, uri: "/admin/tags/create")
-        canGuard(method: .get, uri: "/admin/tags/1/edit")
-        canGuard(method: .post, uri: "/admin/tags")
-        canGuard(method: .post, uri: "/admin/tags/1/edit")
-        canGuard(method: .post, uri: "/admin/tags/delete")
+        try canGuard(method: .GET, uri: "/admin/tags")
+        try canGuard(method: .GET, uri: "/admin/tags/create")
+        try canGuard(method: .GET, uri: "/admin/tags/1/edit")
+        try canGuard(method: .POST, uri: "/admin/tags")
+        try canGuard(method: .POST, uri: "/admin/tags/1/edit")
+        try canGuard(method: .POST, uri: "/admin/tags/delete")
         
         // Categories
-        canGuard(method: .get, uri: "/admin/categories")
-        canGuard(method: .get, uri: "/admin/categories/create")
-        canGuard(method: .get, uri: "/admin/categories/1/edit")
-        canGuard(method: .post, uri: "/admin/categories")
-        canGuard(method: .post, uri: "/admin/categories/1/edit")
-        canGuard(method: .post, uri: "/admin/categories/delete")
+        try canGuard(method: .GET, uri: "/admin/categories")
+        try canGuard(method: .GET, uri: "/admin/categories/create")
+        try canGuard(method: .GET, uri: "/admin/categories/1/edit")
+        try canGuard(method: .POST, uri: "/admin/categories")
+        try canGuard(method: .POST, uri: "/admin/categories/1/edit")
+        try canGuard(method: .POST, uri: "/admin/categories/delete")
         
         // Images
-        canGuard(method: .get, uri: "/admin/images")
-        canGuard(method: .get, uri: "/admin/images/1/edit")
-        canGuard(method: .post, uri: "/admin/images/1/edit")
-        canGuard(method: .post, uri: "/admin/images/delete")
-        canGuard(method: .post, uri: "/admin/images/cleanup")
+        try canGuard(method: .GET, uri: "/admin/images")
+        try canGuard(method: .GET, uri: "/admin/images/1/edit")
+        try canGuard(method: .POST, uri: "/admin/images/1/edit")
+        try canGuard(method: .POST, uri: "/admin/images/1/delete")
+        try canGuard(method: .POST, uri: "/admin/images/cleanup")
         
         // Files
-        canGuard(method: .get, uri: "/admin/files")
-        canGuard(method: .get, uri: "/admin/static-contents")
+        try canGuard(method: .GET, uri: "/admin/static-contents")
         
         // SiteInfo
-        canGuard(method: .get, uri: "/admin/siteinfo/edit")
-        canGuard(method: .post, uri: "/admin/siteinfo/edit")
+        try canGuard(method: .GET, uri: "/admin/siteinfo/edit")
+        try canGuard(method: .POST, uri: "/admin/siteinfo/edit")
         
         // User
-        canGuard(method: .get, uri: "/admin/user/edit")
-        canGuard(method: .post, uri: "/admin/user/edit")
+        try canGuard(method: .GET, uri: "/admin/user/edit")
+        try canGuard(method: .POST, uri: "/admin/user/edit")
     }
     
     func testCanGuardAPIRequest() throws {
         
-        canGuardAPI(method: .post, uri: "/api/converted_markdown")
-        canGuardAPI(method: .get, uri: "/api/files")
-        canGuardAPI(method: .get, uri: "/api/filebody")
-        canGuardAPI(method: .post, uri: "/api/filebody")
-        canGuardAPI(method: .post, uri: "/api/filebody/delete")
-        canGuardAPI(method: .get, uri: "/api/images")
-        canGuardAPI(method: .post, uri: "/api/images")
+        try canGuardAPI(method: .POST, uri: "/api/converted_markdown")
+        try canGuardAPI(method: .GET, uri: "/api/images")
+        try canGuardAPI(method: .POST, uri: "/api/images")
+        
     }
     
-    private func canGuard(method: HTTP.Method, uri: String) {
-
-        do {
-            let request = Request(method: method, uri: uri)
-            try request.setFormData([:], token)
-            let response = try drop.respond(to: request)
+    private func canGuard(method: HTTPMethod, uri: String) throws {
         
-            XCTAssertEqual(response.status, .seeOther)
-            XCTAssertEqual(response.headers[HeaderKey.location], "/login")
+        let message = "\(method): \(uri)"
+        
+        do {
+            let response = try waitResponse(method: method, url: uri) { request in
+                try request.setFormData([String: String](), csrfToken: self.csrfToken)
+            }
+            
+            XCTAssertEqual(response.http.status, .seeOther, message)
+            XCTAssertEqual(response.http.headers.firstValue(name: .location), "/login", message)
         } catch {
             XCTFail(error.localizedDescription)
         }
     }
     
-    private func canGuardAPI(method: HTTP.Method, uri: String) {
+    private func canGuardAPI(method: HTTPMethod, uri: String) throws {
+        
+        let message = "\(method): \(uri)"
         
         do {
-            let request = Request(method: method, uri: uri)
-            try request.setFormData([:], token)
-            let response = try drop.respond(to: request)
+            let response = try waitResponse(method: method, url: uri) { request in
+                try request.setJSONData([String: String](), csrfToken: self.csrfToken)
+            }
             
-            XCTAssertEqual(response.status, .unauthorized)
+            XCTAssertEqual(response.http.status, .forbidden, message)
         } catch {
             XCTFail(error.localizedDescription)
         }

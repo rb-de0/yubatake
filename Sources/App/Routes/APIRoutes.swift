@@ -1,33 +1,25 @@
+import Authentication
 import Vapor
-import AuthProvider
 
-final class APIRoutes: RouteCollection, EmptyInitializable {
+final class APIRoutes: RouteCollection {
     
-    func build(_ builder: RouteBuilder) throws {
+    func boot(router: Router) throws {
         
-        let api = builder
-            .grouped([
-                PersistMiddleware<User>(),
-                PasswordAuthenticationMiddleware<User>()]
-            )
+        let api = router
             .grouped("api")
+            .grouped(AuthErrorMiddleware<User>())
         
         // markdown
-        api.resource("converted_markdown", API.HtmlController())
-        
-        // files
-        api.resource("files", API.FileController())
-        api.post("files/reset", handler: API.FileController().reset)
-        api.get("filebody", handler: API.FileController().show)
-        api.post("filebody", handler: API.FileController().store)
-        api.post("filebody/delete", handler: API.FileController().destroy)
+        do {
+            let controller = API.HtmlController()
+            api.post(ConvertedMarkdownForm.self, at: "converted_markdown", use: controller.store)
+        }
         
         // images
-        api.resource("images", API.ImageController())
-        
-        // themes
-        api.resource("themes", API.ThemeController())
-        api.post("themes/apply", handler: API.ThemeController().apply)
-        api.post("themes/delete", handler: API.ThemeController().destroy)
+        do {
+            let controller = API.ImageController()
+            api.get("images", use: controller.index)
+            api.post(ImageUploadForm.self, at: "images", use: controller.store)
+        }
     }
 }

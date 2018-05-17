@@ -3,15 +3,15 @@
 
 <head>
   <title>#(page_title)</title>
-  #embed("embeds/resources")
-  #import("additional-resources")
   #embed("embeds/meta")
+  #embed("embeds/resources")
+  #get(additional-resources)
 </head>
 
 <body>
 
   <div id="content">
-    #import("content")
+    #get(content)
   </div>
 
   <div id="toggle-menu" v-on:click="toggleMenu">
@@ -32,7 +32,7 @@
       <div id="menu-subcontents">
         #if(static_contents) {
           <div class="menu-subcontents-header">Static Contents</div>
-          #loop(static_contents, "static_content") {
+          #for(static_content in static_contents) {
             <div class="menu-subcontents-item">
               <a class="title-link" href="/posts/#(static_content.id)">#(static_content.title)</a>
             </div>
@@ -42,7 +42,7 @@
       <div id="menu-subcontents">
         #if(recent_posts) {
           <div class="menu-subcontents-header">Recent Posts</div>
-          #loop(recent_posts, "post") {
+          #for(post in recent_posts) {
             <div class="menu-subcontents-item">
               <a class="title-link" href="/posts/#(post.id)">#(post.title)</a>
             </div>
@@ -52,7 +52,7 @@
       <div id="menu-subcontents">
         #if(all_categories) {
           <div class="menu-subcontents-header">Categories</div>
-          #loop(all_categories, "category") {
+          #for(category in all_categories) {
             <div class="menu-subcontents-item">
               <a class="title-link" href="/categories/#(category.category.id)/posts">#(category.category.name) (#(category.count))</a>
             </div>
@@ -62,7 +62,7 @@
       <div id="menu-subcontents">
         #if(all_tags) {
           <div class="menu-subcontents-header">Tags</div>
-          #loop(all_tags, "tag") {
+          #for(tag in all_tags) {
             <div class="menu-subcontents-item">
               <a class="title-link" href="/tags/#(tag.tag.id)/posts">#(tag.tag.name) (#(tag.count))</a>
             </div>

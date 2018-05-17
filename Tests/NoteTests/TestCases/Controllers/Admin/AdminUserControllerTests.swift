@@ -1,50 +1,41 @@
 @testable import App
-import HTTP
+import Crypto
 import Vapor
 import XCTest
 
-final class AdminUserControllerTests: ControllerTestCase {
+final class AdminUserControllerTests: ControllerTestCase, AdminTestCase {
     
     func testCanViewCreateView() throws {
-        
-        let requestData = try login()
-        
-        var request: Request!
+
         var response: Response!
         
-        request = Request(method: .get, uri: "/admin/user/edit")
-        request.cookies.insert(requestData.cookie)
-        response = try drop.respond(to: request)
-        
-        XCTAssertEqual(response.status, .ok)
+        response = try waitResponse(method: .GET, url: "/admin/user/edit")
+
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("name")?.string, "root")
+        XCTAssertNil(view.get("password"))
     }
     
     func testCanUpdateAUser() throws {
         
-        let requestData = try login()
-        
-        var request: Request!
+        let hash = try app.make(BCryptDigest.self)
         var response: Response!
         
-        let json: JSON = [
-            "name": "rb_de0",
-            "password": "123456789"
-        ]
+        let form = ["name": "rb_de0", "password": "123456789"]
         
-        request = Request(method: .post, uri: "/admin/user/edit")
-        request.cookies.insert(requestData.cookie)
-        try request.setFormData(json, requestData.csrfToken)
-        response = try drop.respond(to: request)
+        response = try waitResponse(method: .POST, url: "/admin/user/edit") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
         
-        XCTAssertEqual(response.status, .seeOther)
-        XCTAssertEqual(response.headers[HeaderKey.location], "/admin/user/edit")
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/user/edit")
         
-        let count = try User.all().count
-        let user = try User.all().last
+        response = try waitResponse(method: .GET, url: "/admin/user/edit")
         
-        XCTAssertEqual(count, 2)
+        let user = try User.query(on: conn).all().wait().first
+        XCTAssertEqual(view.get("name")?.string, "rb_de0")
         XCTAssertEqual(user?.name, "rb_de0")
-        XCTAssertEqual(user?.password, try resolve(HashProtocol.self).make("123456789").makeString())
+        XCTAssert(try hash.verify("123456789", created: user?.password ?? ""))
     }
 }
 
