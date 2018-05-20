@@ -51,7 +51,7 @@ final class AdminPostController {
     
     func index(request: Request) throws -> Future<View> {
         
-        return try Post.query(on: request).publicAll().paginate(for: request)
+        return try Post.query(on: request).noStaticAll().paginate(for: request)
             .flatMap { page in
                 try page.data.map { try $0.formPublic(on: request) }
                     .flatten(on: request)

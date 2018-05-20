@@ -88,6 +88,11 @@
             <input id="admin-post-static-content" name="is_static" type="checkbox" #if(post.is_static) {checked="checked"}/> Static Content
           </label>
         </div>
+        <div class="admin-option-item">
+          <label for="admin-post-publish-content" class="pure-form-item-inline">
+            <input id="admin-post-publish-content" name="is_published" type="checkbox" #if(post.is_published) {checked="checked"}/> Publish
+          </label>
+        </div>
       </fieldset>
     </fieldset>
 

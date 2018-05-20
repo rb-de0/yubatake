@@ -393,6 +393,10 @@ ol {
   padding: .5rem 1rem 1rem;
 }
 
+.posts-table-draft {
+  color: #666;
+}
+
 .admin-supplement-list-container {
   padding: 0px;
   height: 160px;

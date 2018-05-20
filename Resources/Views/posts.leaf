@@ -23,13 +23,18 @@
       <tbody>
         #for(post in data) {
           <tr>
-            <td class="posts-table-checkbox">
+            <td>
               <input class="one-checkbox" type="checkbox" name="posts[]" value="#(post.id)" v-on:click="selectOne"/>
             </td>
-            <td class="posts-table-title"><a href="/admin/posts/#(post.id)/edit">#(post.title)</a></td>
-            <td class="posts-table-user">#(post.user.name)</td>
-            <td class="posts-table-category">#(post.category.name)</td>
-            <td class="posts-table-update">#(post.formatted_updated_at)</td>
+            <td>
+              #if(post.is_published == false) {
+                <span class="posts-table-draft">(Draft)</span>
+              }
+              <a href="/admin/posts/#(post.id)/edit">#(post.title)</a>
+            </td>
+            <td>#(post.user.name)</td>
+            <td>#(post.category.name)</td>
+            <td>#(post.formatted_updated_at)</td>
           </tr>
         }
 
