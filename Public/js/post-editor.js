@@ -24,6 +24,11 @@ var viewModel = new Vue({
     }
   },
   methods: {
+    showPreview: function (e, id) {
+      e.preventDefault()
+      var path = '/admin/posts/' + id + '/preview'
+      window.open(makeRequestURL(path))
+    },
     showPickerView: function (e) {
 
       e.preventDefault()

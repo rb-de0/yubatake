@@ -14,6 +14,7 @@ final class Post: DatabaseModel {
         case categoryId = "category_id"
         case userId = "user_id"
         case isStatic = "is_static"
+        case isPublished = "is_published"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
@@ -72,6 +73,7 @@ final class Post: DatabaseModel {
     var categoryId: Int?
     var userId: Int?
     var isStatic: Bool
+    var isPublished: Bool
     var createdAt: Date?
     var updatedAt: Date?
     
@@ -82,6 +84,7 @@ final class Post: DatabaseModel {
         htmlContent = content.htmlFromMarkdown ?? ""
         partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentLength)
         isStatic = form.isStatic
+        isPublished = form.isPublished
         
         categoryId = form.category
         userId = try request.requireAuthenticated(User.self).id
@@ -96,6 +99,7 @@ final class Post: DatabaseModel {
         htmlContent = content.htmlFromMarkdown ?? ""
         partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentLength)
         isStatic = form.isStatic
+        isPublished = form.isPublished
         
         categoryId = form.category
         userId = try request.requireAuthenticated(User.self).id
@@ -125,14 +129,14 @@ final class Post: DatabaseModel {
     // MARK: - Static
     
     static func recentPosts(on conn: DatabaseConnectable, count: Int = Post.recentPostCount) throws -> Future<[Post]> {
-        return try Post.query(on: conn).publicAll()
+        return try Post.query(on: conn).noStaticAll()
             .sort(\Post.createdAt, .descending)
             .range(lower: 0, upper: count)
             .all()
     }
     
     static func staticContents(on conn: DatabaseConnectable) throws -> Future<[Post]> {
-        return try Post.query(on: conn).staticAll().all()
+        return try Post.query(on: conn).staticAll().publicAll().all()
     }
 }
 
@@ -169,6 +173,10 @@ extension Post: Validatable {
 extension QueryBuilder where Model == Post {
     
     func publicAll() throws -> Self {
+        return try filter(\Post.isPublished == true)
+    }
+    
+    func noStaticAll() throws -> Self {
         return try filter(\Post.isStatic == false)
     }
     

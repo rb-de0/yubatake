@@ -33,6 +33,8 @@ final class AdminRoutes: RouteCollection {
             admin.post(PostForm.self, at: "posts", use: controller.store)
             admin.post(PostForm.self, at: "posts", Post.parameter, "edit", use: controller.update)
             admin.post(DeletePostsForm.self, at: "posts/delete", use: controller.delete)
+            
+            admin.get("posts", Post.parameter, "preview", use: controller.showPreview)
         }
         
         // categories

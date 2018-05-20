@@ -65,7 +65,7 @@ final class Tag: DatabaseModel, Content {
         return Tag.query(on: conn).all()
             .flatMap { tags in
                 let counts = try tags.compactMap { tag in
-                    try tag.posts.query(on: conn).publicAll().count().map {
+                    try tag.posts.query(on: conn).noStaticAll().count().map {
                         NumberOfPosts(tag: tag, count: $0)
                     }
                 }

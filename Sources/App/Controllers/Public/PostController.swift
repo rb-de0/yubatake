@@ -20,7 +20,7 @@ final class PostController {
     }
 
     func index(request: Request) throws -> Future<View> {
-        return try Post.query(on: request).publicAll().paginate(for: request)
+        return try Post.query(on: request).publicAll().noStaticAll().paginate(for: request)
             .flatMap { page in
                 try page.data.map { try $0.formPublic(on: request) }
                     .flatten(on: request)
@@ -35,7 +35,7 @@ final class PostController {
     
     func indexInTag(request: Request) throws -> Future<View> {
         return try request.parameters.next(Tag.self).flatMap { tag in
-            try tag.posts.query(on: request).publicAll().paginate(for: request)
+            try tag.posts.query(on: request).publicAll().noStaticAll().paginate(for: request)
                 .flatMap { page in
                     try page.data.map { try $0.formPublic(on: request) }
                         .flatten(on: request)
@@ -52,7 +52,7 @@ final class PostController {
     
     func indexInCategory(request: Request) throws -> Future<View> {
         return try request.parameters.next(Category.self).flatMap { category in
-            try category.posts.query(on: request).publicAll().paginate(for: request)
+            try category.posts.query(on: request).publicAll().noStaticAll().paginate(for: request)
                 .flatMap { page in
                     try page.data.map { try $0.formPublic(on: request) }
                         .flatten(on: request)
@@ -68,7 +68,7 @@ final class PostController {
     }
     
     func indexNoCategory(request: Request) throws -> Future<View> {
-        return try Post.query(on: request).noCategoryAll().paginate(for: request)
+        return try Post.query(on: request).publicAll().noCategoryAll().paginate(for: request)
             .flatMap { page in
                 try page.data.map { try $0.formPublic(on: request) }
                     .flatten(on: request)
@@ -83,7 +83,12 @@ final class PostController {
     
     func show(request: Request) throws -> Future<View> {
         return try request.parameters.next(Post.self).flatMap { post in
-            try post.formPublic(on: request).flatMap { publicPost in
+            
+            guard post.isPublished else {
+                throw Abort(.notFound)
+            }
+            
+            return try post.formPublic(on: request).flatMap { publicPost in
                 try ContextMaker.makeShowView(title: post.title).makeResponse(context: publicPost, for: request)
             }
         }

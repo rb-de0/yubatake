@@ -43,7 +43,7 @@ final class Category: DatabaseModel, Content {
         return Category.query(on: conn).all()
             .flatMap { categories in
                 let counts = try categories.compactMap { category in
-                    try category.posts.query(on: conn).publicAll().count().map {
+                    try category.posts.query(on: conn).noStaticAll().count().map {
                         NumberOfPosts(category: category, count: $0)
                     }
                 }

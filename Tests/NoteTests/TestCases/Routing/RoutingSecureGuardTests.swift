@@ -6,12 +6,14 @@ final class RoutingSecureGuardTests: ControllerTestCase {
     
     func testCanGuardRequest() throws {
         
+        // Posts
         try canGuard(method: .GET, uri: "/admin/posts")
         try canGuard(method: .GET, uri: "/admin/posts/create")
         try canGuard(method: .GET, uri: "/admin/posts/1/edit")
         try canGuard(method: .POST, uri: "/admin/posts")
         try canGuard(method: .POST, uri: "/admin/posts/1/edit")
         try canGuard(method: .POST, uri: "/admin/posts/delete")
+        try canGuard(method: .GET, uri: "/admin/posts/1/preview")
         
         // Tags
         try canGuard(method: .GET, uri: "/admin/tags")

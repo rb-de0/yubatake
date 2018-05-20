@@ -1,4 +1,5 @@
 @testable import App
+import Fluent
 import Vapor
 import XCTest
 
@@ -23,7 +24,7 @@ final class PostControllerTests: ControllerTestCase {
             _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         }
         
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 10)
+        XCTAssertEqual(try Post.query(on: conn).filter(\Post.isPublished == true).filter(\Post.isStatic == false).count().wait(), 10)
         
         var response: Response!
         
@@ -43,7 +44,7 @@ final class PostControllerTests: ControllerTestCase {
             _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         }
         
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 11)
+        XCTAssertEqual(try Post.query(on: conn).filter(\Post.isPublished == true).filter(\Post.isStatic == false).count().wait(), 11)
         
         var response: Response!
         
@@ -71,7 +72,7 @@ final class PostControllerTests: ControllerTestCase {
             _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         }
         
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 21)
+        XCTAssertEqual(try Post.query(on: conn).filter(\Post.isPublished == true).filter(\Post.isStatic == false).count().wait(), 21)
         
         var response: Response!
         
@@ -89,13 +90,32 @@ final class PostControllerTests: ControllerTestCase {
         
         _ = try DataMaker.makePost(isStatic: true, on: app, conn: conn).save(on: conn).wait()
         
-        var response: Response!
-        
-        response = try waitResponse(method: .GET, url: "/posts")
+        let response = try waitResponse(method: .GET, url: "/posts")
         
         XCTAssertEqual(response.http.status, .ok)
         XCTAssertEqual(view.get("data")?.array?.count, 0)
         XCTAssertEqual(view.get("static_contents")?.array?.count, 1)
+    }
+    
+    func testCannotViewDraftContent() throws {
+        
+        _ = try DataMaker.makePost(isPublished: false, on: app, conn: conn).save(on: conn).wait()
+        
+        let response = try waitResponse(method: .GET, url: "/posts")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("data")?.array?.count, 0)
+    }
+    
+    func testCannotViewDraftStaticContent() throws {
+        
+        _ = try DataMaker.makePost(isStatic: true, isPublished: false, on: app, conn: conn).save(on: conn).wait()
+        
+        let response = try waitResponse(method: .GET, url: "/posts")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("data")?.array?.count, 0)
+        XCTAssertEqual(view.get("static_contents")?.array?.count, 0)
     }
     
     func testCanViewPostsInTags() throws {
@@ -164,6 +184,8 @@ extension PostControllerTests {
         ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
         ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
         ("testCanViewStaticContent", testCanViewStaticContent),
+        ("testCannotViewDraftContent", testCannotViewDraftContent),
+        ("testCannotViewDraftStaticContent", testCannotViewDraftStaticContent),
         ("testCanViewPostsInTags", testCanViewPostsInTags),
         ("testCanViewPostsInACategory", testCanViewPostsInACategory),
         ("testCanViewPostsNoCategory", testCanViewPostsNoCategory),

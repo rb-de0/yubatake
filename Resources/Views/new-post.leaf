@@ -88,6 +88,11 @@
             <input id="admin-post-static-content" name="is_static" type="checkbox" #if(post.is_static) {checked="checked"}/> Static Content
           </label>
         </div>
+        <div class="admin-option-item">
+          <label for="admin-post-publish-content" class="pure-form-item-inline">
+            <input id="admin-post-publish-content" name="is_published" type="checkbox" #if(post.is_published) {checked="checked"}/> Publish
+          </label>
+        </div>
       </fieldset>
     </fieldset>
 
@@ -96,6 +101,9 @@
         <label class="form-label" for="admin-post-contents">Contents</label>
         <div>
           <button class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
+          #if(post.id) {
+            <button class="pure-button pure-button-primary" v-on:click="showPreview($event, #(post.id))">Preview</button>
+          }
         </div>
       </div>
       <textarea id="admin-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="24">#(post.content)</textarea>

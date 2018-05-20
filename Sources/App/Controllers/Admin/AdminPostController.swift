@@ -17,6 +17,10 @@ final class AdminPostController {
         static func makeCreateView(menuType: AdminMenuType = .posts) -> AdminViewContext {
             return AdminViewContext(path: "new-post", menuType: menuType)
         }
+        
+        static func makePreviewView(title: String) -> PublicViewContext {
+            return PublicViewContext(path: "post", title: title)
+        }
     }
     
     private struct TagsAndCategories: Encodable {
@@ -51,7 +55,7 @@ final class AdminPostController {
     
     func index(request: Request) throws -> Future<View> {
         
-        return try Post.query(on: request).publicAll().paginate(for: request)
+        return try Post.query(on: request).noStaticAll().paginate(for: request)
             .flatMap { page in
                 try page.data.map { try $0.formPublic(on: request) }
                     .flatten(on: request)
@@ -201,5 +205,17 @@ final class AdminPostController {
             .map {
                 isStatic ? request.redirect(to: "/admin/static-contents") : request.redirect(to: "/admin/posts")
             }
+    }
+    
+    // MARK: - Preview
+    
+    func showPreview(request: Request) throws -> Future<View> {
+        
+        return try request.parameters.next(Post.self).flatMap { post in
+            
+            return try post.formPublic(on: request).flatMap { publicPost in
+                try ContextMaker.makePreviewView(title: post.title).makeResponse(context: publicPost, for: request)
+            }
+        }
     }
 }
