@@ -276,10 +276,126 @@ fileprivate extension MigrationCommand {
         let new: NewSchema<Post>
         
         init(from decoder: Decoder) throws {
-            new = try NewSchema<Post>(from: decoder)
-            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let _decoder = FlexibleDataDecoder(base: decoder, overrideValues: [:])
+            new = try NewSchema<Post>(from: _decoder)
+            let container = try _decoder.container(keyedBy: CodingKeys.self)
             new.content.createdAt = try container.decode(Date.self, forKey: .createdAt)
             new.content.updatedAt = try container.decode(Date.self, forKey: .updatedAt)
         }
+    }
+}
+
+// MARK: - Decoder
+
+private struct FlexibleDataDecoder: Decoder {
+    
+    var codingPath: [CodingKey] {
+        return base.codingPath
+    }
+    
+    var userInfo: [CodingUserInfoKey : Any] {
+        return base.userInfo
+    }
+    
+    private let base: Decoder
+    private let overrideValues: [String: Decodable]
+    
+    init(base: Decoder, overrideValues: [String: Decodable]) {
+        self.base = base
+        self.overrideValues = overrideValues
+    }
+    
+    func unkeyedContainer() throws -> UnkeyedDecodingContainer {
+        fatalError("unsupported")
+    }
+    
+    func singleValueContainer() throws -> SingleValueDecodingContainer {
+        fatalError("unsupported")
+    }
+    
+    func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
+        let keyed = FlexibleDataKeyedDecoder(base: try base.container(keyedBy: type), overrideValues: overrideValues)
+        return KeyedDecodingContainer(keyed)
+    }
+}
+
+private struct FlexibleDataKeyedDecoder<K>: KeyedDecodingContainerProtocol where K: CodingKey {
+    
+    var codingPath: [CodingKey] {
+        return base.codingPath
+    }
+    
+    var allKeys: [K] {
+        return base.allKeys
+    }
+    
+    private let base: KeyedDecodingContainer<K>
+    private let overrideValues: [String: Decodable]
+    
+    init(base: KeyedDecodingContainer<K>, overrideValues: [String: Decodable]) {
+        self.base = base
+        self.overrideValues = overrideValues
+    }
+    
+    func contains(_ key: K) -> Bool {
+        return base.contains(key)
+    }
+    
+    func decodeNil(forKey key: K) throws -> Bool {
+        return try base.decodeNil(forKey: key)
+    }
+    
+    func decodeIfPresent(_ type: Int.Type, forKey key: K) throws -> Int? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: Int8.Type, forKey key: K) throws -> Int8? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: Int16.Type, forKey key: K) throws -> Int16? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: Int32.Type, forKey key: K) throws -> Int32? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: Int64.Type, forKey key: K) throws -> Int64? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: UInt.Type, forKey key: K) throws -> UInt? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: UInt8.Type, forKey key: K) throws -> UInt8? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: UInt16.Type, forKey key: K) throws -> UInt16? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: UInt32.Type, forKey key: K) throws -> UInt32? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: UInt64.Type, forKey key: K) throws -> UInt64? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: Double.Type, forKey key: K) throws -> Double? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: Float.Type, forKey key: K) throws -> Float? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: Bool.Type, forKey key: K) throws -> Bool? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent(_ type: String.Type, forKey key: K) throws -> String? { return try _decodeIfPresent(type, forKey: key) }
+    func decodeIfPresent<T>(_ type: T.Type, forKey key: K) throws -> T? where T: Decodable { return try _decodeIfPresent(type, forKey: key) }
+    
+    // MARK: - Decode
+    
+    func decode<T>(_ type: T.Type, forKey key: K) throws -> T where T : Decodable {
+        
+        if let overrideValue = overrideValues[key.stringValue] as? T {
+            return overrideValue
+        }
+        
+        return try base.decode(type, forKey: key)
+    }
+    
+    private func _decodeIfPresent<T>(_ type: T.Type, forKey key: K) throws -> T? where T: Decodable {
+        
+        if let overrideValue = overrideValues[key.stringValue] as? T {
+            return overrideValue
+        }
+        
+        return try base.decodeIfPresent(type, forKey: key)
+    }
+    
+    // MARK: - unsupported
+    
+    func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type, forKey key: K) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
+        fatalError("unsupported")
+    }
+    
+    func nestedUnkeyedContainer(forKey key: K) throws -> UnkeyedDecodingContainer {
+        fatalError("unsupported")
+    }
+    
+    func superDecoder() throws -> Decoder {
+        fatalError("unsupported")
+    }
+    
+    func superDecoder(forKey key: K) throws -> Decoder {
+        fatalError("unsupported")
     }
 }
