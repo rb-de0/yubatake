@@ -276,7 +276,7 @@ fileprivate extension MigrationCommand {
         let new: NewSchema<Post>
         
         init(from decoder: Decoder) throws {
-            let _decoder = FlexibleDataDecoder(base: decoder, overrideValues: [:])
+            let _decoder = FlexibleDataDecoder(base: decoder, overrideValues: ["is_published": true])
             new = try NewSchema<Post>(from: _decoder)
             let container = try _decoder.container(keyedBy: CodingKeys.self)
             new.content.createdAt = try container.decode(Date.self, forKey: .createdAt)

@@ -14,6 +14,7 @@ final class Post: DatabaseModel {
         case categoryId = "category_id"
         case userId = "user_id"
         case isStatic = "is_static"
+        case isPublished = "is_published"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
@@ -72,6 +73,7 @@ final class Post: DatabaseModel {
     var categoryId: Int?
     var userId: Int?
     var isStatic: Bool
+    var isPublished: Bool
     var createdAt: Date?
     var updatedAt: Date?
     
@@ -82,6 +84,7 @@ final class Post: DatabaseModel {
         htmlContent = content.htmlFromMarkdown ?? ""
         partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentLength)
         isStatic = form.isStatic
+        isPublished = form.isPublished
         
         categoryId = form.category
         userId = try request.requireAuthenticated(User.self).id

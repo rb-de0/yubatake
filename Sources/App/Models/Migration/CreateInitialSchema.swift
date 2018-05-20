@@ -37,6 +37,7 @@ extension Post: Migration {
             try builder.field(for: \.categoryId, referencing: \Category.id)
             try builder.field(for: \.userId, referencing: \User.id)
             try builder.field(type: .bool(), for: \.isStatic)
+            try builder.field(type: .bool(), for: \.isPublished)
             try builder.field(for: \.createdAt)
             try builder.field(for: \.updatedAt)
         }

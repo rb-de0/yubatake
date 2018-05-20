@@ -14,6 +14,7 @@ struct PostForm: Form, Content {
             case category
             case tagsString = "tags_string"
             case isStatic = "is_static"
+            case isPublished = "is_published"
         }
         
         private enum CategoryKeys: String, CodingKey {
@@ -30,6 +31,7 @@ struct PostForm: Form, Content {
             try nested.encode(form.content, forKey: .content)
             try nested.encode(form.tags, forKey: .tagsString)
             try nested.encode(form.isStatic, forKey: .isStatic)
+            try nested.encode(form.isPublished, forKey: .isPublished)
             
             if let category = form.category {
                 var categoryContainer = nested.nestedContainer(keyedBy: CategoryKeys.self, forKey: .category)
@@ -44,6 +46,7 @@ struct PostForm: Form, Content {
         case category
         case tags
         case isStatic = "is_static"
+        case isPublished = "is_published"
         case shouldTweet = "should_tweet"
     }
     
@@ -52,6 +55,7 @@ struct PostForm: Form, Content {
     let category: Int?
     let tags: String
     let isStatic: Bool
+    let isPublished: Bool
     let shouldTweet: Bool
     
     init(from decoder: Decoder) throws {
@@ -65,6 +69,12 @@ struct PostForm: Form, Content {
             isStatic = bool
         } else {
             isStatic = (try? container.decode(String.self, forKey: .isStatic)) != nil
+        }
+        
+        if let bool = try? container.decode(Bool.self, forKey: .isPublished) {
+            isPublished = bool
+        } else {
+            isPublished = (try? container.decode(String.self, forKey: .isPublished)) != nil
         }
         
         if let bool = try? container.decode(Bool.self, forKey: .shouldTweet) {
