@@ -136,7 +136,7 @@ final class Post: DatabaseModel {
     }
     
     static func staticContents(on conn: DatabaseConnectable) throws -> Future<[Post]> {
-        return try Post.query(on: conn).staticAll().all()
+        return try Post.query(on: conn).staticAll().publicAll().all()
     }
 }
 

@@ -107,6 +107,17 @@ final class PostControllerTests: ControllerTestCase {
         XCTAssertEqual(view.get("data")?.array?.count, 0)
     }
     
+    func testCannotViewDraftStaticContent() throws {
+        
+        _ = try DataMaker.makePost(isStatic: true, isPublished: false, on: app, conn: conn).save(on: conn).wait()
+        
+        let response = try waitResponse(method: .GET, url: "/posts")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("data")?.array?.count, 0)
+        XCTAssertEqual(view.get("static_contents")?.array?.count, 0)
+    }
+    
     func testCanViewPostsInTags() throws {
         
         let tag = try DataMaker.makeTag("Swift").save(on: conn).wait()
@@ -174,6 +185,7 @@ extension PostControllerTests {
         ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
         ("testCanViewStaticContent", testCanViewStaticContent),
         ("testCannotViewDraftContent", testCannotViewDraftContent),
+        ("testCannotViewDraftStaticContent", testCannotViewDraftStaticContent),
         ("testCanViewPostsInTags", testCanViewPostsInTags),
         ("testCanViewPostsInACategory", testCanViewPostsInACategory),
         ("testCanViewPostsNoCategory", testCanViewPostsNoCategory),
