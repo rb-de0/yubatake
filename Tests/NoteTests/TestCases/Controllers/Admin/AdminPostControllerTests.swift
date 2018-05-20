@@ -14,6 +14,8 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         
         _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 1)
+        
         response = try waitResponse(method: .GET, url: "/admin/posts")
         
         XCTAssertEqual(response.http.status, .ok)
@@ -22,7 +24,6 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         XCTAssertNil(view.get("page.position.next"))
         XCTAssertNil(view.get("page.position.previous"))
         XCTAssertEqual(view.get("data")?.array?.count, 1)
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 1)
     }
     
     func testCanViewPageButtonAtTwoPages() throws {
@@ -31,7 +32,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
             _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         }
         
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 11)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 11)
         
         var response: Response!
         
@@ -60,7 +61,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
             _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         }
         
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 21)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 21)
 
         let response = try waitResponse(method: .GET, url: "/admin/posts?page=2")
         
@@ -123,7 +124,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         
         XCTAssertEqual(response.http.status, .ok)
         XCTAssertEqual(view.get("data")?.array?.count, 0)
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 0)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 0)
     }
     
     func testCanDestroyStaticContents() throws {
@@ -143,7 +144,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         
         XCTAssertEqual(response.http.status, .ok)
         XCTAssertEqual(view.get("data")?.array?.count, 0)
-        XCTAssertEqual(try Post.query(on: conn).staticAll().count().wait(), 0)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 0)
     }
     
     // MARK: - Store/Update
@@ -162,7 +163,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         
         XCTAssertEqual(response.http.status, .seeOther)
         XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 1)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 1)
         XCTAssertEqual(try Tag.query(on: conn).count().wait(), 2)
         
         response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
@@ -174,10 +175,80 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         XCTAssertEqual(view.get("post.content")?.string, "content")
         XCTAssertEqual(view.get("post.category.id")?.int, 1)
         XCTAssertEqual(view.get("post.tags_string")?.string, "Swift,iOS")
+        XCTAssertEqual(view.get("post.is_static")?.bool, false)
+        XCTAssertEqual(view.get("post.is_published")?.bool, true)
         
         XCTAssertEqual(post?.title, "title")
         XCTAssertEqual(post?.content, "content")
         XCTAssertEqual(post?.categoryId, 1)
+        XCTAssertEqual(post?.isStatic, false)
+        XCTAssertEqual(post?.isPublished, true)
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts")
+        
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
+    }
+    
+    func testCanStoreAStaticPost() throws {
+        
+        _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
+        
+        var response: Response!
+        
+        let form = try DataMaker.makePostFormForTest(title: "title", content: "content", categoryId: 1, tags: "Swift,iOS", isStatic: true)
+        
+        response = try waitResponse(method: .POST, url: "/admin/posts") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
+        
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 1)
+        XCTAssertEqual(try Tag.query(on: conn).count().wait(), 2)
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
+        
+        let post = try Post.query(on: conn).first().wait()
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.is_static")?.bool, true)
+        XCTAssertEqual(post?.isStatic, true)
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts")
+        XCTAssertEqual(view.get("data")?.array?.count, 0)
+        
+        response = try waitResponse(method: .GET, url: "/admin/static-contents")
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
+    }
+    
+    func testCanStoreADraftPost() throws {
+        
+        _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
+        
+        var response: Response!
+        
+        let form = try DataMaker.makePostFormForTest(title: "title", content: "content", categoryId: 1, tags: "Swift,iOS", isPublished: false)
+        
+        response = try waitResponse(method: .POST, url: "/admin/posts") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
+        
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 1)
+        XCTAssertEqual(try Tag.query(on: conn).count().wait(), 2)
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
+        
+        let post = try Post.query(on: conn).first().wait()
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.is_published")?.bool, false)
+        XCTAssertEqual(post?.isPublished, false)
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts")
+        
+        XCTAssertEqual(view.get("data")?.array?.count, 1)
     }
     
     func testCannotStoreAPostHasInvalidCategory() throws {
@@ -192,7 +263,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         
         XCTAssertEqual(response.http.status, .seeOther)
         XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/create")
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 0)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 0)
     }
     
     func testCanStoreAPostHasNotInsertedTags() throws {
@@ -208,7 +279,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         
         XCTAssertEqual(response.http.status, .seeOther)
         XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 1)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 1)
         XCTAssertEqual(try Tag.query(on: conn).count().wait(), 3)
     }
     
@@ -275,6 +346,8 @@ extension AdminPostControllerTests {
         ("testCanDestroyPosts", testCanDestroyPosts),
         ("testCanDestroyStaticContents", testCanDestroyStaticContents),
         ("testCanStoreAPost", testCanStoreAPost),
+        ("testCanStoreAStaticPost", testCanStoreAStaticPost),
+        ("testCanStoreADraftPost", testCanStoreADraftPost),
         ("testCannotStoreAPostHasInvalidCategory", testCannotStoreAPostHasInvalidCategory),
         ("testCanStoreAPostHasNotInsertedTags", testCanStoreAPostHasNotInsertedTags),
         ("testCanUpdateAPost", testCanUpdateAPost),

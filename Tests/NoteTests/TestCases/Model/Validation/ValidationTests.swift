@@ -21,19 +21,19 @@ final class ValidationTests: ControllerTestCase {
         let request = try DataMaker.makeAuthorizedRequest(on: app, conn: conn)
         var form: PostForm
         
-        form = try DataMaker.makePostForm(title: "1", content: "1", categoryId: nil, isStatic: true, on: app, conn: conn)
+        form = try DataMaker.makePostForm(title: "1", content: "1", categoryId: nil, isStatic: true, isPublished: true)
         XCTAssertNoThrow(try post.apply(form: form, on: request))
-        form = try DataMaker.makePostForm(title: String(repeating: "1", count: 128), content: String(repeating: "1", count: 8192), categoryId: nil, isStatic: true, on: app, conn: conn)
+        form = try DataMaker.makePostForm(title: String(repeating: "1", count: 128), content: String(repeating: "1", count: 8192), categoryId: nil, isStatic: true, isPublished: true)
         XCTAssertNoThrow(try post.apply(form: form, on: request))
         
-        form = try DataMaker.makePostForm(title: "", content: "1", categoryId: nil, isStatic: true, on: app, conn: conn)
+        form = try DataMaker.makePostForm(title: "", content: "1", categoryId: nil, isStatic: true, isPublished: true)
         canThrowValidateError(try post.apply(form: form, on: request))
-        form = try DataMaker.makePostForm(title: String(repeating: "1", count: 129), content: "1", categoryId: nil, isStatic: true, on: app, conn: conn)
+        form = try DataMaker.makePostForm(title: String(repeating: "1", count: 129), content: "1", categoryId: nil, isStatic: true, isPublished: true)
         canThrowValidateError(try post.apply(form: form, on: request))
         
-        form = try DataMaker.makePostForm(title: "1", content: "", categoryId: nil, isStatic: true, on: app, conn: conn)
+        form = try DataMaker.makePostForm(title: "1", content: "", categoryId: nil, isStatic: true, isPublished: true)
         canThrowValidateError(try post.apply(form: form, on: request))
-        form = try DataMaker.makePostForm(title: "1", content: String(repeating: "1", count: 8193), categoryId: nil, isStatic: true, on: app, conn: conn)
+        form = try DataMaker.makePostForm(title: "1", content: String(repeating: "1", count: 8193), categoryId: nil, isStatic: true, isPublished: true)
         canThrowValidateError(try post.apply(form: form, on: request))
     }
     

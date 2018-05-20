@@ -16,13 +16,14 @@ final class AdminPostControllerMessageTests: ControllerTestCase, AdminTestCase {
         
         XCTAssertEqual(response.http.status, .seeOther)
         XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/create")
-        XCTAssertEqual(try Post.query(on: conn).publicAll().count().wait(), 0)
+        XCTAssertEqual(try Post.query(on: conn).count().wait(), 0)
         
         response = try waitResponse(method: .GET, url: "/admin/posts/create")
         
         XCTAssertEqual(view.get("post.title")?.string, "")
         XCTAssertEqual(view.get("post.content")?.string, "")
         XCTAssertEqual(view.get("post.is_static")?.bool, false)
+        XCTAssertEqual(view.get("post.is_published")?.bool, true)
         XCTAssertNotNil(view.get("error_message"))
     }
     
@@ -51,6 +52,7 @@ final class AdminPostControllerMessageTests: ControllerTestCase, AdminTestCase {
         XCTAssertEqual(view.get("post.title")?.string, title)
         XCTAssertEqual(view.get("post.content")?.string, content)
         XCTAssertEqual(view.get("post.is_static")?.bool, false)
+        XCTAssertEqual(view.get("post.is_published")?.bool, true)
         XCTAssertEqual(view.get("post.tags_string")?.string, "iOS,Swift")
         XCTAssertEqual(view.get("post.category.id")?.int, 1)
         XCTAssertNotNil(view.get("error_message"))

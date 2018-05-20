@@ -14,6 +14,7 @@ final class DataMaker {
             case category
             case tags
             case isStatic = "is_static"
+            case isPublished = "is_published"
         }
         
         let title: String
@@ -21,16 +22,18 @@ final class DataMaker {
         let category: Int?
         let tags: String
         let isStatic: String?
+        let isPublished: String?
     }
     
     class func makePost(title: String = "title",
                         content: String = "content",
                         categoryId: Int? = nil,
                         isStatic: Bool = false,
+                        isPublished: Bool = true,
                         on container: Container,
                         conn: DatabaseConnectable) throws -> Post {
         
-        let form = try makePostForm(title: title, content: content, categoryId: categoryId, isStatic: isStatic, on: container, conn: conn)
+        let form = try makePostForm(title: title, content: content, categoryId: categoryId, isStatic: isStatic, isPublished: isPublished)
         return try Post(from: form, on: try makeAuthorizedRequest(on: container, conn: conn))
     }
     
@@ -38,10 +41,9 @@ final class DataMaker {
                         content: String,
                         categoryId: Int?,
                         isStatic: Bool,
-                        on container: Container,
-                        conn: DatabaseConnectable) throws -> PostForm {
+                        isPublished: Bool) throws -> PostForm {
         
-        let json: [String: Any?] = ["title": title, "content": content, "category": categoryId, "tags": "", "is_static": isStatic]
+        let json: [String: Any?] = ["title": title, "content": content, "category": categoryId, "tags": "", "is_static": isStatic, "is_published": isPublished]
         return try decode(PostForm.self, from: json)
     }
     
@@ -49,9 +51,10 @@ final class DataMaker {
                         content: String,
                         categoryId: Int? = nil,
                         tags: String,
-                        isStatic: Bool = false) throws -> TestPostForm {
+                        isStatic: Bool = false,
+                        isPublished: Bool = true) throws -> TestPostForm {
         
-        return TestPostForm(title: title, content: content, category: categoryId, tags: tags, isStatic: isStatic ? "on" : nil)
+        return TestPostForm(title: title, content: content, category: categoryId, tags: tags, isStatic: isStatic ? "on" : nil, isPublished: isPublished ? "on" : nil)
     }
     
     // MARK: - Category
