@@ -78,7 +78,16 @@
       </div>
 
       <fieldset class="pure-group">
-        #if(post.id) {} else {
+        #if(post.id) {
+          #if(post.is_published == false) {
+            <div class="admin-option-item">
+              <label class="checkbox-container">Share to Twitter
+                <input name="should_tweet" type="checkbox"/>
+                <span class="checkbox"></span>
+              </label>
+            </div>
+          }
+        } else {
           <div class="admin-option-item">
             <label class="checkbox-container">Share to Twitter
               <input name="should_tweet" type="checkbox"/>
