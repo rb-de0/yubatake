@@ -25,7 +25,7 @@
       <input id="admin-post-title" class="pure-input-1" type="text" name="title" value="#(post.title)" placeholder="Title">
     </fieldset>
 
-    <fieldset class="pure-group">
+    <fieldset id="admin-supplement-field-group" lass="pure-group">
 
       <div class="pure-g gutters">
         

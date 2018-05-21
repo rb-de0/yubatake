@@ -176,7 +176,6 @@ label.checkbox-container {
 }
 
 .pure-button {
-  padding: .25rem 1rem;
   font-size: .9rem;
 }
 
@@ -404,8 +403,12 @@ label.checkbox-container {
   margin-bottom: .25rem;
 }
 
+#admin-supplement-field-group {
+  padding-top: 0;
+}
+
 #admin-option-field-set {
-  padding-bottom: 0px;
+  padding-bottom: 0;
 }
 
 #admin-content-input-header {
@@ -420,6 +423,7 @@ label.checkbox-container {
   flex-direction: column;
   justify-content: stretch;
   height: 280px;
+  padding-top: 1rem;
 }
 
 .admin-supplement-list-container {
@@ -558,7 +562,7 @@ label.checkbox-container {
 }
 
 #image-form-container .pure-form {
-  width: 96%;
+  width: 100%;
 }
 
 /* --------------------------
@@ -647,7 +651,7 @@ label.checkbox-container {
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: .5rem;
+  margin: .5rem 0 .5rem 0;
 }
 
 #file-name {
@@ -779,6 +783,7 @@ label.checkbox-container {
 
   #file-editor-header {
     flex-direction: row;
+    margin: 0 0 .5rem 0;
   }
 
   #file-name-container {
@@ -808,16 +813,20 @@ label.checkbox-container {
     margin-left: 0;
   }
 
-  #admin-page-title {
-    margin-top: 0;
-  }
-
   #toggle-menu {
     display: none;
   }
 
   #login-form {
     width: 480px;
+  }
+
+  #admin-page-title {
+    margin-top: 0;
+  }
+
+  #image-form-container .pure-form {
+    width: 96%;
   }
 
   .post-table-description-container {
