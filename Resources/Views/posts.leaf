@@ -10,18 +10,25 @@
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
 
     <table id="admin-table" class="pure-table pure-table-horizontal">
+
+      <col id="posts-table-head-checkbox">
+      <col id="posts-table-head-title">
+      <col id="posts-table-head-user">
+      <col id="posts-table-head-category">
+      <col id="posts-table-head-update">
+
       <thead id="admin-table-header">
         <tr>
-          <th id="posts-table-head-checkbox">
+          <th>
             <label class="checkbox-container">
               <input id="all-checkbox" type="checkbox" v-on:click="selectAll"/>
               <span class="checkbox"></span>
             </label>
           </th>
-          <th id="posts-table-head-title">Title</th>
-          <th id="posts-table-head-user">User</th>
-          <th id="posts-table-head-category">Category</th>
-          <th id="posts-table-head-update">Last Update</th>
+          <th>Title</th>
+          <th class="collapsable-col">User</th>
+          <th class="collapsable-col">Category</th>
+          <th class="collapsable-col">Last Update</th>
         </tr>
       </thead>
 
@@ -39,10 +46,15 @@
                 <span class="posts-table-draft">(Draft)</span>
               }
               <a href="/admin/posts/#(post.id)/edit">#(post.title)</a>
+              <div class="post-table-description-container">
+                <div>User: #(post.user.name)</div>
+                <div>Category: #(post.category.name)</div>
+                <div>Last Update: #(post.formatted_updated_at)</div>
+              </div>
             </td>
-            <td>#(post.user.name)</td>
-            <td>#(post.category.name)</td>
-            <td>#(post.formatted_updated_at)</td>
+            <td class="collapsable-col">#(post.user.name)</td>
+            <td class="collapsable-col">#(post.category.name)</td>
+            <td class="collapsable-col">#(post.formatted_updated_at)</td>
           </tr>
         }
 

@@ -19,14 +19,6 @@ ul {
   -webkit-padding-start: 1rem;
 }
 
-th {
-  word-break: break-all;
-}
-
-tr {
-  word-break: break-all;
-}
-
 ol {
   -webkit-padding-start: 1.5rem;
 }
@@ -45,6 +37,10 @@ ol {
 * CheckBox
 * --------------------------
 */
+
+label.checkbox-container {
+  display: inline;
+}
 
 .checkbox-container {
   position: relative;
@@ -297,7 +293,7 @@ ol {
   right: 0px;
   bottom: 0px;
   left: 0px;
-  padding: 16px 32px 16px;
+  padding: 1rem 2rem 1rem;
   color: #222222;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
@@ -387,6 +383,14 @@ ol {
   float: right;
 }
 
+.post-table-description-container {
+  display: block;
+}
+
+.collapsable-col {
+  display: none;
+}
+
 .posts-table-draft {
   color: #666;
 }
@@ -435,6 +439,7 @@ ol {
 }
 
 .admin-supplement-tag-item {
+  font-size: .9rem;
   cursor: pointer;
 }
 
@@ -813,5 +818,13 @@ ol {
 
   #login-form {
     width: 480px;
+  }
+
+  .post-table-description-container {
+    display: none;
+  }
+  
+  .collapsable-col {
+    display: table-cell;
   }
 }
