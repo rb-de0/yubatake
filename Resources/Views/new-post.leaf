@@ -26,47 +26,48 @@
     </fieldset>
 
     <fieldset class="pure-group">
-      <div class="pure-u-1 pure-u-md-1-2">
-        <div id="admin-category-container">
-          <div class="form-label">
-            Category
-          </div>
-          <div class="admin-supplement-list-container">
-            <ul class="admin-supplement-list">
-              <li>
-                <label for="non-categorized" class="admin-supplement-category-item pure-radio">
-                  <input id="non-categorized" type="radio" name="category" #if(post.category) {} else {checked}>NonCategorized
-                </label>
-              </li>
-              #for(category in categories) {
+
+      <div class="pure-g gutters">
+        
+        <div class="pure-u-1 pure-u-md-1-2">
+          <div class="admin-supplement-container">
+            <div class="form-label">Category</div>
+            <div class="admin-supplement-list-container">
+              <ul class="admin-supplement-list">
                 <li>
-                  <label for="#(category.name)" class="admin-supplement-category-item pure-radio">
-                    <input id="#(category.name)" type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id) {checked}>
-                    #(category.name)
+                  <label for="non-categorized" class="admin-supplement-category-item pure-radio">
+                    <input id="non-categorized" type="radio" name="category" #if(post.category) {} else {checked}>NonCategorized
                   </label>
                 </li>
-              }
-            </ul>
+                #for(category in categories) {
+                  <li>
+                    <label for="#(category.name)" class="admin-supplement-category-item pure-radio">
+                      <input id="#(category.name)" type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id) {checked}>
+                      #(category.name)
+                    </label>
+                  </li>
+                }
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
-    </fieldset>
 
-    <fieldset class="pure-group">
-      <div class="pure-u-1 pure-u-md-1-2">
-        <div id="admin-tag-container">
-          <div class="form-label">
-            <label for="admin-tag-text">Tags(comma separated)</label>
-          </div>
-          <input id="admin-tag-text" v-model="tagString" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
-          <div class="admin-supplement-list-container">
-            <ul class="admin-supplement-list">
-              #for(tag in tags) {
-                <li class="admin-supplement-tag-item" v-bind:class="[ isSelectedTag('#(tag.name)') ? 'selected' : '' ]" v-on:click="selectedTag">#(tag.name)</li>
-              }
-            </ul>
+        <div class="pure-u-1 pure-u-md-1-2">
+          <div class="admin-supplement-container">
+            <div class="form-label">
+              <label for="admin-tag-text">Tags(comma separated)</label>
+            </div>
+            <input id="admin-tag-text" v-model="tagString" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
+            <div class="admin-supplement-list-container">
+              <ul class="admin-supplement-list">
+                #for(tag in tags) {
+                  <li class="admin-supplement-tag-item" v-bind:class="[ isSelectedTag('#(tag.name)') ? 'selected' : '' ]" v-on:click="selectedTag">#(tag.name)</li>
+                }
+              </ul>
+            </div>
           </div>
         </div>
+
       </div>
     </fieldset>
 
