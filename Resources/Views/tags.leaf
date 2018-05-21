@@ -12,7 +12,12 @@
     <table id="admin-table" class="pure-table pure-table-horizontal">
       <thead id="admin-table-header">
         <tr>
-          <th id="tags-table-head-checkbox"><input id="all-checkbox" type="checkbox" v-on:click="selectAll"/></th>
+          <th id="tags-table-head-checkbox">
+            <label class="checkbox-container">
+              <input id="all-checkbox" type="checkbox" v-on:click="selectAll"/>
+              <span class="checkbox"></span>
+            </label>
+          </th>
           <th id="tags-table-head-name">Name</th>
         </tr>
       </thead>
@@ -21,7 +26,10 @@
         #for(tag in data) {
           <tr>
             <td class="tags-table-checkbox">
-              <input class="one-checkbox" type="checkbox" name="tags[]" value="#(tag.id)" v-on:click="selectOne"/>
+              <label class="checkbox-container">
+                <input class="one-checkbox" type="checkbox" name="tags[]" value="#(tag.id)" v-on:click="selectOne"/>
+                <span class="checkbox"></span>
+              </label>
             </td>
             <td class="tags-table-name"><a href="/admin/tags/#(tag.id)/edit">#(tag.name)</a></td>
           </tr>

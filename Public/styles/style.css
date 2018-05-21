@@ -14,11 +14,6 @@ body {
   height: 100%;
 }
 
-input[type=checkbox] {
-  height: 16px;
-  width: 16px;
-}
-
 ul {
   margin: 0px;
   -webkit-padding-start: 1rem;
@@ -39,6 +34,68 @@ ol {
 [v-cloak] {
   display: none;
 }
+
+.clearfix::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* --------------------------
+* CheckBox
+* --------------------------
+*/
+
+.checkbox-container {
+  position: relative;
+  cursor: pointer;
+  padding-left: 24px;
+  font-size: .9rem;
+}
+
+.checkbox-container input[type=checkbox] {
+  display: none;
+}
+
+.checkbox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: #fff;
+  border: solid 1px #ddd;
+}
+
+.checkbox:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkbox {
+  background-color: #0078e7;
+  border: none;
+}
+
+.checkbox-container input:checked ~ .checkbox:after {
+  display: block;
+}
+
+.checkbox-container .checkbox:after {
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* --------------------------
+* App Common
+* --------------------------
+*/
 
 .form-label {
   font-size: .9rem;
@@ -64,10 +121,6 @@ ol {
 */
 
 .pure-form .pure-group li input {
-  display: inline;
-}
-
-.pure-form .pure-group .pure-form-item-inline input  {
   display: inline;
 }
 
