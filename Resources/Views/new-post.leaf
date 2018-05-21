@@ -35,15 +35,16 @@
             <div class="admin-supplement-list-container">
               <ul class="admin-supplement-list">
                 <li>
-                  <label for="non-categorized" class="admin-supplement-category-item pure-radio">
-                    <input id="non-categorized" type="radio" name="category" #if(post.category) {} else {checked}>NonCategorized
+                  <label class="radio-container">NonCategorized
+                    <input type="radio" name="category" #if(post.category) {} else {checked}>
+                    <span class="radio-button"></span>
                   </label>
                 </li>
                 #for(category in categories) {
                   <li>
-                    <label for="#(category.name)" class="admin-supplement-category-item pure-radio">
-                      <input id="#(category.name)" type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id) {checked}>
-                      #(category.name)
+                    <label class="radio-container">#(category.name)
+                      <input type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id) {checked}>
+                      <span class="radio-button"></span>
                     </label>
                   </li>
                 }

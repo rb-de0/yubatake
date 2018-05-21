@@ -93,6 +93,56 @@ ol {
 }
 
 /* --------------------------
+* RadioButton
+* --------------------------
+*/
+
+.radio-container {
+  position: relative;
+  cursor: pointer;
+  padding-left: 24px;
+  font-size: .9rem;
+}
+
+.radio-container input[type=radio] {
+  display: none;
+}
+
+.radio-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: #fff;
+  border: solid 1px #ddd;
+  border-radius: 50%;
+}
+
+.radio-button:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.radio-container input:checked ~ .radio-button {
+  background-color: #0078e7;
+}
+
+.radio-container input:checked ~ .radio-button:after {
+  display: block;
+}
+
+.radio-container .radio-button:after {
+  top: 5px;
+  left: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: white;
+}
+
+/* --------------------------
 * App Common
 * --------------------------
 */
@@ -119,10 +169,6 @@ ol {
 * Pure Common
 * --------------------------
 */
-
-.pure-form .pure-group li input {
-  display: inline;
-}
 
 .pure-menu-link {
   font-size: .9rem;
@@ -382,15 +428,6 @@ ol {
 .admin-supplement-list {
   list-style: none;
   padding: .5rem;
-}
-
-.admin-supplement-list .admin-supplement-category-item {
-  margin: 2px 0px;
-}
-
-.admin-supplement-list .admin-supplement-category-item input:first-child:last-child {
-  top: 0px;
-  margin-right: .25rem;
 }
 
 .admin-supplement-list .admin-supplement-tag-item {
