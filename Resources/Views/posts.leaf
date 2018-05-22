@@ -1,23 +1,25 @@
 #set("script") {
-  <script src="/js/admin-table.js"></script>
+  <script src="/js/contents-form-table.js"></script>
 }
 
 #set("content") {
-  <div id="admin-page-title">All #if(is_static) {StaticContents} else {Posts}</div>
+  <div id="page-title">All #if(is_static) {StaticContents} else {Posts}</div>
 
-  <form id="admin-selectable-form" action="/admin/posts/delete" method="post">
+  <form id="contents-form" action="/admin/posts/delete" method="post">
 
     <input type="hidden" name="csrf-token" value="#(csrf_token)">
 
-    <table id="admin-table" class="pure-table pure-table-horizontal">
+    <table id="contents-form-table" class="pure-table pure-table-horizontal">
 
-      <col id="posts-table-head-checkbox">
-      <col id="posts-table-head-title">
-      <col id="posts-table-head-user">
-      <col id="posts-table-head-category">
-      <col id="posts-table-head-update">
+      <colgroup>
+        <col id="contents-form-table-head-checkbox">
+        <col id="posts-table-head-title">
+        <col id="posts-table-head-user">
+        <col id="posts-table-head-category">
+        <col id="posts-table-head-update">
+      </colgroup>
 
-      <thead id="admin-table-header">
+      <thead id="contents-form-table-header">
         <tr>
           <th>
             <label class="checkbox-container">
@@ -61,8 +63,9 @@
       </tbody>
     </table>
 
-    <div id="admin-table-footer">
-      <div id="admin-edit-button-container">
+    <div id="contents-form-footer">
+
+      <div id="contents-edit-button-container">
         <a class="pure-button" href="/admin/posts/create">New</a>
         <button type="submit" class="pure-button">Delete</button>
       </div>

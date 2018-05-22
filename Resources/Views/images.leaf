@@ -7,26 +7,27 @@
 }
 
 #set("content") {
-  <div id="admin-page-title">All Images</div>
+  <div id="page-title">All Images</div>
 
-  <form id="admin-selectable-form" method="post" v-cloak>
+  <form id="contents-form" method="post" v-cloak>
 
     <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
 
     <div class="pure-g">
 
       <div v-for="image in images" class="pure-u-1-3 pure-u-lg-1-8 pure-u-xl-1-12">
-        <div class="admin-image-card-container">
-          <a class="admin-image-card" v-bind:href="'/admin/images/' + image.id + '/edit'">
-            <img class="admin-image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+        <div class="image-card-container">
+          <a class="image-card" v-bind:href="'/admin/images/' + image.id + '/edit'">
+            <img class="image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
           </a>
         </div>
       </div>
 
     </div>
 
-    <div id="admin-table-footer">
-      <div id="admin-edit-button-container">
+    <div id="contents-form-footer">
+
+      <div id="contents-edit-button-container">
         <input id="image-file-name" type="hidden" name="image_file_name"/>
         <label class="pure-button" for="image-file-data">Upload
           <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>

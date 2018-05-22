@@ -1,5 +1,5 @@
 #set("content") {
-  <div id="admin-page-title">Edit SiteInfo</div>
+  <div id="page-title">Edit SiteInfo</div>
 
   <form class="pure-form" action="/admin/siteinfo/edit" method="post">
 
@@ -8,16 +8,16 @@
 
     <fieldset class="pure-group">
       <div class="form-label">
-        <label for="admin-siteinfo-name">SiteName</label>
+        <label for="edit-form-siteinfo-name">SiteName</label>
       </div>
-      <input id="admin-siteinfo-name" class="pure-input-1" type="text" name="name" value="#(name)" placeholder="Name">
+      <input id="edit-form-siteinfo-name" class="pure-input-1" type="text" name="name" value="#(name)" placeholder="Name">
     </fieldset>
 
     <fieldset class="pure-group">
       <div class="form-label">
-        <label for="admin-siteinfo-description">Description</label>
+        <label for="edit-form-siteinfo-description">Description</label>
       </div>
-      <textarea id="admin-siteinfo-description" class="pure-input-1" name="description" placeholder="Description" rows="8">#(description)</textarea>
+      <textarea id="edit-form-siteinfo-description" class="pure-input-1" name="description" placeholder="Description" rows="8">#(description)</textarea>
     </fieldset>
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
