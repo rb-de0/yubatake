@@ -15,32 +15,23 @@
 
           <div id="post-content-header-post-attribute">
             #if(category) {
-              <div>
-                Category:
-                <span>
-                  <a class="category-link" href="/categories/#(category.id)/posts">#(category.name)</a>
-                </span>
-              </div>
+              <span>
+                <a class="category-link" href="/categories/#(category.id)/posts">#(category.name)</a>
+              </span>
             } else {
-              <div>
-                Category:
-                <span>
-                  <a class="category-link" href="/categories/noncategorized/posts">NonCategorized</a>
-                </span>
-              </div>
+              <span>
+                <a class="category-link" href="/categories/noncategorized/posts">NonCategorized</a>
+              </span>
             }
-            #if(count(tags) != 0) {
-              <div>
-                Tag:
-                #for(tag in tags) {
-                  <span><a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a></span>
-                }
-              </div>
+            #if(tags) {
+              #for(tag in tags) {
+                <span><a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a></span>
+              }
             }
           </div>
 
           <div id="post-content-header-date">
-            <div class="post-content-header-text">CreatedAt: #(formatted_created_at)</div>
+            <div class="post-content-header-text">PublishedAt: #(formatted_created_at)</div>
             <div class="post-content-header-text">UpdatedAt: #(formatted_updated_at)</div>
           </div>
         </div>
