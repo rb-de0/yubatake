@@ -14,19 +14,13 @@ extension API {
         
         func store(request: Request, form: ThemeForm) throws -> Future<HTTPStatus> {
             
-            let viewCreator = try request.make(ViewCreator.self)
-            
             return try SiteInfo.shared(on: request).flatMap { siteInfo in
                 
                 siteInfo.theme = form.name
                 
                 return request.withPooledConnection(to: .mysql) { conn in
-                    SiteInfo.Database.inTransaction(on: conn) { transaction in
-                        siteInfo.save(on: transaction).map { saved in
-                            try viewCreator.updateDirectory(to: saved.selectedTheme, on: request)
-                        }
-                    }
-                }.transform(to: .ok)
+                    siteInfo.save(on: conn).transform(to: .ok)
+                }
             }
         }
     }

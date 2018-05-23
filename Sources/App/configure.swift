@@ -53,7 +53,7 @@ public func configure(
         config.prefer(LeafRenderer.self, for: TemplateRenderer.self)
 
         services.register { container -> ViewCreator in
-            try ViewCreator.default(container: container)
+            try ViewCreator.default()
         }
         
         var tags = LeafTagConfig.default()

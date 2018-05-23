@@ -5,9 +5,6 @@ public func boot(_ app: Application) throws {
         .flatMap {
             try createSiteInfoIfNeeded(using: app)
         }
-        .flatMap {
-            try initializeTemplateDirectory(using: app)
-        }
         .wait()
 }
 
@@ -46,16 +43,5 @@ private func createSiteInfoIfNeeded(using app: Application) throws -> Future<Voi
                 }
                 return conn.eventLoop.newSucceededFuture(result: ())
             }
-    }
-}
-
-private func initializeTemplateDirectory(using app: Application) throws -> Future<Void> {
-    
-    let viewCreator = try app.make(ViewCreator.self)
-    
-    return app.withPooledConnection(to: .mysql) { conn -> Future<Void> in
-        try SiteInfo.shared(on: conn).map { siteInfo in
-            try viewCreator.updateDirectory(to: siteInfo.selectedTheme, on: app)
-        }
     }
 }
