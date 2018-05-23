@@ -1,5 +1,5 @@
 #set("content") {
-  <div id="admin-page-title">Edit User</div>
+  <div id="page-title">Edit User</div>
 
   <form class="pure-form" action="/admin/user/edit" method="post">
 
@@ -8,33 +8,33 @@
 
     <fieldset class="pure-group">
       <div class="form-label">
-        <label for="admin-user-name">UserName</label>
+        <label for="edit-form-user-name">UserName</label>
       </div>
-      <input id="admin-user-name" class="pure-input-1" type="text" name="name" value="#(name)" placeholder="Name">
+      <input id="edit-form-user-name" class="pure-input-1" type="text" name="name" value="#(name)" placeholder="Name">
       <div class="form-label">
-        <label for="admin-user-password">password</label>
+        <label for="edit-form-user-password">password</label>
       </div>
-      <input id="admin-user-password" class="pure-input-1" type="password" name="password">
+      <input id="edit-form-user-password" class="pure-input-1" type="password" name="password">
     </fieldset>
 
-    <div class="admin-form-group-title">Twitter Auth Information</div>
+    <div class="form-group-title">Twitter Auth Information</div>
     <fieldset>
       <div class="form-label">
-        <label for="admin-user-api-key">APIKey</label>
+        <label for="edit-form-user-api-key">APIKey</label>
       </div>
-      <input id="admin-user-api-key" class="pure-input-1" type="text" name="api_key" value="#(api_key)">
+      <input id="edit-form-user-api-key" class="pure-input-1" type="text" name="api_key" value="#(api_key)">
       <div class="form-label">
-        <label for="admin-user-api-secret">APISecret</label>
+        <label for="edit-form-user-api-secret">APISecret</label>
       </div>
-      <input id="admin-user-api-secret" class="pure-input-1" type="text" name="api_secret" value="#(api_secret)">
+      <input id="edit-form-user-api-secret" class="pure-input-1" type="text" name="api_secret" value="#(api_secret)">
       <div class="form-label">
-        <label for="admin-user-access-token">AccessToken</label>
+        <label for="edit-form-user-access-token">AccessToken</label>
       </div>
-      <input id="admin-user-access-token" class="pure-input-1" type="text" name="access_token" value="#(access_token)">
+      <input id="edit-form-user-access-token" class="pure-input-1" type="text" name="access_token" value="#(access_token)">
       <div class="form-label">
-        <label for="admin-user-access-token-secret">AccessTokenSecret</label>
+        <label for="edit-form-user-access-token-secret">AccessTokenSecret</label>
       </div>
-      <input id="admin-user-access-token-secret" class="pure-input-1" type="text" name="access_token_secret" value="#(access_token_secret)">
+      <input id="edit-form-user-access-token-secret" class="pure-input-1" type="text" name="access_token_secret" value="#(access_token_secret)">
     </fieldset>
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">

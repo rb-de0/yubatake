@@ -32,7 +32,7 @@ var viewModel = new Vue({
     showPickerView: function (e) {
 
       e.preventDefault()
-      document.getElementById('admin-image-picker').style.display = 'flex'
+      document.getElementById('image-picker').style.display = 'flex'
       document.getElementById('content').style.overflow = 'hidden'
       document.getElementById('menu').style.overflow = 'hidden'
 
@@ -40,12 +40,12 @@ var viewModel = new Vue({
     },
     closePickerView: function (e) {
 
-      if (e.target !== document.getElementById('admin-image-picker')) {
+      if (e.target !== document.getElementById('image-picker')) {
         return
       }
 
       e.preventDefault()
-      document.getElementById('admin-image-picker').style.display = 'none'
+      document.getElementById('image-picker').style.display = 'none'
       document.getElementById('content').style.overflow = 'scroll'
       document.getElementById('menu').style.overflow = 'scroll'
     },
@@ -100,7 +100,7 @@ var viewModel = new Vue({
     },
     selectImage: function (image) {
 
-      document.getElementById('admin-image-picker').style.display = 'none'
+      document.getElementById('image-picker').style.display = 'none'
       document.getElementById('content').style.overflow = 'scroll'
       document.getElementById('menu').style.overflow = 'scroll'
 
@@ -145,6 +145,6 @@ var viewModel = new Vue({
     }
   },
   created: function() {
-    this.tags = document.getElementById('admin-tag-text').value.split(',')
+    this.tags = document.getElementById('edit-form-tag-text').value.split(',')
   }
 })

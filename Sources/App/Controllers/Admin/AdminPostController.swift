@@ -179,7 +179,10 @@ final class AdminPostController {
             
             return updateTransaction
                 .map {
-                    request.redirect(to: "/admin/posts/\(postId)/edit")
+                    if form.shouldTweet {
+                        try request.make(TwitterRepository.self).post(post, on: request)
+                    }
+                    return request.redirect(to: "/admin/posts/\(postId)/edit")
                 }
                 .catchMap { error in
                     try request.redirect(to: "/admin/posts/\(postId)/edit", with: FormError(error: error, formData: form))
