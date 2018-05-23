@@ -4,25 +4,13 @@ import Vapor
 
 final class ViewCreator: Service {
     
-    private let publicRenderer: PublicTemplateRenderer
-    private let lock = NSLock()
-    
     let decorators: [ViewDecorator]
     
-    init(publicRenderer: PublicTemplateRenderer, decorators: [ViewDecorator]) {
-        self.publicRenderer = publicRenderer
+    init(decorators: [ViewDecorator]) {
         self.decorators = decorators
     }
     
-    func updateDirectory(to name: String, on container: Container) throws {
-        lock.lock()
-        defer { lock.unlock() }
-        publicRenderer.updateDirectory(to: try container.make(FileConfig.self).templateDir(in: name))
-    }
-    
     func make<T: Encodable>(_ path: String, _ encodable: T, for request: Request, forAdmin: Bool) throws -> Future<View> {
-        
-        let renderer: TemplateRenderer = forAdmin ? try request.make(TemplateRenderer.self) : publicRenderer
         
         func render(templateData: TemplateData) throws -> Future<View> {
             
@@ -34,9 +22,17 @@ final class ViewCreator: Service {
                 try decorator.decorate(context: &context, for: request)
             }
             
-            lock.lock()
-            defer { lock.unlock() }
-            return renderer.render(path, .dictionary(context))
+            let base = try request.make(TemplateRenderer.self)
+            
+            if forAdmin {
+                return base.render(path, .dictionary(context))
+            }
+            
+            return try SiteInfo.shared(on: request).flatMap { siteInfo in
+                let relativeDirectory = try request.make(FileConfig.self).templateDir(in: siteInfo.selectedTheme)
+                let renderer: TemplateRenderer = PublicTemplateRenderer(base: base, relativeDirectory: relativeDirectory)
+                return renderer.render(path, .dictionary(context))
+            }
         }
         
         return try TemplateDataEncoder().encode(encodable, on: request)
@@ -50,9 +46,7 @@ final class ViewCreator: Service {
 // MARK: - Default
 extension ViewCreator {
     
-    class func `default`(container: Container, decorators: [ViewDecorator] = [MessageDeliveryViewDecorator(), CSRFViewDecorator()]) throws -> ViewCreator {
-        let relativeDirectory = try container.make(FileConfig.self).templateDir(in: SiteInfo.defaultTheme)
-        let publicRenderer = PublicTemplateRenderer(base: try container.make(), relativeDirectory: relativeDirectory)
-        return ViewCreator(publicRenderer: publicRenderer, decorators: decorators)
+    class func `default`(decorators: [ViewDecorator] = [MessageDeliveryViewDecorator(), CSRFViewDecorator()]) throws -> ViewCreator {
+        return ViewCreator(decorators: decorators)
     }
 }
