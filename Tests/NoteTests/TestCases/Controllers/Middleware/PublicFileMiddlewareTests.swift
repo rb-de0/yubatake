@@ -11,7 +11,7 @@ final class PublicFileMiddlewareTests: ControllerTestCase {
         response = try waitResponse(method: .GET, url: "/themes/default/styles/style.css")
         XCTAssertEqual(response.http.status, .ok)
         
-        response = try waitResponse(method: .GET, url: "/themes/default/js/menu.js")
+        response = try waitResponse(method: .GET, url: "/themes/pure/js/menu.js")
         XCTAssertEqual(response.http.status, .ok)
         
         response = try waitResponse(method: .GET, url: "/js/file-editor.js")
