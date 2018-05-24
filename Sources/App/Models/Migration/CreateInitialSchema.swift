@@ -57,5 +57,15 @@ extension PostTag: Migration {
 }
 
 extension SiteInfo: Migration {}
-extension Image: Migration {}
+
+extension Image: Migration {
+    
+    static func prepare(on connection: MySQLConnection) -> Future<Void> {
+        
+        return Database.create(self, on: connection) { builder in
+            try addProperties(to: builder)
+            try builder.addIndex(to: \.path, isUnique: true)
+        }
+    }
+}
 
