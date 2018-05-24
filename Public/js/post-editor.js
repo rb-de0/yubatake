@@ -3,7 +3,7 @@ var viewModel = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     page: 1,
-    images: [],
+    imageGroups: [],
     hasNext: false,
     hasPrevious: false,
     totalPage: 0,
@@ -12,7 +12,7 @@ var viewModel = new Vue({
   },
   computed: {
     hasImages: function() {
-      return this.images.length !== 0
+      return this.imageGroups.length !== 0
     }
   },
   watch: {
@@ -72,7 +72,7 @@ var viewModel = new Vue({
       .then(function (response) {
         receiver.hasNext = response.data.page.position.next !== undefined
         receiver.hasPrevious = response.data.page.position.previous !== undefined
-        receiver.images = response.data.data
+        receiver.imageGroups = response.data.data
         receiver.totalPage = response.data.page.position.max
         receiver.page = response.data.page.position.current
       })

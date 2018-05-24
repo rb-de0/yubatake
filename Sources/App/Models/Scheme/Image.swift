@@ -2,11 +2,11 @@ import FluentMySQL
 import Pagination
 import Vapor
 
-final class Image: DatabaseModel, Content {
+final class Image: DatabaseModel {
     
     static let pageSize = 32
     
-    struct Public: PageResponse {
+    struct Public: ResponseContent {
         
         private enum CodingKeys: String, CodingKey {
             case name
