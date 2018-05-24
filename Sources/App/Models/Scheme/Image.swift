@@ -4,7 +4,7 @@ import Vapor
 
 final class Image: DatabaseModel {
     
-    static let pageSize = 32
+    static let defaultPageSize = 32
     
     struct Public: ResponseContent {
         
