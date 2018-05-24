@@ -28,7 +28,7 @@
     <fieldset id="supplement-field-group" lass="pure-group">
 
       <div class="pure-g gutters">
-        
+
         <div class="pure-u-1 pure-u-md-1-2">
           <div class="supplement-container">
             <div class="form-label">Category</div>
@@ -131,16 +131,17 @@
   <div id="image-picker" v-on:click="closePickerView">
     <div id="image-picker-content">
 
-      <div>
-        <div id="image-picker-header">
-          <div id="image-picker-title">Select a image</div>
-          <label class="pure-button" for="image-file-data">Upload
-            <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
-          </label>
-        </div>
+      <div id="image-picker-header">
+        <div id="image-picker-title">Select a image</div>
+        <label class="pure-button" for="image-file-data">Upload
+          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
+        </label>
+      </div>
 
-        <div id="image-picker-items" class="pure-g">
-          <div v-for="image in images" class="pure-u-1-2 pure-u-md-1-4 pure-u-lg-1-8">
+      <div id="image-picker-items">
+        <div v-for="group in imageGroups" class="pure-g">
+          <div class="pure-u-1 image-list-date-header">[[ group.date ]]</div>
+          <div v-for="image in group.images" class="pure-u-1-2 pure-u-md-1-4 pure-u-lg-1-8">
             <div class="image-card-container">
               <div class="image-card" v-on:click="selectImage(image)">
                 <img class="image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>

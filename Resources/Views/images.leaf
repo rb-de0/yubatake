@@ -13,16 +13,21 @@
 
     <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
 
-    <div class="pure-g">
+    <div id="contents-form-image-list">
+      
+      <div v-for="group in groups" class="pure-g">
 
-      <div v-for="image in images" class="pure-u-1-3 pure-u-lg-1-8 pure-u-xl-1-12">
-        <div class="image-card-container">
-          <a class="image-card" v-bind:href="'/admin/images/' + image.id + '/edit'">
-            <img class="image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
-          </a>
+        <div class="pure-u-1 image-list-date-header">[[ group.date ]]</div>
+
+        <div v-for="image in group.images" class="pure-u-1-3 pure-u-lg-1-8 pure-u-xl-1-12">
+          <div class="image-card-container">
+            <a class="image-card" v-bind:href="'/admin/images/' + image.id + '/edit'">
+              <img class="image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+            </a>
+          </div>
         </div>
-      </div>
 
+      </div>
     </div>
 
     <div id="contents-form-footer">

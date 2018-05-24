@@ -2,6 +2,7 @@
     "tweetFormat": "New Post %1$@ on %2$@",
     "hostName": "",
     "dateFormat": "yyyy-MM-dd HH:mm",
+    "imageGroupDateFormat": "yyyy-MM-dd",
     "meta": {
         "pageDescription": "note",
         "pageImage": "imageURL",

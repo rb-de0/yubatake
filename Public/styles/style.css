@@ -470,10 +470,6 @@ label.checkbox-container {
 }
 
 #image-picker-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
   width: 80%;
   height: 80%;
   background-color: #fff;
@@ -484,14 +480,14 @@ label.checkbox-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: .5rem 1rem 0;
+  padding: 1rem 1rem 0;
 }
 
 #image-picker-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 1rem .5rem;
+  padding: 0 1rem 1rem;
 }
 
 #image-picker-header .pure-button, #image-picker-footer .pure-button {
@@ -562,8 +558,18 @@ label.checkbox-container {
 * --------------------------
 */
 
+#contents-form-image-list {
+  margin: .5rem 0 2rem 0;
+}
+
 #image-file-data {
   display: none;
+}
+
+.image-list-date-header {
+  margin: 1rem 0 .25rem 0;
+  font-size: 1.125rem;
+  font-weight: bold;
 }
 
 .image-card-container {

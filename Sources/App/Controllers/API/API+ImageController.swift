@@ -5,11 +5,12 @@ extension API {
     
     final class ImageController {
         
-        func index(request: Request) throws -> Future<Paginated<Image.Public>> {
+        func index(request: Request) throws -> Future<Paginated<ImageGroup>> {
             
             return try Image.query(on: request).paginate(for: request).map { (page: Page<Image>) in
                 let publicImages = try page.data.map { try $0.formPublic(on: request) }
-                return try page.transform(publicImages).response()
+                let groups = try ImageGroup.make(from: publicImages, on: request)
+                return try page.transform(groups).response()
             }
         }
         
