@@ -1,19 +1,21 @@
-# note
+# yubatake
 
-[![Build Status](https://travis-ci.org/rb-de0/note.svg?branch=master)](https://travis-ci.org/rb-de0/note)
-[![Coverage Status](https://coveralls.io/repos/github/rb-de0/note/badge.svg?branch=master)](https://coveralls.io/github/rb-de0/note?branch=master)
+### Current Version is Beta. The application may be unstable and some data may not be handed over to the next version.
 
-A simple CMS using Vapor(Server Side Swift Framework)
+[![Build Status](https://travis-ci.org/rb-de0/yubatake.svg?branch=master)](https://travis-ci.org/rb-de0/yubatake)
+[![Coverage Status](https://coveralls.io/repos/github/rb-de0/yubatake/badge.svg?branch=master)](https://coveralls.io/github/rb-de0/yubatake?branch=master)
+
+yubatake is simple blogging engine for Swift.
 
 # Prerequisites
 
 ### Swift
 
-- 4.0.3
+- 4.1
 
 ### OS
 
-- macOS Sierra 10.12.6
+- macOS High Sierra 10.13.4
 - Ubuntu 14.04
 
 # Usage
@@ -22,26 +24,26 @@ A simple CMS using Vapor(Server Side Swift Framework)
 
 #### 1. Install Swift
 
-Please install Swift in your environment. For macOS please download Xcode.
+Please install Swift in your environment. For macOS please download Xcode 9.3.
 If you are using Ubuntu, it is easy to install using swiftenv.
 
 Example(swiftenv)
 
 ```bash
-$ swiftenv install 4.0.3
+$ swiftenv install 4.1
 ```
 
 #### 2. Install MySQL
 
-Since note supports MySQL only, installation of MySQL server and client library is required.
+yubatake supports MySQL only.
 
-For details, refer to the official Vapor 's document.
-
-[https://docs.vapor.codes/2.0/mysql/package/](https://docs.vapor.codes/2.0/mysql/package/)
+Please install MySQL Server in your environment.
 
 #### 3. Install Redis
 
-note supports Redis and In Memory Database as session store. If you use Redis, Redis needs to be installed in your environment.
+yubatake uses Redis Server as a session store. 
+
+Please install Redis in your environment.
 
 For macOS
 
@@ -55,7 +57,6 @@ For ubuntu
 $ sudo apt-get install redis-server
 ```
 
-
 ## Setup Application
 
 #### 1. Clone or download this repository. 
@@ -64,85 +65,50 @@ $ sudo apt-get install redis-server
 
 To use MySQL for the database, please enter the following SQL to create the database.
 
+Please choose the name of a database freely.
 
 ```SQL
-mysql> create database note default character set utf8;
+mysql> create database yubatake default character set utf8;
 ```
 
 #### 3. Setup Config
 
-Move to the directory of this repository and Change the Config of the application. 
+Please edit configuration files in `Config` directory according to your environment.
 
-Application settings are written in JSON files in ```Config``` directory. Although the default setting has already been written, you need to create a custom JSON file according to your environment.
+#### app.json
 
-Please create the Config file in ```Config/secrets```. The secrets directory is ignored so it is not affected by note updates.
+The setting of the whole application.
 
-The way to write Config is described in the Config section.
+#### mysql.json
+
+The setting of a mysql server.
+
+#### redis.json
+
+The setting of a redis server.
+
+#### csp.json
+
+The setting of a Content Security Policy.
 
 
 #### 4. Enter the following command.
 
 ```bash
-$ swift build
+$ swift build -c release
 ```
 
 ※ Depending on the version of MySQL, you may need ```-Xswiftc -DNOJSON``` as argument.
 
-## About Config
 
+#### 5. Run the app.
 
-Application settings can be changed freely, but your own environment settings should be placed in ```Config/secrets```.
-
-For details, refer to the official Vapor 's document.
-
-[https://docs.vapor.codes/2.0/configs/config/](https://docs.vapor.codes/2.0/configs/config/)
-
-Below are examples of several Config settings.
-
-#### droplet.json
-
-If you want to use In Memory Database as a store of sessions, change middleware of droplet.json from ```redis-sessions``` to ```sessions```.
-
-```
-{
-    ...,
-    "middleware": [
-        ...,
-	"sessions"
-    ],
-    ...
-}
+```bash
+$ swift run Run
 ```
 
-#### redis.json
-
-Please write down the setting of Redis Server.
-
-```JSON
-{
-    "hostname": "127.0.0.1",
-    "port": 6379
-}
-```
-
-#### mysql.json
-
-Please write down the setting of MySQL Server.
-
-```JSON
-{
-    "hostname": "127.0.0.1",
-    "user": "root",
-    "password": "password",
-    "database": "note"
-}
-```
-
-# Future Improvement
-
-[https://github.com/rb-de0/note/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement](https://github.com/rb-de0/note/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
 
 
 # LICENSE
 
-note is released under the MIT License. See the license file for more info.
+yubatake is released under the MIT License. See the license file for more info.
