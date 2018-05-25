@@ -40,5 +40,4 @@ before_install:
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       bash schema_checker.sh;
-    else
     fi
