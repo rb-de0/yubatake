@@ -1,3 +1,4 @@
+import MySQL
 import Pagination
 import Vapor
 
@@ -21,7 +22,7 @@ extension API {
             
             let deleteTransaction = request.withPooledConnection(to: .mysql) { conn in
                 
-                Image.Database.inTransaction(on: conn) { transaction in
+                MySQLDatabase.inTransaction(on: conn) { transaction in
                     
                     newImage.save(on: transaction).map { _ in
                         try repository.save(image: form.data, for: form.name)
