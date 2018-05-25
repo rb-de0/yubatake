@@ -22,9 +22,10 @@ final class PublicViewContext {
             case siteInfo = "site_info"
             case recentPost = "recent_posts"
             case staticContents = "static_contents"
-            case meta
             case tags = "all_tags"
             case categories = "all_categories"
+            case meta
+            case dateFormat = "date_format"
             case root
         }
         
@@ -42,7 +43,9 @@ final class PublicViewContext {
             try container.encode(tags, forKey: .tags)
             try container.encode(categories, forKey: .categories)
             try container.encodeIfPresent(config.meta, forKey: .meta)
+            try container.encode(config.dateFormat, forKey: .dateFormat)
             try container.encode(root, forKey: .root)
+            
         }
     }
     

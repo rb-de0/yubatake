@@ -7,6 +7,7 @@ final class AdminViewContext {
         
         let context: Encodable
         let pageTitle: String?
+        let config: ApplicationConfig
         let siteInfo: Future<SiteInfo>
         let menuType: AdminMenuType?
         let formData: Encodable?
@@ -15,6 +16,7 @@ final class AdminViewContext {
             case pageTitle = "page_title"
             case siteInfo = "site_info"
             case menuType = "menu_type"
+            case dateFormat = "date_format"
         }
         
         func encode(to encoder: Encoder) throws {
@@ -27,6 +29,7 @@ final class AdminViewContext {
             try container.encode(title, forKey: .pageTitle)
             try container.encode(siteInfo, forKey: .siteInfo)
             try container.encode(menuType?.rawValue, forKey: .menuType)
+            try container.encode(config.dateFormat, forKey: .dateFormat)
         }
     }
     
@@ -44,10 +47,12 @@ final class AdminViewContext {
         
         let formData = try formDataType.restoreFormData(from: request)?.makeRenderingContext()
         let siteInfo = try SiteInfo.shared(on: request)
+        let config = try request.make(ApplicationConfig.self)
         
         let renderingContext = RenderingContext(
             context: context,
             pageTitle: title,
+            config: config,
             siteInfo: siteInfo,
             menuType: menuType,
             formData: formData

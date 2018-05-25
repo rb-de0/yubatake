@@ -26,8 +26,6 @@ final class Post: DatabaseModel {
             case category
             case tags
             case tagsString = "tags_string"
-            case formattedCreatedAt = "formatted_created_at"
-            case formattedUpdatedAt = "formatted_updated_at"
         }
         
         let post: Post
@@ -35,17 +33,13 @@ final class Post: DatabaseModel {
         let category: Category?
         let tags: [Tag]
         let tagsString: String
-        let formattedCreatedAt: String?
-        let formattedUpdatedAt: String?
         
-        init(post: Post, user: User.Public?, category: Category?, tags: [Tag], dateFormat: String) {
+        init(post: Post, user: User.Public?, category: Category?, tags: [Tag]) {
             self.post = post
             self.user = user
             self.category = category
             self.tags = tags
             self.tagsString = tags.map { $0.name }.joined(separator: Tag.separator)
-            self.formattedCreatedAt = post.formattedCreatedAt(dateFormat: dateFormat)
-            self.formattedUpdatedAt = post.formattedUpdatedAt(dateFormat: dateFormat)
         }
 
         func encode(to encoder: Encoder) throws {
@@ -55,8 +49,6 @@ final class Post: DatabaseModel {
             try container.encodeIfPresent(category, forKey: .category)
             try container.encode(tags, forKey: .tags)
             try container.encode(tagsString, forKey: .tagsString)
-            try container.encodeIfPresent(formattedCreatedAt, forKey: .formattedCreatedAt)
-            try container.encodeIfPresent(formattedUpdatedAt, forKey: .formattedUpdatedAt)
         }
     }
     
@@ -111,7 +103,6 @@ final class Post: DatabaseModel {
     
     func formPublic(on request: Request) throws -> Future<Public> {
         
-        let dateFormat = try request.make(ApplicationConfig.self).dateFormat
         let _user = try user?.get(on: request)
         let _category = try category?.get(on: request)
         let _tags = try tags.query(on: request).all()
@@ -122,7 +113,7 @@ final class Post: DatabaseModel {
             .and(_tags)
             .map { ($0.0.0, $0.0.1, $0.1) }
             .map { (user, category, tags) in
-                return Public(post: self, user: user, category: category, tags: tags, dateFormat: dateFormat)
+                return Public(post: self, user: user, category: category, tags: tags)
             }
     }
     
