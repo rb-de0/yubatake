@@ -55,10 +55,6 @@ public func configure(
         services.register { container -> ViewCreator in
             try ViewCreator.default()
         }
-        
-        var tags = LeafTagConfig.default()
-        tags.use(Raw(), as: "raw")
-        services.register(tags)
     }
     
     // middleware

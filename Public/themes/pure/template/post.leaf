@@ -40,7 +40,7 @@
     </div>
 
     <div id="post-content-body">
-      #raw(html_content)
+      #get(html_content)
     </div>
 
   </div>
