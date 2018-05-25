@@ -107,7 +107,18 @@ $ swift build -c release
 $ swift run Run
 ```
 
+# Migration
 
+If you are using a version earlier than 3.0, you need to migrate the database.
+
+1. Please update to 2.1.2
+2. Run the application to update scheme.
+3. Please update to 3.0.0
+4. Execute the following command to migrate the database.
+
+```bash
+$ swift run Run migrate -i <oldDatabase>
+```
 
 # LICENSE
 
