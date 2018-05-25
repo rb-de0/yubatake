@@ -21,6 +21,11 @@ or alternatively using `brew cask install fastlane`
 fastlane mac send_coverage
 ```
 
+### mac dump_schema
+```
+fastlane mac dump_schema
+```
+
 
 ----
 

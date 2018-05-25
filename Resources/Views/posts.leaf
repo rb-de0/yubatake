@@ -51,12 +51,12 @@
               <div class="post-table-description-container">
                 <div>User: #(post.user.name)</div>
                 <div>Category: #(post.category.name)</div>
-                <div>Last Update: #(post.formatted_updated_at)</div>
+                <div>Last Update: #date(post.updated_at, date_format)</div>
               </div>
             </td>
             <td class="collapsable-col">#(post.user.name)</td>
             <td class="collapsable-col">#(post.category.name)</td>
-            <td class="collapsable-col">#(post.formatted_updated_at)</td>
+            <td class="collapsable-col">#date(post.updated_at, date_format)</td>
           </tr>
         }
 

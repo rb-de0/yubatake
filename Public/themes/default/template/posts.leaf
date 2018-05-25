@@ -12,7 +12,7 @@
       <div class="pure-u-1 post-card">
         <div class="post-card-content">
           <a class="title-link no-decoration" href="/posts/#(post.id)"><div class="post-card-title">#(post.title)</div></a>
-          <div class="post-card-created-at">#(post.formatted_created_at)</div>
+          <div class="post-card-created-at">#date(post.created_at, date_format)</div>
           <div class="post-card-part-of-content-container">
             <div class="post-card-part-of-content">
               #(post.part_of_content)

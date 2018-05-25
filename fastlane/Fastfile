@@ -20,4 +20,8 @@ platform :mac do
     )
   end
 
+  lane :dump_schema do
+    sh("bundle exec ridgepole -c ../database.yml --export --output ../Schemafile")
+  end
+
 end

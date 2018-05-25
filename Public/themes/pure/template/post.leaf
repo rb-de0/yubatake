@@ -31,8 +31,8 @@
           </div>
 
           <div id="post-content-header-date">
-            <div class="post-content-header-text">PublishedAt: #(formatted_created_at)</div>
-            <div class="post-content-header-text">UpdatedAt: #(formatted_updated_at)</div>
+            <div class="post-content-header-text">PublishedAt: #date(created_at, date_format)</div>
+            <div class="post-content-header-text">UpdatedAt: #date(updated_at, date_format)</div>
           </div>
         </div>
       }
@@ -40,7 +40,7 @@
     </div>
 
     <div id="post-content-body">
-      #raw(html_content)
+      #get(html_content)
     </div>
 
   </div>
