@@ -11,7 +11,7 @@ services:
 env:
   global:
     - MYSQL_USER=test
-    - MYSQL_PASSWORD=note
+    - MYSQL_PASSWORD=test
     - MYSQL_PORT=3306
 
 osx_image: xcode9.3
@@ -32,14 +32,13 @@ before_install:
     fi
   - mysql -u root -e "set global max_connections = 1000";
   - mysql -u root -e "create database note_tests default character set utf8";
-  - mysql -u root -e "create user 'test'@'localhost' IDENTIFIED BY 'note'";
+  - mysql -u root -e "create database schema_check default character set utf8";
+  - mysql -u root -e "create user 'test'@'localhost' IDENTIFIED BY 'test'";
   - mysql -u root -e "grant all on note_tests.* TO 'test'@'localhost'";
+  - mysql -u root -e "grant all on schema_check.* TO 'test'@'localhost'";
 
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      swift package generate-xcodeproj;
-      bundle exec fastlane send_coverage;
+      bash schema_checker.sh
     else
-      swift build -Xswiftc -DNOJSON;
-      swift test -Xswiftc -DNOJSON;
     fi

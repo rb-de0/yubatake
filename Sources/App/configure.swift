@@ -42,10 +42,12 @@ public func configure(
     services.register { container -> CommandConfig in
         var config = CommandConfig.default()
         config.use(MigrationCommand.self, as: "migrate")
+        config.use(BootOnlyCommand.self, as: "boot")
         config.useFluentCommands()
         return config
     }
     services.register(MigrationCommand())
+    services.register(BootOnlyCommand())
     
     // view
     do {
