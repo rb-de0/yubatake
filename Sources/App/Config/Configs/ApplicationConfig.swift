@@ -3,7 +3,7 @@ import Vapor
 struct ApplicationConfig: LocalConfig, Service {
     
     static var fileName: String {
-        return "note"
+        return "app"
     }
     
     let messageFormat: String?

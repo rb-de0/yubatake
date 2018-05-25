@@ -31,10 +31,10 @@ before_install:
       sudo chmod -R a+rx /usr/;
     fi
   - mysql -u root -e "set global max_connections = 1000";
-  - mysql -u root -e "create database note_tests default character set utf8";
+  - mysql -u root -e "create database yubatake_tests default character set utf8";
   - mysql -u root -e "create database schema_check default character set utf8";
   - mysql -u root -e "create user 'test'@'localhost' IDENTIFIED BY 'test'";
-  - mysql -u root -e "grant all on note_tests.* TO 'test'@'localhost'";
+  - mysql -u root -e "grant all on yubatake_tests.* TO 'test'@'localhost'";
   - mysql -u root -e "grant all on schema_check.* TO 'test'@'localhost'";
 
 script:

@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import NoteTests
+@testable import YubatakeTests
 
 let tests: [XCTestCaseEntry] = [
     testCase(APIFileControllerTests.allTests),

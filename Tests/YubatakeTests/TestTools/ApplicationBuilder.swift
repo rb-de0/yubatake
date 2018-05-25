@@ -27,7 +27,7 @@ final class ApplicationBuilder {
             services = customized.1
         }
         
-        let mysqlDatabaseConfig = MySQLDatabaseConfig(hostname: DB.hostName, port: DB.port, username: DB.user, password: DB.password, database: "note_tests")
+        let mysqlDatabaseConfig = MySQLDatabaseConfig(hostname: DB.hostName, port: DB.port, username: DB.user, password: DB.password, database: "yubatake_tests")
         services.register(mysqlDatabaseConfig)
         
         let redisClientConfig = RedisClientConfig(url: URL(string: "redis://user:pass@localhost:6379")!)

@@ -10,7 +10,7 @@ final class MigrationCommand: Command, Service {
         .value(name: "input", short: "i", help: ["old database"])
     ]
     
-    let help: [String] = ["Migrating note to 3.0.0 from 2.1.2"]
+    let help: [String] = ["Migrating yubatake to 3.0.0 from 2.1.2"]
     
     private var _oldConn: MySQLConnection?
     private var _newConn: MySQLConnection?

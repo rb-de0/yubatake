@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "note",
+    name: "yubatake",
     products: [
         .executable(name: "Run", targets: ["Run"])
     ],
@@ -36,6 +36,6 @@ let package = Package(
             "VaporSecurityHeaders"
         ]),
         .target(name: "Run", dependencies: ["App"]),
-        .testTarget(name: "NoteTests", dependencies: ["App"])
+        .testTarget(name: "YubatakeTests", dependencies: ["App"])
     ]
 )

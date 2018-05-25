@@ -1,5 +1,5 @@
 Vagrant.configure(2) do |config|
-  config.vm.define "note-vm" do |node|
+  config.vm.define "yubatake-vm" do |node|
     node.vm.box = "bento/ubuntu-16.04"
   end
 
