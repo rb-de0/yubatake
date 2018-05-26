@@ -28,6 +28,10 @@ body {
   background-color: #fff;
 }
 
+img {
+  max-width: 100%;
+}
+
 header {
   margin: 1rem auto;
   padding: .5rem 2rem .5rem;

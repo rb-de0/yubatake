@@ -11,6 +11,7 @@
 
   <form id="contents-form" method="post" v-cloak>
 
+    <progress v-if="isLoading" v-bind:value="completedTaskCount" v-bind:max="taskCount"></progress>
     <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
 
     <div id="contents-form-image-list">
@@ -35,7 +36,7 @@
       <div id="contents-edit-button-container">
         <input id="image-file-name" type="hidden" name="image_file_name"/>
         <label class="pure-button" for="image-file-data">Upload
-          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
+          <input id="image-file-data" type="file" accept="image/jpeg,image/png" v-on:change="upload" multiple/>
         </label>
         #if(has_not_found) {
           <button class="pure-button pure-button-primary" formaction="/admin/images/cleanup" formmethod="post">Cleanup</button>
