@@ -134,9 +134,11 @@
       <div id="image-picker-header">
         <div id="image-picker-title">Select a image</div>
         <label class="pure-button" for="image-file-data">Upload
-          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
+          <input id="image-file-data" type="file" accept="image/jpeg,image/png" v-on:change="upload" multiple/>
         </label>
       </div>
+
+      <progress v-if="isLoading" v-bind:value="completedTaskCount" v-bind:max="taskCount"></progress>
 
       <div id="image-picker-items">
         <div v-for="group in imageGroups" class="pure-g">

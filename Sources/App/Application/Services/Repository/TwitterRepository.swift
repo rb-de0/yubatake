@@ -7,15 +7,15 @@ protocol TwitterRepository {
 
 final class TwitterRepositoryDefault: TwitterRepository, Service {
     
-    private let messageFormat: String?
+    private let tweetFormat: String?
     private let hostName: String
     
     init(applicationConfig: ApplicationConfig) throws {
         
         #if os(Linux)
-        self.messageFormat = applicationConfig.messageFormat?.replacingOccurrences(of: "$@", with: "$s")
+        self.tweetFormat = applicationConfig.tweetFormat?.replacingOccurrences(of: "$@", with: "$s")
         #else
-        self.messageFormat = applicationConfig.messageFormat
+        self.tweetFormat = applicationConfig.tweetFormat
         #endif
         
         self.hostName = applicationConfig.hostName
@@ -23,13 +23,13 @@ final class TwitterRepositoryDefault: TwitterRepository, Service {
     
     func post(_ post: Post, on request: Request) throws {
         
-        guard let format = messageFormat, let schema = request.http.url.scheme else {
+        guard let format = tweetFormat else {
             return
         }
         
         let id = try post.requireID()
         let poppo = try request.requireAuthenticated(User.self).makePoppo()
-        let url = "\(schema)://\(hostName)/\(id)"
+        let url = "\(hostName)/\(id)"
         
         #if os(Linux)
         post.title.withCString { title in

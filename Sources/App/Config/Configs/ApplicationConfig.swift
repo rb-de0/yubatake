@@ -6,7 +6,7 @@ struct ApplicationConfig: LocalConfig, Service {
         return "app"
     }
     
-    let messageFormat: String?
+    let tweetFormat: String?
     let hostName: String
     let dateFormat: String
     let imageGroupDateFormat: String
