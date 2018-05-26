@@ -23,6 +23,22 @@ ol {
   -webkit-padding-start: 1.5rem;
 }
 
+progress::-webkit-progress-value { 
+  background-color: #0078e7; 
+}
+
+progress::-webkit-progress-bar { 
+  background-color: transparent;
+}
+
+progress::-moz-progress-bar { 
+  background-color: #0078e7; 
+}
+
+progress { 
+  color: #0078e7; 
+}
+
 [v-cloak] {
   display: none;
 }
@@ -476,6 +492,13 @@ label.checkbox-container {
   overflow: scroll;
 }
 
+#image-picker-content progress {
+  width: 100%;
+  margin: 1rem 1rem 0 1rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 #image-picker-header {
   display: flex;
   justify-content: space-between;
@@ -557,6 +580,13 @@ label.checkbox-container {
 * Admin Image List
 * --------------------------
 */
+
+#contents-form progress {
+  width: 100%;
+  margin: 1rem 0 0 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
 
 #contents-form-image-list {
   margin: .5rem 0 2rem 0;

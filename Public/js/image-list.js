@@ -5,7 +5,10 @@ var viewModel = new Vue({
     groups: [],
     hasNext: false,
     hasPrevious: false,
-    page: 0
+    page: 0,
+    isLoading: false,
+    taskCount: 0,
+    completedTaskCount: 0
   },
   computed: {
     previousPage: function() {
@@ -18,23 +21,34 @@ var viewModel = new Vue({
   methods: {
     upload: function (e) {
 
-      var fileName = e.target.value.split('/').pop().split('\\').pop()
+      var receiver = this
+      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
 
       if (e.target.files.length < 1) {
         return
       }
 
-      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
-      var receiver = this
+      this.taskCount = e.target.files.length
+      this.completedTaskCount = 0
+      this.isLoading = true
 
-      var data = new FormData()
-      data.append('image_file_name', fileName)
-      data.append('image_file_data', e.target.files[0])
-      data.append('csrf-token', csrfToken)
+      var tasks = Array.from(e.target.files).map(function(file) {
+        var fileName = file.name
+        var data = new FormData()
+        data.append('image_file_name', fileName)
+        data.append('image_file_data', file)
+        data.append('csrf-token', csrfToken)
+        return axios.post(makeRequestURL('/api/images'), data)
+          .then(function(response) {
+            receiver.completedTaskCount += 1
+          })
+      })
 
-      axios.post(makeRequestURL('/api/images'), data)
-      .then(function (response) {
+      Promise.all(tasks).then(function () {
+        receiver.isLoading = false
         location.reload()
+      }).catch(function(error) {
+        receiver.isLoading = false
       })
     }
   },
