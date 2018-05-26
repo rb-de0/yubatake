@@ -17,9 +17,9 @@ favicon.ico
 Public/documents/
 
 ### User Files ###
-Public/user
-Resources/Views/user
-theme
+Public/themes/*
+!Public/themes/default
+!Public/themes/pure
 
 ### Dev ###
 .vagrant

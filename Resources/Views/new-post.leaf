@@ -1,0 +1,166 @@
+#set("resources") {
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+  <script async src="https://platform.twitter.com/widgets.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+}
+
+#set("script") {
+  <script src="/js/post-editor.js"></script>
+}
+
+#set("content") {
+
+  <div id="page-title">#if(post.id) {Edit Post} else {New Post}</div>
+
+  <form class="pure-form" action="/admin/posts#if(post.id) {/#(post.id)/edit}" method="post">
+
+    <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
+    <div class="field-error">#(error_message)</div>
+
+    <fieldset class="pure-group">
+      <div class="form-label">
+        <label for="edit-form-post-title">Title</label>
+      </div>
+      <input id="edit-form-post-title" class="pure-input-1" type="text" name="title" value="#(post.title)" placeholder="Title">
+    </fieldset>
+
+    <fieldset id="supplement-field-group" lass="pure-group">
+
+      <div class="pure-g gutters">
+
+        <div class="pure-u-1 pure-u-md-1-2">
+          <div class="supplement-container">
+            <div class="form-label">Category</div>
+            <div class="supplement-list-container">
+              <ul class="supplement-list">
+                <li>
+                  <label class="radio-container">NonCategorized
+                    <input type="radio" name="category" #if(post.category) {} else {checked}>
+                    <span class="radio-button"></span>
+                  </label>
+                </li>
+                #for(category in categories) {
+                  <li>
+                    <label class="radio-container">#(category.name)
+                      <input type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id) {checked}>
+                      <span class="radio-button"></span>
+                    </label>
+                  </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="pure-u-1 pure-u-md-1-2">
+          <div class="supplement-container">
+            <div class="form-label">
+              <label for="edit-form-tag-text">Tags(comma separated)</label>
+            </div>
+            <input id="edit-form-tag-text" v-model="tagString" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
+            <div class="supplement-list-container">
+              <ul class="supplement-list">
+                #for(tag in tags) {
+                  <li class="supplement-tag-item" v-bind:class="[ isSelectedTag('#(tag.name)') ? 'selected' : '' ]" v-on:click="selectedTag">#(tag.name)</li>
+                }
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </fieldset>
+
+    <fieldset id="option-field-set" class="pure-group">
+      <div class="form-label">
+        <label>Options</label>
+      </div>
+
+      <fieldset class="pure-group">
+        #if(post.id) {
+          #if(post.is_published == false) {
+            <div class="option-item">
+              <label class="checkbox-container">Share to Twitter
+                <input name="should_tweet" type="checkbox"/>
+                <span class="checkbox"></span>
+              </label>
+            </div>
+          }
+        } else {
+          <div class="option-item">
+            <label class="checkbox-container">Share to Twitter
+              <input name="should_tweet" type="checkbox"/>
+              <span class="checkbox"></span>
+            </label>
+          </div>
+        }
+        <div class="option-item">
+          <label class="checkbox-container">Static Content
+            <input name="is_static" type="checkbox" #if(post.is_static) {checked="checked"}/>
+            <span class="checkbox"></span>
+          </label>
+        </div>
+        <div class="option-item">
+          <label class="checkbox-container">Publish
+            <input name="is_published" type="checkbox" #if(post.is_published) {checked="checked"}/>
+            <span class="checkbox"></span>
+          </label>
+        </div>
+      </fieldset>
+    </fieldset>
+
+    <fieldset class="pure-group">
+      <div id="post-content-input-header">
+        <label class="form-label" for="edit-form-post-contents">Contents</label>
+        <div>
+          <button class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
+          #if(post.id) {
+            <button class="pure-button pure-button-primary" v-on:click="showPreview($event, #(post.id))">Preview</button>
+          }
+        </div>
+      </div>
+      <textarea id="edit-form-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="24">#(post.content)</textarea>
+    </fieldset>
+
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">
+      #if(post.id) {Update} else {Post}
+    </button>
+  </form>
+
+  <div id="image-picker" v-on:click="closePickerView">
+    <div id="image-picker-content">
+
+      <div id="image-picker-header">
+        <div id="image-picker-title">Select a image</div>
+        <label class="pure-button" for="image-file-data">Upload
+          <input id="image-file-data" type="file" name="image_file_data" accept="image/jpeg,image/png" v-on:change="upload"/>
+        </label>
+      </div>
+
+      <div id="image-picker-items">
+        <div v-for="group in imageGroups" class="pure-g">
+          <div class="pure-u-1 image-list-date-header">[[ group.date ]]</div>
+          <div v-for="image in group.images" class="pure-u-1-2 pure-u-md-1-4 pure-u-lg-1-8">
+            <div class="image-card-container">
+              <div class="image-card" v-on:click="selectImage(image)">
+                <img class="image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="image-picker-footer">
+        <div v-show="hasImages" id="image-picker-page"> [[ page ]]/[[ totalPage ]] </div>
+        <div>
+          <button v-if="hasPrevious" class="pure-button" v-on:click="requestPrevious">Previous</button>
+          <button v-if="hasNext" class="pure-button" v-on:click="requestNext">Next</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}
+
+#embed("admin-base")

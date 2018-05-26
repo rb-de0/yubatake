@@ -10,19 +10,20 @@ services:
 
 env:
   global:
-    - MYSQL_PASSWORD=''
+    - MYSQL_USER=test
+    - MYSQL_PASSWORD=test
     - MYSQL_PORT=3306
 
-osx_image: xcode9.2
+osx_image: xcode9.3
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       brew update;
       brew tap vapor/tap;
       brew update;
-      bundle install --path vendor/bundle;
       brew install vapor;
       brew install cmysql;
       mysql.server start;
+      bundle install --path vendor/bundle;
     else
       eval "$(curl -sL https://apt.vapor.sh)";
       sudo apt-get install vapor;
@@ -30,18 +31,18 @@ before_install:
       sudo chmod -R a+rx /usr/;
     fi
   - mysql -u root -e "set global max_connections = 1000";
+  - mysql -u root -e "create database yubatake_tests default character set utf8";
+  - mysql -u root -e "create database schema_check default character set utf8";
+  - mysql -u root -e "create user 'test'@'localhost' IDENTIFIED BY 'test'";
+  - mysql -u root -e "grant all on yubatake_tests.* TO 'test'@'localhost'";
+  - mysql -u root -e "grant all on schema_check.* TO 'test'@'localhost'";
 
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      swift build;
-      swift test;
+      bash schema_checker.sh;
+      swift package generate-xcodeproj;
+      bundle exec fastlane send_coverage;
     else
       swift build -Xswiftc -DNOJSON;
       swift test -Xswiftc -DNOJSON;
-    fi
-
-after_success:
-  - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      swift package generate-xcodeproj;
-      bundle exec fastlane send_coverage;
     fi

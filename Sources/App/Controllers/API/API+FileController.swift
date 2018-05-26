@@ -1,52 +1,26 @@
-import HTTP
 import Vapor
 
 extension API {
     
-    final class FileController: ResourceRepresentable {
+    final class FileController {
         
-        func makeResource() -> Resource<String> {
-            return Resource(
-                index: index
-            )
-        }
-        
-        static let themesKey = "theme"
-        static let bodyKey = "body"
-        
-        private lazy var fileRepository = resolve(FileRepository.self)
-        
-        func index(request: Request) throws -> ResponseRepresentable {
-            let theme = request.data[FileController.themesKey]?.string
-            return try fileRepository.files(in: theme).makeJSON()
-        }
-        
-        func store(request: Request) throws -> ResponseRepresentable {
-           
-            guard let body = request.data[FileController.bodyKey]?.string else {
-                throw Abort(.badRequest)
+        func index(request: Request) throws -> Future<[EditableFileGroup]> {
+            let repository = try request.make(FileRepository.self)
+            return try request.parameters.next(Theme.self).map { theme in
+                try repository.files(in: theme)
             }
-            
-            let set = try AccessibleFileSet(request: request)
-            try set.update(body: body)
-            
-            return Response(status: .ok)
         }
         
-        func show(request: Request) throws -> ResponseRepresentable {
-            let set = try AccessibleFileSet(request: request)
-            return try set.makeJSON()
+        func show(request: Request) throws -> Future<EditableFileBody> {
+            let repository = try request.make(FileRepository.self)
+            let form = try request.query.decode(EditableFileForm.self)
+            return repository.readFileBody(using: try request.fileio(), path: form.path)
         }
         
-        func destroy(request: Request) throws -> ResponseRepresentable {
-            let set = try AccessibleFileSet(request: request)
-            try set.delete()
-            return Response(status: .ok)
-        }
-        
-        func reset(request: Request) throws -> ResponseRepresentable {
-            try fileRepository.deleteAllUserFiles()
-            return Response(status: .ok)
+        func store(request: Request, form: EditableFileUpdateForm) throws -> HTTPStatus {
+            let repository = try request.make(FileRepository.self)
+            try repository.writeFileBody(path: form.path, body: form.body)
+            return HTTPStatus.ok
         }
     }
 }

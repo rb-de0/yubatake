@@ -1,0 +1,46 @@
+#set("content") {
+  <div id="page-title">Edit User</div>
+
+  <form class="pure-form" action="/admin/user/edit" method="post">
+
+    <input type="hidden" name="csrf-token" value="#(csrf_token)">
+    <div class="field-error">#(error_message)</div>
+
+    <fieldset class="pure-group">
+      <div class="form-label">
+        <label for="edit-form-user-name">UserName</label>
+      </div>
+      <input id="edit-form-user-name" class="pure-input-1" type="text" name="name" value="#(name)" placeholder="Name">
+      <div class="form-label">
+        <label for="edit-form-user-password">password</label>
+      </div>
+      <input id="edit-form-user-password" class="pure-input-1" type="password" name="password">
+    </fieldset>
+
+    <div class="form-group-title">Twitter Auth Information</div>
+    <fieldset>
+      <div class="form-label">
+        <label for="edit-form-user-api-key">APIKey</label>
+      </div>
+      <input id="edit-form-user-api-key" class="pure-input-1" type="text" name="api_key" value="#(api_key)">
+      <div class="form-label">
+        <label for="edit-form-user-api-secret">APISecret</label>
+      </div>
+      <input id="edit-form-user-api-secret" class="pure-input-1" type="text" name="api_secret" value="#(api_secret)">
+      <div class="form-label">
+        <label for="edit-form-user-access-token">AccessToken</label>
+      </div>
+      <input id="edit-form-user-access-token" class="pure-input-1" type="text" name="access_token" value="#(access_token)">
+      <div class="form-label">
+        <label for="edit-form-user-access-token-secret">AccessTokenSecret</label>
+      </div>
+      <input id="edit-form-user-access-token-secret" class="pure-input-1" type="text" name="access_token_secret" value="#(access_token_secret)">
+    </fieldset>
+
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">
+      Update
+    </button>
+  </form>
+}
+
+#embed("admin-base")

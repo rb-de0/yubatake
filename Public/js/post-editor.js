@@ -1,18 +1,18 @@
 var viewModel = new Vue({
   el: '#content',
+  delimiters: ['[[', ']]'],
   data: {
     page: 1,
-    images: [],
+    imageGroups: [],
     hasNext: false,
     hasPrevious: false,
     totalPage: 0,
-    latestScrollOffset: 0,
     tagString: '',
     tags: []
   },
   computed: {
     hasImages: function() {
-      return this.images.length !== 0
+      return this.imageGroups.length !== 0
     }
   },
   watch: {
@@ -24,42 +24,15 @@ var viewModel = new Vue({
     }
   },
   methods: {
-    showPreview: function (e) {
-
+    showPreview: function (e, id) {
       e.preventDefault()
-
-      var preview = document.getElementById('admin-content-preview')
-      preview.style.display = 'block'
-      preview.style.height = window.innerHeight + 'px'
-
-      this.latestScrollOffset = document.getElementById('content').scrollTop
-      document.querySelector('.pure-form').style.display = 'none'
-
-      var content = document.getElementById('admin-post-contents').value
-      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
-
-      axios.post(makeRequestURL('/api/converted_markdown'), {
-        content: content,
-        'csrf-token': csrfToken
-      })
-      .then(function (response) {
-        document.getElementById('post-content-body').innerHTML = response.data['html']
-        twttr.widgets.load()
-        hljs.initHighlighting.called = false
-        hljs.initHighlighting()
-      })
-    },
-    closePreview: function (e) {
-
-      e.preventDefault()
-      document.getElementById('admin-content-preview').style.display = 'none'
-      document.querySelector('.pure-form').style.display = 'block'
-      document.getElementById('content').scrollTo(0, this.latestScrollOffset)
+      var path = '/admin/posts/' + id + '/preview'
+      window.open(makeRequestURL(path))
     },
     showPickerView: function (e) {
 
       e.preventDefault()
-      document.getElementById('admin-image-picker').style.display = 'flex'
+      document.getElementById('image-picker').style.display = 'flex'
       document.getElementById('content').style.overflow = 'hidden'
       document.getElementById('menu').style.overflow = 'hidden'
 
@@ -67,12 +40,12 @@ var viewModel = new Vue({
     },
     closePickerView: function (e) {
 
-      if (e.target !== document.getElementById('admin-image-picker')) {
+      if (e.target !== document.getElementById('image-picker')) {
         return
       }
 
       e.preventDefault()
-      document.getElementById('admin-image-picker').style.display = 'none'
+      document.getElementById('image-picker').style.display = 'none'
       document.getElementById('content').style.overflow = 'scroll'
       document.getElementById('menu').style.overflow = 'scroll'
     },
@@ -99,7 +72,7 @@ var viewModel = new Vue({
       .then(function (response) {
         receiver.hasNext = response.data.page.position.next !== undefined
         receiver.hasPrevious = response.data.page.position.previous !== undefined
-        receiver.images = response.data.data
+        receiver.imageGroups = response.data.data
         receiver.totalPage = response.data.page.position.max
         receiver.page = response.data.page.position.current
       })
@@ -127,7 +100,7 @@ var viewModel = new Vue({
     },
     selectImage: function (image) {
 
-      document.getElementById('admin-image-picker').style.display = 'none'
+      document.getElementById('image-picker').style.display = 'none'
       document.getElementById('content').style.overflow = 'scroll'
       document.getElementById('menu').style.overflow = 'scroll'
 
@@ -172,6 +145,6 @@ var viewModel = new Vue({
     }
   },
   created: function() {
-    this.tags = document.getElementById('admin-tag-text').value.split(',')
+    this.tags = document.getElementById('edit-form-tag-text').value.split(',')
   }
 })

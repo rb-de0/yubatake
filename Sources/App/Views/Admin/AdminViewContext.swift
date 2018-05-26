@@ -1,40 +1,63 @@
-import CSRF
+import Leaf
 import Vapor
 
 final class AdminViewContext {
     
+    private struct RenderingContext: Encodable {
+        
+        let context: Encodable
+        let pageTitle: String?
+        let config: ApplicationConfig
+        let siteInfo: Future<SiteInfo>
+        let menuType: AdminMenuType?
+        let formData: Encodable?
+        
+        enum CodingKeys: String, CodingKey {
+            case pageTitle = "page_title"
+            case siteInfo = "site_info"
+            case menuType = "menu_type"
+            case dateFormat = "date_format"
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            
+            let title = siteInfo.map { self.pageTitle ?? $0.name }
+            
+            try context.encode(to: encoder)
+            try formData?.encode(to: encoder)
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(title, forKey: .pageTitle)
+            try container.encode(siteInfo, forKey: .siteInfo)
+            try container.encode(menuType?.rawValue, forKey: .menuType)
+            try container.encode(config.dateFormat, forKey: .dateFormat)
+        }
+    }
+    
     private let path: String
-    private let formDataDeliverer: FormDataDeliverable.Type
+    private let menuType: AdminMenuType?
+    private let title: String?
     
-    private var menuType: AdminMenuType?
-    private var title: String?
-    
-    init(path: String, menuType: AdminMenuType? = nil, title: String? = nil, formDataDeliverer: FormDataDeliverable.Type = NoDerivery.self) {
+    init(path: String, menuType: AdminMenuType? = nil, title: String? = nil) {
         self.path = path
         self.menuType = menuType
         self.title = title
-        self.formDataDeliverer = formDataDeliverer
     }
     
-    func addTitle(_ title: String) -> Self {
-        self.title = title
-        return self
-    }
-    
-    func addMenu(_ menuType: AdminMenuType) -> Self {
-        self.menuType = menuType
-        return self
-    }
-    
-    func makeResponse(context: NodeRepresentable = Node(ViewContext.shared), for request: Request) throws -> View {
+    func makeResponse(context: Encodable = [String: String](), formDataType: Form.Type = EmptyForm.self, for request: Request) throws -> Future<View> {
         
-        var node = try context.makeNode(in: ViewContext.shared)
+        let formData = try formDataType.restoreFormData(from: request)?.makeRenderingContext()
+        let siteInfo = try SiteInfo.shared(on: request)
+        let config = try request.make(ApplicationConfig.self)
         
-        let siteInfo = try SiteInfo.shared()
-        try node.set("site_info", siteInfo.makeJSON())
-        try node.set("menu_type", menuType?.rawValue)
-        try node.set("page_title", title ?? siteInfo.name)
-
-        return try resolve(ViewCreator.self).make(path, node, for: request, formDataDeliverer: formDataDeliverer)
+        let renderingContext = RenderingContext(
+            context: context,
+            pageTitle: title,
+            config: config,
+            siteInfo: siteInfo,
+            menuType: menuType,
+            formData: formData
+        )
+        
+        return try request.make(ViewCreator.self).make(path, renderingContext, for: request, forAdmin: true)
     }
 }

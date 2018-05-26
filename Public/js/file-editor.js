@@ -14,30 +14,18 @@ function getModeFromFileName(filename) {
 
 var viewModel = new Vue({
   el: '#file-editor-app',
+  delimiters: ['[[', ']]'],
   data: {
     themelist: null,
-    selectedTheme: null,
-    editor: null,
     grouplist: null,
+    selectedTheme: null,
     selectedFile: null,
-    bodies: null,
-    selectedBodyIndex: 0,
+    editor: null,
     hasError: false
   },
   computed: {
     isFileSelected: function () {
       return this.selectedFile !== null
-    },
-    hasUserFile: function() {
-
-      if (this.bodies === null) {
-        return false
-      }
-
-      var bodyObj = this.bodies.find(function(elem, _, _) {
-        return elem.customized === true
-      })
-      return bodyObj !== undefined
     },
     isThemeSelected: function() {
       return this.selectedTheme !== null
@@ -49,18 +37,9 @@ var viewModel = new Vue({
       return (this.themelist !== null && this.themelist.length !== 0)
     }
   },
-  watch: {
-    selectedBodyIndex: function (index) {
-      this.updateEditor()
-    }
-  },
   methods: {
     selectFile: function (file) {
       this.fetchFileBody(file)
-    },
-    selectBodyIndex: function (index) {
-      this.bodies[this.selectedBodyIndex].body = this.editor.getValue()
-      this.selectedBodyIndex = index
     },
     fetchFileBody: function(file) {
 
@@ -73,18 +52,15 @@ var viewModel = new Vue({
 
       var receiver = this
 
-      axios.get(makeRequestURL('/api/filebody'), {
+      axios.get(makeRequestURL('/api/files'), {
         params: {
-          path: file.path,
-          type: file.type,
-          theme: file.theme
+          path: file.path
         }
       })
       .then(function (response) {
         receiver.hasError = false
         receiver.selectedFile = file
-        receiver.selectedBodyIndex = 0
-        receiver.bodies = response.data.bodies
+        receiver.selectedFile.body = response.data.body
         receiver.updateEditor()
       })
       .catch(function (error) {
@@ -97,99 +73,41 @@ var viewModel = new Vue({
         this.editor = ace.edit('file-editor')
         this.editor.$blockScrolling = Infinity
         this.editor.setTheme('ace/theme/xcode')
+        this.editor.setReadOnly(false)
         this.editor.session.setUseWorker(false)
       }
 
-      if (this.bodies === null || this.bodies.length === 0) {
+      if (this.selectedFile.body === null) {
         this.editor.setValue('')
         return
       }
 
-      var body = this.bodies[this.selectedBodyIndex]
-
-      if ((this.bodies.length === 2 && body.customized === false) || this.isThemeSelected) {
-        this.editor.setReadOnly(true)
-      } else {
-        this.editor.setReadOnly(false)
-      }
-
+      var body = this.selectedFile.body
       var mode = getModeFromFileName(this.selectedFile.name)
 
       this.editor.session.setMode(mode)
-      this.editor.setValue(body.body)
+      this.editor.setValue(body)
       this.editor.clearSelection()
     },
     save: function() {
 
-      if (this.bodies === null || this.bodies.length === 0) {
+      if (this.selectedFile.body === null) {
         return
       }
 
-      if (this.selectedFile === null) {
-        return
-      }
-
-      this.bodies[this.selectedBodyIndex].body = this.editor.getValue()
-
-      var bodyObj = this.bodies.find(function(elem, _, _) {
-        return elem.customized === true
-      })
-      var body = bodyObj === undefined ? this.bodies[0].body : bodyObj.body
-      var type = this.selectedFile.type
+      var body = this.editor.getValue()
       var path = this.selectedFile.path
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
       var receiver = this
 
-      axios.post(makeRequestURL('/api/filebody'), {
+      axios.post(makeRequestURL('/api/files'), {
         body: body,
         path: path,
-        type: type,
-        'csrf-token': csrfToken
-      })
-      .then(function (response) {
-        receiver.hasError = false
-        receiver.selectedFile.customized = true
-        receiver.fetchFileBody(null)
-      })
-      .catch(function (error) {
-        receiver.hasError = true
-      })
-    },
-    destroy: function() {
-
-      if (this.selectedFile === null) {
-        return
-      }
-
-      var type = this.selectedFile.type
-      var path = this.selectedFile.path
-      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
-      var receiver = this
-
-      axios.post(makeRequestURL('/api/filebody/delete'), {
-        path: path,
-        type: type,
         'csrf-token': csrfToken
       })
       .then(function (response) {
         receiver.hasError = false
         receiver.fetchFileBody(null)
-        receiver.selectedFile.customized = false
-      })
-      .catch(function (error) {
-        receiver.hasError = true
-      })
-    },
-    resetFiles: function() {
-
-      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
-      var receiver = this
-
-      axios.post(makeRequestURL('/api/files/reset'), {
-        'csrf-token': csrfToken
-      })
-      .then(function (response) {
-        location.reload()
       })
       .catch(function (error) {
         receiver.hasError = true
@@ -200,11 +118,9 @@ var viewModel = new Vue({
       this.selectedFile = null
 
       var receiver = this
-      axios.get(makeRequestURL('/api/files'), {
-        params: {
-          theme: theme
-        }
-      })
+      var url = '/api/themes/' + theme.name + '/files'
+
+      axios.get(makeRequestURL(url))
       .then(function (response) {
         receiver.hasError = false
         receiver.selectedTheme = theme
@@ -217,45 +133,11 @@ var viewModel = new Vue({
         return
       }
 
-      var name = this.selectedTheme
-      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
-
-      var receiver = this
-      axios.post(makeRequestURL('/api/themes/apply'), {
-        name: name,
-        'csrf-token': csrfToken
-      })
-      .then(function (response) {
-        location.reload()
-      })
-      .catch(function (error) {
-        receiver.hasError = true
-      })
-    },
-    saveTheme: function() {
-
-      var name = document.getElementById('theme-name').value
+      var name = this.selectedTheme.name
       var csrfToken = document.getElementById('csrf-token').getAttribute('value')
 
       var receiver = this
       axios.post(makeRequestURL('/api/themes'), {
-        name: name,
-        'csrf-token': csrfToken
-      })
-      .then(function (response) {
-        location.reload()
-      })
-      .catch(function (error) {
-        receiver.hasError = true
-      })
-    },
-    destroyTheme: function() {
-
-      var name = this.selectedTheme
-      var csrfToken = document.getElementById('csrf-token').getAttribute('value')
-
-      var receiver = this
-      axios.post(makeRequestURL('/api/themes/delete'), {
         name: name,
         'csrf-token': csrfToken
       })
@@ -272,8 +154,7 @@ var viewModel = new Vue({
     var receiver = this
     axios.get(makeRequestURL('/api/themes'))
     .then(function (response) {
-      receiver.themelist = response.data.themes
-      receiver.selectTheme(null)
+      receiver.themelist = response.data
     })
   }
 })

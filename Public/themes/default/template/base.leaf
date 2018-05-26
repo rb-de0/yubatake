@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>#(page_title)</title>
+  #embed("embeds/meta")
+  #embed("embeds/resources")
+  #get(resources)
+</head>
+
+<body>
+
+  <header>
+    <a id="site-title" class="no-decoration" href="/">#(site_info.name)</a>
+    <div id="site-description">#(site_info.description)</div>
+  </header>
+
+  <main class="pure-g">
+
+    <div id="content" class="pure-u-1 pure-u-lg-3-4">
+      #get(content)
+    </div>
+
+    <div id="content-menu" class="pure-u-1 pure-u-lg-1-4">
+
+      <div class="pure-menu">
+        #if(count(static_contents) != 0) {
+          <div id="menu-subcontents">
+            <div class="menu-subcontents-header">Site Contents</div>
+            #for(static_content in static_contents) {
+              <div class="menu-subcontents-item">
+                <a class="no-decoration" href="/posts/#(static_content.id)">#(static_content.title)</a>
+              </div>
+            }
+          </div>
+        }
+        #if(count(recent_posts) != 0) {
+          <div id="menu-subcontents">
+            <div class="menu-subcontents-header">Recent Posts</div>
+            #for(post in recent_posts) {
+              <div class="menu-subcontents-item">
+                <a class="no-decoration" href="/posts/#(post.id)">#(post.title)</a>
+              </div>
+            }
+          </div>
+        }
+        #if(count(all_categories) != 0) {
+          <div id="menu-subcontents">
+            <div class="menu-subcontents-header">Category</div>
+            #for(category in all_categories) {
+              <div class="menu-subcontents-item">
+                <a class="no-decoration" href="/categories/#(category.category.id)/posts">#(category.category.name) (#(category.count))</a>
+              </div>
+            }
+          </div>
+        }
+        #if(count(all_tags) != 0) {
+          <div id="menu-subcontents">
+            <div class="menu-subcontents-header">Tag</div>
+            #for(tag in all_tags) {
+              <div class="menu-subcontents-item">
+                <a class="no-decoration" href="/tags/#(tag.tag.id)/posts">#(tag.tag.name) (#(tag.count))</a>
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+    </div>
+
+  </main>
+
+</body>
+
+</html>

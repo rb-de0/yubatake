@@ -1,60 +1,27 @@
-import HTTP
 import Vapor
 
 extension API {
     
-    final class ThemeController:  ResourceRepresentable {
+    final class ThemeController {
         
-        func makeResource() -> Resource<String> {
-            return Resource(
-                index: index,
-                store: store
-            )
-        }
-        
-        static let themesKey = "themes"
-        static let nameKey = "name"
-        
-        private lazy var fileRepository = resolve(FileRepository.self)
-        
-        func index(request: Request) throws -> ResponseRepresentable {
-            let themes = try fileRepository.getAllThemes()
-            var json = JSON()
-            try json.set(ThemeController.themesKey, themes)
-            return json
-        }
-        
-        func store(request: Request) throws -> ResponseRepresentable {
-            
-            guard let name = request.data[ThemeController.nameKey]?.string else {
-                throw Abort(.badRequest)
+        func index(request: Request) throws -> Future<[Theme]> {
+            let repository = try request.make(FileRepository.self)
+            let themes = try repository.allThemes()
+            return try SiteInfo.shared(on: request).map { siteInfo in
+                themes.map { Theme(name: $0, selected: $0 == siteInfo.selectedTheme)}
             }
-            
-            try fileRepository.saveTheme(as: name)
-            
-            return Response(status: .ok)
         }
         
-        func apply(request: Request) throws -> ResponseRepresentable {
+        func store(request: Request, form: ThemeForm) throws -> Future<HTTPStatus> {
             
-            guard let name = request.data[ThemeController.nameKey]?.string else {
-                throw Abort(.badRequest)
+            return try SiteInfo.shared(on: request).flatMap { siteInfo in
+                
+                siteInfo.theme = form.name
+                
+                return request.withPooledConnection(to: .mysql) { conn in
+                    siteInfo.save(on: conn).transform(to: .ok)
+                }
             }
-            
-            try fileRepository.copyTheme(name: name)
-            
-            return Response(status: .ok)
-        }
-        
-        func destroy(request: Request) throws -> ResponseRepresentable {
-            
-            guard let name = request.data[ThemeController.nameKey]?.string else {
-                throw Abort(.badRequest)
-            }
-            
-            try fileRepository.deleteTheme(name: name)
-            
-            return Response(status: .ok)
         }
     }
 }

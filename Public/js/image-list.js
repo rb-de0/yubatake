@@ -1,7 +1,8 @@
 var viewModel = new Vue({
   el: '#content',
+  delimiters: ['[[', ']]'],
   data: {
-    images: [],
+    groups: [],
     hasNext: false,
     hasPrevious: false,
     page: 0
@@ -56,7 +57,7 @@ var viewModel = new Vue({
     .then(function (response) {
       receiver.hasNext = response.data.page.position.next !== undefined
       receiver.hasPrevious = response.data.page.position.previous !== undefined
-      receiver.images = response.data.data
+      receiver.groups = response.data.data
       receiver.page = response.data.page.position.current
     })
   }

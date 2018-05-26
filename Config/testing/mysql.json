@@ -1,0 +1,6 @@
+{
+    "hostname": "127.0.0.1",
+    "username": "test",
+    "password": "test",
+    "database": "schema_check"
+}

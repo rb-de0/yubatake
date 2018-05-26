@@ -6,18 +6,22 @@ platform :mac do
 
   lane :send_coverage do
     scan(
-      scheme: "note-Package",
+      scheme: "yubatake-Package",
       code_coverage: true,
       destination: 'arch=x86_64'
     )
     slather(
-      proj: "note.xcodeproj",
-      scheme: "note-Package",
+      proj: "yubatake.xcodeproj",
+      scheme: "yubatake-Package",
       travis: true,
       binary_basename: "App",
       ignore: [".build/*", "Tests/*"],
       coveralls: true
     )
+  end
+
+  lane :dump_schema do
+    sh("bundle exec ridgepole -c ../database.yml --export --output ../Schemafile")
   end
 
 end

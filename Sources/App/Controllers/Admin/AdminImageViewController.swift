@@ -1,91 +1,109 @@
-import Crypto
-import HTTP
+import MySQL
 import Vapor
 
-final class AdminImageViewController: EditableResourceRepresentable {
+final class AdminImageViewController {
     
-    struct ContextMaker {
+    private struct ContextMaker {
         
         static func makeIndexView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/images", menuType: .images)
+            return AdminViewContext(path: "images", menuType: .images)
         }
         
         static func makeCreateView() -> AdminViewContext {
-            return AdminViewContext(path: "admin/edit-image", menuType: .images)
+            return AdminViewContext(path: "edit-image", menuType: .images)
         }
     }
     
-    func makeResource() -> EditableResource<Image> {
+    private struct IndexContext: Encodable {
         
-        let resource = Resource<Image>(
-            index: index,
-            edit: edit
-        )
+        private enum CodingKeys: String, CodingKey {
+            case hasNotFound = "has_not_found"
+        }
         
-        return EditableResource(
-            resource: resource,
-            update: update,
-            destroy: destroy,
-            destroyKey: "images"
-        )
+        let hasNotFound: Bool
     }
     
-    static let hasNotFoundKey = "has_not_found"
-    
-    private lazy var imageRepository = resolve(ImageRepository.self)
-    
-    func index(request: Request) throws -> ResponseRepresentable {
-        var json = JSON()
-        let hasNotFound = try Image.all().filter { image in !imageRepository.isExist(at: image.path) }.count > 0
-        try json.set(AdminImageViewController.hasNotFoundKey, hasNotFound)
-        return try ContextMaker.makeIndexView().makeResponse(context: json, for: request)
-    }
-    
-    func edit(request: Request, image: Image) throws -> ResponseRepresentable {
-        return try ContextMaker.makeCreateView().makeResponse(context: image.makeJSON(), for: request)
-    }
-    
-    func update(request: Request, image: Image) throws -> ResponseRepresentable {
-
-        let id = try image.assertId()
+    func index(request: Request) throws -> Future<View> {
         
-        do {
+        let repository = try request.make(ImageRepository.self)
+        return Image.query(on: request).all().flatMap { images in
+            let publicImages = try images.map { try $0.formPublic(on: request) }
+            let hasNotFound = publicImages.contains(where: { !repository.isExist(at: $0.name) })
+            return try ContextMaker.makeIndexView().makeResponse(context: IndexContext(hasNotFound: hasNotFound), formDataType: ImageForm.self, for: request)
+        }
+    }
+    
+    func edit(request: Request) throws -> Future<View> {
+        return try request.parameters.next(Image.self).flatMap { image in
+            try ContextMaker.makeCreateView().makeResponse(context: try image.formPublic(on: request), formDataType: ImageForm.self, for: request)
+        }
+    }
+    
+    func update(request: Request, form: ImageForm) throws -> Future<Response> {
+        
+        let repository = try request.make(ImageRepository.self)
+        
+        return try request.parameters.next(Image.self).flatMap { image in
             
-            let beforePath = image.path
+            let id = try image.requireID()
+            let beforeName = try image.formPublic(on: request).name
+            let applied = try image.apply(form: form, on: request)
+            let afterName = try applied.formPublic(on: request).name
             
-            try Image.database?.transaction { conn in
-                try image.update(for: request)
-                try image.makeQuery(conn).save()
-                try imageRepository.renameImage(at: beforePath, to: image.path)
+            let updateTransaction = request.withPooledConnection(to: .mysql) { conn in
+                
+                MySQLDatabase.inTransaction(on: conn) { transaction in
+                    
+                    applied.save(on: transaction).map { _ in
+                        try repository.rename(from: beforeName, to: afterName)
+                    }
+                }
             }
             
-            return Response(redirect: "/admin/images/\(id)/edit")
-            
-        } catch {
-            
-            return Response(redirect: "/admin/images/\(id)/edit", with: FormError(error: error), for: request)
+            return updateTransaction
+                .map {
+                    request.redirect(to: "/admin/images/\(id)/edit")
+                }
+                .catchMap { error in
+                    try request.redirect(to: "/admin/images/\(id)/edit", with: FormError(error: error, formData: form))
+                }
         }
     }
     
-    func destroy(request: Request, images: [Image]) throws -> ResponseRepresentable {
+    func delete(request: Request) throws -> Future<Response> {
         
-        try Image.database?.transaction { conn in
+        let repository = try request.make(ImageRepository.self)
+        
+        return try request.parameters.next(Image.self).flatMap { image in
             
-            try images.forEach {
-                try $0.makeQuery(conn).delete()
-                try $0.deleteImageData()
+            let deleteTransaction = request.withPooledConnection(to: .mysql) { conn in
+                
+                MySQLDatabase.inTransaction(on: conn) { transaction in
+                    
+                    image.delete(on: transaction).map { _ in
+                        try repository.delete(at: try image.formPublic(on: request).name)
+                    }
+                }
+            }
+            
+            return deleteTransaction.map {
+                request.redirect(to: "/admin/images")
             }
         }
-
-        return Response(redirect: "/admin/images")
     }
     
-    func cleanup(request: Request) throws -> ResponseRepresentable {
+    func cleanup(request: Request) throws -> Future<Response> {
         
-        try Image.all()
-            .filter { image in !imageRepository.isExist(at: image.path) }
-            .forEach { try $0.delete() }
+        let repository = try request.make(ImageRepository.self)
         
-        return Response(redirect: "/admin/images")
+        return Image.query(on: request).all().flatMap { images in
+            let notFoundImages = try images.map { try $0.formPublic(on: request) }
+                .filter { !repository.isExist(at: $0.name) }
+                .map { $0.image }
+            let deleteImages = notFoundImages.map { $0.delete(on: request) }
+            return Future<Void>.andAll(deleteImages, eventLoop: request.eventLoop).map {
+                request.redirect(to: "/admin/images")
+            }
+        }
     }
 }

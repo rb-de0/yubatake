@@ -1,54 +1,96 @@
+import Pagination
 import Vapor
-import HTTP
 
-final class PostController: ResourceRepresentable {
+final class PostController {
     
-    struct ContextMaker {
+    private struct Keys {
+        static let tag = "tag"
+        static let category = "category"
+    }
+    
+    private struct ContextMaker {
         
         static func makeIndexView() -> PublicViewContext {
-            return PublicViewContext(path: "public/posts")
+            return PublicViewContext(path: "posts")
         }
         
-        static func makeShowView() -> PublicViewContext {
-            return PublicViewContext(path: "public/post")
+        static func makeShowView(title: String) -> PublicViewContext {
+            return PublicViewContext(path: "post", title: title)
+        }
+    }
+
+    func index(request: Request) throws -> Future<View> {
+        return try Post.query(on: request).publicAll().noStaticAll().paginate(for: request)
+            .flatMap { page in
+                try page.data.map { try $0.formPublic(on: request) }
+                    .flatten(on: request)
+                    .map { posts in
+                        try page.transform(posts)
+                }
+            }
+            .flatMap { page in
+                try ContextMaker.makeIndexView().makeResponse(context: page.response(), for: request)
+            }
+    }
+    
+    func indexInTag(request: Request) throws -> Future<View> {
+        return try request.parameters.next(Tag.self).flatMap { tag in
+            try tag.posts.query(on: request).publicAll().noStaticAll().paginate(for: request)
+                .flatMap { page in
+                    try page.data.map { try $0.formPublic(on: request) }
+                        .flatten(on: request)
+                        .map { posts in
+                            try page.transform(posts)
+                        }
+                }
+                .flatMap { page in
+                    let context = page.response().add(Keys.tag, tag)
+                    return try ContextMaker.makeIndexView().makeResponse(context: context, for: request)
+                }
         }
     }
     
-    func makeResource() -> Resource<Post> {
-        return Resource(
-            index: index,
-            show: show
-        )
+    func indexInCategory(request: Request) throws -> Future<View> {
+        return try request.parameters.next(Category.self).flatMap { category in
+            try category.posts.query(on: request).publicAll().noStaticAll().paginate(for: request)
+                .flatMap { page in
+                    try page.data.map { try $0.formPublic(on: request) }
+                        .flatten(on: request)
+                        .map { posts in
+                            try page.transform(posts)
+                        }
+                }
+                .flatMap { page in
+                    let context = page.response().add(Keys.category, category)
+                    return try ContextMaker.makeIndexView().makeResponse(context: context, for: request)
+                }
+        }
     }
     
-    static let tagKey = "tag"
-    static let categoryKey = "category"
-    
-    func index(request: Request) throws -> ResponseRepresentable {
-        let page = try Post.makeQuery().publicAll().paginate(for: request).makeJSON()
-        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
+    func indexNoCategory(request: Request) throws -> Future<View> {
+        return try Post.query(on: request).publicAll().noCategoryAll().paginate(for: request)
+            .flatMap { page in
+                try page.data.map { try $0.formPublic(on: request) }
+                    .flatten(on: request)
+                    .map { posts in
+                        try page.transform(posts)
+                    }
+            }
+            .flatMap { page in
+                try ContextMaker.makeIndexView().makeResponse(context: page.response(), for: request)
+            }
     }
     
-    func index(request: Request, inTag tag: Tag) throws -> ResponseRepresentable {
-        var page = try tag.posts.makeQuery().publicAll().paginate(for: request).makeJSON()
-        try page.set(PostController.tagKey, tag.makeJSON())
-        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
-    }
-    
-    func index(request: Request, inCategory category: Category) throws -> ResponseRepresentable {
-        var page = try category.posts.makeQuery().publicAll().paginate(for: request).makeJSON()
-        try page.set(PostController.categoryKey, category.makeJSON())
-        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
-    }
-    
-    func indexNoCategory(request: Request) throws -> ResponseRepresentable {
-        var page = try Post.makeQuery().publicAll().filter(Category.foreignIdKey, nil).paginate(for: request).makeJSON()
-        try page.set(PostController.categoryKey, Category.makeNonCategorized())
-        return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
-    }
-
-    func show(request: Request, post: Post) throws -> ResponseRepresentable {
-        return try ContextMaker.makeShowView().addTitle(post.title).makeResponse(context: post.makeJSON(), for: request)
+    func show(request: Request) throws -> Future<View> {
+        return try request.parameters.next(Post.self).flatMap { post in
+            
+            guard post.isPublished else {
+                throw Abort(.notFound)
+            }
+            
+            return try post.formPublic(on: request).flatMap { publicPost in
+                try ContextMaker.makeShowView(title: post.title).makeResponse(context: publicPost, for: request)
+            }
+        }
     }
 }
-

@@ -1,71 +1,57 @@
-import HTTP
 import Vapor
+import Fluent
 
-final class MessageDeliveryMiddleware: Middleware {
+fileprivate struct MessageDeliveryMiddlewareConst {
+    static let errorMessageKey = "error_message"
+}
+
+struct MessageDeliveryViewDecorator: ViewDecorator {
     
-    static let formDataDelivererKey = "form_data_veliverer"
-    
-    struct MessageDeliveryViewDecorator: ViewDecorator {
+    func decorate(context: inout [String : TemplateData], for request: Request) throws {
         
-        func decorate(node: inout Node, with request: Request) throws {
-            
-            guard let formDataDeliverer = request.storage[MessageDeliveryMiddleware.formDataDelivererKey] as? FormDataDeliverable.Type else {
-                return
-            }
-            
-            if let redirectFormData = (request.storage[formDataDeliverer.formDataKey] as? Node)?.object {
-                try formDataDeliverer.override(node: &node, with: redirectFormData)
-            }
-        }
-    }
-    
-    init(config: Config) {
-        config.addViewDecorator(MessageDeliveryViewDecorator())
-    }
-    
-    func respond(to request: Request, chainingTo next: Responder) throws -> Response {
-        
-        guard let session = request.session else {
-            return try next.respond(to: request)
+        guard let errorMessage = try request.session()[MessageDeliveryMiddlewareConst.errorMessageKey] else {
+            return
         }
         
-        if let errorMessage = session.data["error_message"] {
-            request.storage["error_message"] = errorMessage
-            session.data.removeKey("error_message")
-        }
-        
-        let formDataKey = NoDerivery.formDataKey
-        
-        if let formData = session.data[formDataKey] {
-            request.storage[formDataKey] = formData
-            session.data.removeKey(formDataKey)
-        }
-        
-        let response = try next.respond(to: request)
-        
-        if let error = request.storage["form_error"] as? FormError, response.status == .seeOther {
-            try? session.data.set("error_message", error.errorMessage)
-            if let formData = request.formURLEncoded {
-                try? error.deliverer.stash(on: session, formData: formData)
-            }
-        }
-        
-        return response
+        context[MessageDeliveryMiddlewareConst.errorMessageKey] = .string(errorMessage)
     }
 }
 
-extension Response {
-    
-    convenience init(redirect location: String, with error: FormError, for request: Request) {
-        request.storage["form_error"] = error
-        self.init(redirect: location)
+final class MessageDeliveryMiddleware: Middleware, Service {
+
+    func respond(to request: Request, chainingTo next: Responder) throws -> Future<Response> {
+        
+        let promise = request.eventLoop.newPromise(Response.self)
+        let session = try request.session()
+        let hasErrorMessage = session[MessageDeliveryMiddlewareConst.errorMessageKey] != nil
+        
+        func processAfterRequest() {
+            
+            if hasErrorMessage {
+                session[MessageDeliveryMiddlewareConst.errorMessageKey] = nil
+            }
+        }
+        
+        try next.respond(to: request)
+            .map { res in
+                processAfterRequest()
+                return res
+            }
+            .do { res in
+                promise.succeed(result: res)
+            }
+            .catch { error in
+                promise.fail(error: error)
+            }
+        
+        return promise.futureResult
     }
 }
 
-extension ViewCreator {
+extension Request {
     
-    func make(_ path: String, _ context: NodeRepresentable, for request: Request, formDataDeliverer: FormDataDeliverable.Type) throws -> View {
-        request.storage[MessageDeliveryMiddleware.formDataDelivererKey] = formDataDeliverer
-        return try make(path, context, for: request)
+    func redirect(to location: String, with errorMessage: String) throws -> Response {
+        try session()[MessageDeliveryMiddlewareConst.errorMessageKey] = errorMessage
+        return redirect(to: location)
     }
 }

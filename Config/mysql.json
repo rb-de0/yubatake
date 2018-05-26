@@ -1,6 +1,6 @@
 {
     "hostname": "127.0.0.1",
-    "user": "root",
+    "username": "root",
     "password": "password",
-    "database": "note"
+    "database": "yubatake"
 }

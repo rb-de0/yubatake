@@ -1,0 +1,280 @@
+/* --------------------------
+* Common
+* --------------------------
+*/
+
+.no-decoration {
+  text-decoration: none;
+}
+
+.no-decoration:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------
+* Base
+* --------------------------
+*/
+
+html {
+  font-size: 14px;
+}
+
+body {
+  max-width: 1080px;
+  margin: 0 auto;
+  font-family: sans-serif;
+  color: #222;
+  background-color: #fff;
+}
+
+header {
+  margin: 1rem auto;
+  padding: .5rem 2rem .5rem;
+}
+
+header a {
+  color: #222;
+}
+
+main {
+  padding: 0 2rem;
+}
+
+main a {
+  color: #245fbb;
+}
+
+#site-title {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+#site-description {
+  margin-top: 1rem;
+  font-size: .9rem;
+}
+
+#content-page-title {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  font-size: 1.75rem;
+}
+
+/* --------------------------
+* Menu
+* --------------------------
+*/
+
+#content-menu {
+  margin: 2rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid #f1f1f1;
+}
+
+#menu-subcontents {
+  padding: .5rem 0;
+}
+
+.menu-subcontents-header {
+  margin-bottom: .5rem;
+  font-size: 1rem;
+}
+
+.menu-subcontents-item {
+  margin: .125rem 0px;
+  font-size: .8125rem;
+}
+
+/* --------------------------
+* Post Card
+* --------------------------
+*/
+
+.post-card a {
+  text-decoration: none;
+}
+
+.post-card-title {
+  padding: .5rem 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.post-card-created-at {
+  padding: 0;
+  font-size: .7rem;
+  color: #aaa;
+}
+
+.post-card-content {
+  padding: 1rem 0 .5rem 0;
+  margin: 0;
+  border-bottom: 1px solid #f1f1f1;
+  background-color: #fff;
+}
+
+.post-card-part-of-content-container {
+  padding: 1rem 0;
+  height: auto;
+}
+
+.post-card-part-of-content {
+  height: auto;
+  padding: 0;
+  font-size: 1rem;
+  word-break: break-word;
+  line-height: 1.5;
+  background-color: #fff;
+  overflow: hidden;
+}
+
+.post-card-tags, .post-card-category {
+  padding: 0;
+  height: 1.5rem;
+  font-size: .8rem;
+  overflow-y: hidden;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+#content-page-footer {
+  margin: 2rem 0 1rem 0;
+  padding-bottom: 2rem;
+}
+
+#content-page-footer #page-navigator {
+  float: left;
+}
+
+/* --------------------------
+* Post Detail
+* --------------------------
+*/
+
+#post-content {
+  padding-top: 2rem;
+  background-color: #fff;
+}
+
+#post-content-header {
+  margin-top: .5rem;
+  margin-bottom: 2rem;
+  padding-bottom: .3rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+#post-content-title {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: bold;
+  word-break: break-all;
+}
+
+#post-content-header-date {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-top: .4rem;
+  font-size: .8rem;
+}
+
+#post-content-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+#post-content-header-post-attribute {
+  margin-right: 2rem;
+  font-size: .8rem;
+}
+
+#post-content-header-post-attribute div:last-child {
+  margin-top: .4rem;
+}
+
+#post-content-header-post-attribute a {
+  text-decoration: none;
+}
+
+#post-content-border {
+  margin-top: .25rem;
+  margin-bottom: 2rem;
+  border-top: 1px solid #ddd;
+}
+
+#post-content-body {
+  padding-bottom: 3rem;
+  line-height: 2.0;
+  text-align: left;
+  font-size: .9rem;
+}
+
+#post-content-body h1 {
+  margin-top: 3.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: .2rem;
+  font-weight: bold;
+  font-size: 1.4rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+#post-content-body h2 {
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: .2rem;
+  font-weight: 600;
+  font-size: 1.3rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+#post-content-body h3 {
+  margin-top: 48px;
+  margin-bottom: .5rem;
+  padding-bottom: .2rem;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+#post-content-body a {
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.post-content-header-text {
+  margin-right: 1rem;
+  margin-left: 0px;
+}
+
+/* --------------------------
+* PC
+* --------------------------
+*/
+
+@media screen and (min-width: 64em) {
+
+  #content {
+    box-sizing: border-box;
+    padding-right: 2rem;
+  }
+
+  #content-menu {
+    box-sizing: border-box;
+    margin: 0;
+    padding-left: 3rem;
+    border-top: none;
+  }
+
+  #content-page-footer {
+    margin: 2rem 0 5rem 0;
+  }
+}
+
+@media screen and (min-width: 48em) {
+
+  html {
+    font-size: 16px;
+  }
+}

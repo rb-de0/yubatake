@@ -1,0 +1,67 @@
+#set("script") {
+  <script src="/js/contents-form-table.js"></script>
+}
+
+#set("content") {
+  <div id="page-title">All Categories</div>
+
+  <form id="contents-form" action="/admin/categories/delete" method="post">
+
+    <input type="hidden" name="csrf-token" value="#(csrf_token)">
+
+    <table id="contents-form-table" class="pure-table pure-table-horizontal">
+
+      <colgroup>
+        <col id="contents-form-table-head-checkbox">
+        <col id="categories-table-head-name">
+      </colgroup>
+
+      <thead id="contents-form-table-header">
+        <tr>
+          <th>
+            <label class="checkbox-container">
+              <input id="all-checkbox" type="checkbox" v-on:click="selectAll"/>
+              <span class="checkbox"></span>
+            </label>
+          </th>
+          <th>Name</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        #for(category in data) {
+          <tr>
+            <td>
+              <label class="checkbox-container">
+                <input class="one-checkbox" type="checkbox" name="categories[]" value="#(category.id)" v-on:click="selectOne"/>
+                <span class="checkbox"></span>
+              </label>
+            </td>
+            <td><a href="/admin/categories/#(category.id)/edit">#(category.name)</a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div id="contents-form-footer">
+
+      <div id="contents-edit-button-container">
+        <a class="pure-button" href="/admin/categories/create">New</a>
+        <button type="submit" class="pure-button">Delete</button>
+      </div>
+
+      <div id="page-navigator">
+        #if(page.position.previous) {
+          <a class="pure-button" href="?page=#(page.position.previous)">Previous</a>
+        }
+        #if(page.position.next) {
+          <a class="pure-button" href="?page=#(page.position.next)">Next</a>
+        }
+      </div>
+      <div class="clearfix"></div>
+    </div>
+
+  </form>
+}
+
+#embed("admin-base")

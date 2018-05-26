@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Login</title>
+  #embed("embeds/resources")
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+  <div id="login-form-container">
+    <div id="login-form">
+
+      <form class="pure-form" action="/login" method="post">
+
+        <input type="hidden" name="csrf-token" value="#(csrf_token)">
+        <div class="field-error">#(error_message)</div>
+
+        <fieldset class="pure-group">
+          <div class="form-label">
+            <label for="name">ID</label>
+          </div>
+          <input id="name" class="pure-input-1" type="text" name="name" placeholder="ID">
+          <div class="form-label">
+            <label for="password">Password</label>
+          </div>
+          <input id="password" class="pure-input-1" type="password" name="password" placeholder="Password">
+        </fieldset>
+        <button type="submit" class="pure-button pure-input-1 pure-button-primary">Login</button>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+</html>
