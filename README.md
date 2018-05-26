@@ -104,7 +104,7 @@ $ swift build -c release
 #### 5. Run the app.
 
 ```bash
-$ swift run Run
+$ swift run -c release Run
 ```
 
 # Migration
