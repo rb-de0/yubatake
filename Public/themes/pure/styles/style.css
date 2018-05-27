@@ -391,6 +391,10 @@ ol {
   color: #337ab7;
 }
 
+#post-content-share-container {
+  padding-bottom: 1rem;
+}
+
 /* --------------------------
 * PC
 * --------------------------
