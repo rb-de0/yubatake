@@ -52,6 +52,10 @@
       #get(html_content)
     </div>
 
+    <div id="post-content-share-container">
+      <a href="https://twitter.com/share" class="twitter-share-button"></a>
+    </div>
+
   </div>
 
   <script>hljs.initHighlightingOnLoad()</script>
