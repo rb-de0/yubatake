@@ -26,6 +26,7 @@ final class PublicViewContext {
             case categories = "all_categories"
             case meta
             case dateFormat = "date_format"
+            case favicon
             case root
         }
         
@@ -35,6 +36,7 @@ final class PublicViewContext {
             
             let title = siteInfo.map { self.pageTitle ?? $0.name }
             let root = siteInfo.map { self.fileConfig.themeRoot.started(with: "/").finished(with: "/").appending($0.selectedTheme) }
+            
             try container.encode(title, forKey: .pageTitle)
             try container.encode(pageURL, forKey: .pageURL)
             try container.encode(siteInfo, forKey: .siteInfo)
@@ -42,8 +44,11 @@ final class PublicViewContext {
             try container.encode(staticContents, forKey: .staticContents)
             try container.encode(tags, forKey: .tags)
             try container.encode(categories, forKey: .categories)
+            
             try container.encodeIfPresent(config.meta, forKey: .meta)
+            try container.encodeIfPresent(config.faviconPath, forKey: .favicon)
             try container.encode(config.dateFormat, forKey: .dateFormat)
+            
             try container.encode(root, forKey: .root)
             
         }

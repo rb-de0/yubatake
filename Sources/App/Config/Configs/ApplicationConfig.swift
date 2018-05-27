@@ -10,6 +10,7 @@ struct ApplicationConfig: LocalConfig, Service {
     let hostName: String
     let dateFormat: String
     let imageGroupDateFormat: String
+    let faviconPath: String?
     let meta: Meta?
     
     struct Meta: Content {
