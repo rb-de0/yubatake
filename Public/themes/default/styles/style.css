@@ -247,6 +247,10 @@ main a {
   word-break: break-all;
 }
 
+#post-content-share-container {
+  padding-bottom: 2rem;
+}
+
 .post-content-header-text {
   margin-right: 1rem;
   margin-left: 0px;
