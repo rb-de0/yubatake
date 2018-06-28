@@ -36,6 +36,7 @@ before_install:
   - mysql -u root -e "create user 'test'@'localhost' IDENTIFIED BY 'test'";
   - mysql -u root -e "grant all on yubatake_tests.* TO 'test'@'localhost'";
   - mysql -u root -e "grant all on schema_check.* TO 'test'@'localhost'";
+  - mysql -u root -e "alter user 'test'@'localhost' IDENTIFIED WITH mysql_native_password BY 'test'";
 
 script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
