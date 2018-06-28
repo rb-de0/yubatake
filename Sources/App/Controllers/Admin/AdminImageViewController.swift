@@ -52,12 +52,12 @@ final class AdminImageViewController {
             
             let updateTransaction = request.withPooledConnection(to: .mysql) { conn in
                 
-                MySQLDatabase.inTransaction(on: conn) { transaction in
+                MySQLDatabase.transactionExecute({ transaction in
                     
                     applied.save(on: transaction).map { _ in
                         try repository.rename(from: beforeName, to: afterName)
                     }
-                }
+                }, on: conn)
             }
             
             return updateTransaction
@@ -78,12 +78,12 @@ final class AdminImageViewController {
             
             let deleteTransaction = request.withPooledConnection(to: .mysql) { conn in
                 
-                MySQLDatabase.inTransaction(on: conn) { transaction in
+                MySQLDatabase.transactionExecute ({ transaction in
                     
                     image.delete(on: transaction).map { _ in
                         try repository.delete(at: try image.formPublic(on: request).name)
                     }
-                }
+                }, on: conn)
             }
             
             return deleteTransaction.map {

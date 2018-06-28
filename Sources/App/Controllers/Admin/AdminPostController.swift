@@ -97,7 +97,7 @@ final class AdminPostController {
             let newPost = try Post(from: form, on: request)
             let tags = try Tag.tags(from: form)
             
-            return MySQLDatabase.inTransaction(on: conn) { transaction in
+            return MySQLDatabase.transactionExecute({ transaction in
                 
                 newPost.save(on: transaction).flatMap { post in
                     
@@ -113,7 +113,7 @@ final class AdminPostController {
                         }
                         .transform(to: post)
                 }
-            }
+            }, on: conn)
         }
         
         return saveTransaction
@@ -154,7 +154,7 @@ final class AdminPostController {
                 
                 let applied = try post.apply(form: form, on: request)
                 
-                return MySQLDatabase.inTransaction(on: conn) { transaction in
+                return MySQLDatabase.transactionExecute ({ transaction in
                     
                     applied.save(on: transaction).flatMap { post in
                         
@@ -174,7 +174,7 @@ final class AdminPostController {
                                 return Future<Void>.andAll(refresh, eventLoop: request.eventLoop)
                             }
                     }
-                }
+                }, on: conn)
             }
             
             return updateTransaction
