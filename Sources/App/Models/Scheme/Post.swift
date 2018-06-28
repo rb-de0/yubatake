@@ -120,7 +120,7 @@ final class Post: DatabaseModel {
     // MARK: - Static
     
     static func recentPosts(on conn: DatabaseConnectable, count: Int = Post.recentPostCount) throws -> Future<[Post]> {
-        return try Post.query(on: conn).noStaticAll()
+        return try Post.query(on: conn).noStaticAll().publicAll()
             .sort(\Post.createdAt, .descending)
             .range(lower: 0, upper: count)
             .all()
