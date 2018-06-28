@@ -66,11 +66,11 @@
       },
       {
         "package": "CSRF",
-        "repositoryURL": "https://github.com/rb-de0/CSRF.git",
+        "repositoryURL": "https://github.com/vapor-community/CSRF.git",
         "state": {
-          "branch": "vapor3",
-          "revision": "54ded1d9cae0de4a16031b6eba5b6a231c4eb442",
-          "version": null
+          "branch": null,
+          "revision": "473fde772a3b0ad156181d0ae7015ec4c99bb29a",
+          "version": "2.0.0"
         }
       },
       {
