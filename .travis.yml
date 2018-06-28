@@ -23,6 +23,7 @@ before_install:
       brew install vapor;
       brew install mysql@5.7;
       brew services start mysql@5.7;
+      brew link mysql@5.7 --force;
       bundle install --path vendor/bundle;
     else
       eval "$(curl -sL https://apt.vapor.sh)";
