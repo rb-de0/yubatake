@@ -21,9 +21,6 @@ before_install:
       brew tap vapor/tap;
       brew update;
       brew install vapor;
-      brew install cmysql;
-      brew services stop mysql;
-      brew remove mysql;
       brew install mysql@5.7;
       brew services start mysql@5.7;
       bundle install --path vendor/bundle;
