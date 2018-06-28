@@ -195,9 +195,9 @@ final class AdminPostController {
         var isStatic = false
         let ids = form.posts ?? []
         let eventLoop = request.eventLoop
-        let deletePosts = try ids
+        let deletePosts = ids
             .map {
-                try Post.find($0, on: request)
+                Post.find($0, on: request)
                     .unwrap(or: Abort(.badRequest))
                     .do { isStatic = $0.isStatic }
                     .delete(on: request)

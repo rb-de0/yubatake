@@ -4,6 +4,8 @@ import Vapor
 
 final class Category: DatabaseModel, Content {
     
+    static let entity = "categories"
+    
     struct NumberOfPosts: Content {
         let category: Category
         let count: Int

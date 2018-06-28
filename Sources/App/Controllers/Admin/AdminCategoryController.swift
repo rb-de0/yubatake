@@ -63,8 +63,8 @@ final class AdminCategoryController {
         
         let ids = form.categories ?? []
         let eventLoop = request.eventLoop
-        let deleteCategories = try ids.map {
-            try Category.find($0, on: request)
+        let deleteCategories = ids.map {
+            Category.find($0, on: request)
                 .unwrap(or: Abort(.badRequest))
                 .delete(on: request)
                 .transform(to: ())

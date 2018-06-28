@@ -4,6 +4,8 @@ import Vapor
 
 final class Tag: DatabaseModel, Content {
     
+    static let entity = "tags"
+    
     struct NumberOfPosts: Content {
         let tag: Tag
         let count: Int
@@ -48,14 +50,14 @@ final class Tag: DatabaseModel, Content {
     }
     
     static func notInsertedTags(in tags: [Tag], on conn: DatabaseConnectable) throws -> Future<[Tag]> {
-        return try tags
-            .map { tag in try Tag.query(on: conn).filter(\Tag.name == tag.name).count().map { count in (count, tag) } }
+        return tags
+            .map { tag in Tag.query(on: conn).filter(\Tag.name == tag.name).count().map { count in (count, tag) } }
             .flatten(on: conn)
             .map { tags in tags.filter { $0.0 == 0 }.map { $0.1 } }
     }
     
     static func insertedTags(in tags: [Tag], on conn: DatabaseConnectable) throws -> Future<[Tag]> {
-        return try tags.map { try Tag.query(on: conn).filter(\Tag.name == $0.name).first() }
+        return tags.map { Tag.query(on: conn).filter(\Tag.name == $0.name).first() }
             .flatten(on: conn)
             .map { tags in tags.compactMap { $0 } }
     }

@@ -7,6 +7,8 @@ import Vapor
 
 final class User: DatabaseModel {
     
+    static let entity = "users"
+    
     private enum CodingKeys: String, CodingKey {
         case id
         case name

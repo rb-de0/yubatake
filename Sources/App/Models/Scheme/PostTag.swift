@@ -8,9 +8,7 @@ final class PostTag: ModifiablePivot, MySQLModel {
         case tagId = "tag_id"
     }
     
-    static var entity: String {
-        return "post_tag"
-    }
+    static let entity = "post_tag"
     
     static var leftIDKey: LeftIDKey {
         return \.postId
