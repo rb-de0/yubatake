@@ -47,7 +47,7 @@ final class MigrationCommand: Command, Service {
 
         let oldDataBase = MySQLDatabase(config: oldDataBaseConfig)
         let newDataBase = MySQLDatabase(config: config)
-        let worker = MultiThreadedEventLoopGroup(numThreads: 1)
+        let worker = MultiThreadedEventLoopGroup(numberOfThreads: 1)
         
         _oldConn = try oldDataBase.newConnection(on: worker).wait()
         _newConn = try newDataBase.newConnection(on: worker).wait()
@@ -113,7 +113,7 @@ final class MigrationCommand: Command, Service {
         let conn = newConn
         
         return Future.flatMap(on: container) {
-            return try User.find(1, on: conn).unwrap(or: Abort(HTTPStatus.internalServerError))
+            return User.find(1, on: conn).unwrap(or: Abort(HTTPStatus.internalServerError))
                 .flatMap { user in
                     let logger = try container.make(Logger.self)
                     let rootUser = try User.makeRootUser(using: container)

@@ -3,6 +3,8 @@ import Vapor
 
 final class SiteInfo: DatabaseModel, Content {
     
+    static let entity = "siteinfos"
+    
     private enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -40,7 +42,7 @@ final class SiteInfo: DatabaseModel, Content {
     }
     
     static func shared(on conn: DatabaseConnectable) throws -> Future<SiteInfo> {
-        return try SiteInfo.find(1, on: conn).unwrap(or: Abort(.internalServerError))
+        return SiteInfo.find(1, on: conn).unwrap(or: Abort(.internalServerError))
     }
 }
 

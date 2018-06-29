@@ -4,7 +4,7 @@ create_table "categories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force:
   t.string "name", null: false
   t.datetime "created_at", precision: 6
   t.datetime "updated_at", precision: 6
-  t.index ["name"], name: "_fluent_a2pbhTRFgEwhaCM4izxMlQ", unique: true
+  t.index ["name"], name: "uq:54ace75812cbdb87d167b38b9f847f43fad451c4", unique: true
 end
 
 create_table "fluent", id: :binary, limit: 16, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -19,29 +19,29 @@ create_table "images", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :ca
   t.string "alt_description", null: false
   t.datetime "created_at", precision: 6
   t.datetime "updated_at", precision: 6
-  t.index ["path"], name: "_fluent_cpasmIFPog7uNQuAr1mJVg", unique: true
+  t.index ["path"], name: "uq:87ec1fb9722c97acf9f663a9722b03630d1c6d50", unique: true
 end
 
 create_table "post_tag", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
   t.bigint "post_id", null: false
   t.bigint "tag_id", null: false
-  t.index ["post_id"], name: "post_id"
-  t.index ["tag_id"], name: "tag_id"
+  t.index ["post_id"], name: "fk:e6428d3aef1990a75e672dac424fadf22d14129e"
+  t.index ["tag_id"], name: "fk:fa52fac2dda6f37625dbf0c726e58a275a37a090"
 end
 
 create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-  t.string "title", limit: 128, null: false
-  t.string "content", limit: 8192, null: false
-  t.string "html_content", limit: 8192, null: false
-  t.string "part_of_content", limit: 150, null: false
+  t.string "title", limit: 128
+  t.string "content", limit: 8192
+  t.string "html_content", limit: 8192
+  t.string "part_of_content", limit: 150
   t.bigint "category_id"
   t.bigint "user_id"
-  t.boolean "is_static", null: false
-  t.boolean "is_published", null: false
+  t.boolean "is_static"
+  t.boolean "is_published"
   t.datetime "created_at", precision: 6
   t.datetime "updated_at", precision: 6
-  t.index ["category_id"], name: "category_id"
-  t.index ["user_id"], name: "user_id"
+  t.index ["category_id"], name: "fk:82c6a979135869a48bf35c75d729eaec229f5405"
+  t.index ["user_id"], name: "fk:3d8955eb4dbd0cde1036e9e26e9ccdac4442f6b0"
 end
 
 create_table "siteinfos", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -56,7 +56,7 @@ create_table "tags", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :casc
   t.string "name", null: false
   t.datetime "created_at", precision: 6
   t.datetime "updated_at", precision: 6
-  t.index ["name"], name: "_fluent_B06n307aNDI5w2xIgzJ3lg", unique: true
+  t.index ["name"], name: "uq:44396bc30ac31e5ffc68457d97c72dd4dbcef64c", unique: true
 end
 
 create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -70,7 +70,7 @@ create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cas
   t.datetime "updated_at", precision: 6
 end
 
-add_foreign_key "post_tag", "posts", name: "post_tag_ibfk_1", on_update: :cascade, on_delete: :cascade
-add_foreign_key "post_tag", "tags", name: "post_tag_ibfk_2"
-add_foreign_key "posts", "categories", name: "posts_ibfk_1"
-add_foreign_key "posts", "users", name: "posts_ibfk_2"
+add_foreign_key "post_tag", "posts", name: "fk:e6428d3aef1990a75e672dac424fadf22d14129e", on_delete: :cascade
+add_foreign_key "post_tag", "tags", name: "fk:fa52fac2dda6f37625dbf0c726e58a275a37a090", on_delete: :cascade
+add_foreign_key "posts", "categories", name: "fk:82c6a979135869a48bf35c75d729eaec229f5405"
+add_foreign_key "posts", "users", name: "fk:3d8955eb4dbd0cde1036e9e26e9ccdac4442f6b0"

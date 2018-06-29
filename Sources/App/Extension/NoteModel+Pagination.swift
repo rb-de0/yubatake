@@ -1,13 +1,13 @@
-import Fluent
+import FluentMySQL
 import Pagination
 import Vapor
 
-extension QueryBuilder where Model: DatabaseModel, Model: Paginatable {
+extension QueryBuilder where Result: DatabaseModel, Result: Paginatable, Result.Database == Database {
     
-    func paginate(for request: Request) throws -> Future<Page<Model>> {
+    func paginate(for request: Request) throws -> Future<Page<Result>> {
         let key = Pagination.defaultPageKey
-        let field: KeyPath<Model, Date?> = \Model.createdAt
-        let sorts = [try QuerySort(field: field.makeQueryField(), direction: .descending)]
+        let field: KeyPath<Result, Date?> = \Result.createdAt
+        let sorts = [MySQLDatabase.querySort(field.queryField, .descending)]
         let page = try request.query.get(Int?.self, at: key) ?? 1
         return try paginate(page: page, sorts)
     }

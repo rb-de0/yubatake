@@ -8,11 +8,7 @@ extension PageResponse {
     
     init(from decoder: Decoder) throws { fatalError() }
     
-    static var defaultPageSorts: [QuerySort] {
-        return []
-    }
-    
-    static var defaultPageGroups: [QueryGroupBy] {
+    static var defaultPageSorts: [MySQLDatabase.QuerySort] {
         return []
     }
 
