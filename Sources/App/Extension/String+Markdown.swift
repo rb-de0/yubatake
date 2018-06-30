@@ -8,6 +8,7 @@ extension String {
             .removeProtocols("img", "src", "http", "https")
             .removeProtocols("a", "href", "ftp", "http", "https", "mailto")
             .addAttributes("blockquote", "class", "data-lang")
+            .addAttributes("img", "class")
     }
     
     var htmlFromMarkdown: String? {
