@@ -2,7 +2,7 @@ import Crypto
 import FluentMySQL
 import Vapor
 
-final class MigrationCommand: Command, Service {
+final class UpdateCommand: Command, Service {
     
     let arguments: [CommandArgument] = []
     
@@ -234,7 +234,7 @@ fileprivate struct NewSchema<T: MySQLModel>: MySQLModel {
 
 // MARK: - Old Schema
 
-fileprivate extension MigrationCommand {
+fileprivate extension UpdateCommand {
     
     private struct OldCategory: OldSchemaType {
         
