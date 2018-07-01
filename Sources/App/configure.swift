@@ -28,6 +28,9 @@ public func configure(
     services.register { container -> FileConfig in
         return FileConfig(directoryConfig: try container.make())
     }
+    services.register { container -> NIOServerConfig in
+        return try container.make(ConfigProvider.self).make(NIOServerConfig.self)
+    }
     
     // bcrypt
     try services.register(AuthenticationProvider())
