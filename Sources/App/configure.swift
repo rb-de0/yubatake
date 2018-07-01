@@ -42,12 +42,10 @@ public func configure(
     services.register { container -> CommandConfig in
         var config = CommandConfig.default()
         config.use(UpdateCommand.self, as: "update")
-        config.use(BootOnlyCommand.self, as: "boot")
         config.useFluentCommands()
         return config
     }
     services.register(UpdateCommand())
-    services.register(BootOnlyCommand())
     
     // view
     do {
