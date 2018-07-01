@@ -8,8 +8,8 @@ protocol DatabaseModel: MySQLModel, Parameter {
 }
 
 extension DatabaseModel {
-    static var createdAtKey: TimestampKey { return \.createdAt }
-    static var updatedAtKey: TimestampKey { return \.updatedAt }
+    static var createdAtKey: TimestampKey? { return \.createdAt }
+    static var updatedAtKey: TimestampKey? { return \.updatedAt }
     
     static var uniqueSlug: String {
         return ":id"
