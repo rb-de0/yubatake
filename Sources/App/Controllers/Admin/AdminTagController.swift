@@ -62,8 +62,8 @@ final class AdminTagController {
         
         let ids = form.tags ?? []
         let eventLoop = request.eventLoop
-        let deleteTags = try ids.map {
-            try Tag.find($0, on: request)
+        let deleteTags = ids.map {
+            Tag.find($0, on: request)
                 .unwrap(or: Abort(.badRequest))
                 .delete(on: request)
                 .transform(to: ())

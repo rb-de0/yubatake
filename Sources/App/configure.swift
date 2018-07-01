@@ -28,6 +28,9 @@ public func configure(
     services.register { container -> FileConfig in
         return FileConfig(directoryConfig: try container.make())
     }
+    services.register { container -> NIOServerConfig in
+        return try container.make(ConfigProvider.self).make(NIOServerConfig.self)
+    }
     
     // bcrypt
     try services.register(AuthenticationProvider())
@@ -41,13 +44,11 @@ public func configure(
     // command
     services.register { container -> CommandConfig in
         var config = CommandConfig.default()
-        config.use(MigrationCommand.self, as: "migrate")
-        config.use(BootOnlyCommand.self, as: "boot")
+        config.use(UpdateCommand.self, as: "update")
         config.useFluentCommands()
         return config
     }
-    services.register(MigrationCommand())
-    services.register(BootOnlyCommand())
+    services.register(UpdateCommand())
     
     // view
     do {

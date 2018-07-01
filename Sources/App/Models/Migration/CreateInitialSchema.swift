@@ -8,7 +8,7 @@ extension Category: Migration {
         
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
-            try builder.addIndex(to: \.name, isUnique: true)
+            builder.unique(on: \.name)
         }
     }
 }
@@ -19,7 +19,7 @@ extension Tag: Migration {
         
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
-            try builder.addIndex(to: \.name, isUnique: true)
+            builder.unique(on: \.name)
         }
     }
 }
@@ -29,17 +29,19 @@ extension Post: Migration {
     static func prepare(on connection: MySQLConnection) -> Future<Void> {
         
         return Database.create(self, on: connection) { builder in
-            try builder.field(for: idKey)
-            try builder.field(type: .varChar(length: Post.titleLength), for: \.title)
-            try builder.field(type: .varChar(length: Post.contentLength), for: \.content)
-            try builder.field(type: .varChar(length: Post.contentLength), for: \.htmlContent)
-            try builder.field(type: .varChar(length: Post.partOfContentLength), for: \.partOfContent)
-            try builder.field(for: \.categoryId, referencing: \Category.id)
-            try builder.field(for: \.userId, referencing: \User.id)
-            try builder.field(type: .bool(), for: \.isStatic)
-            try builder.field(type: .bool(), for: \.isPublished)
-            try builder.field(for: \.createdAt)
-            try builder.field(for: \.updatedAt)
+            builder.field(for: idKey)
+            builder.field(for: \.title, type: .varchar(Post.titleLength))
+            builder.field(for: \.content, type: .varchar(Post.contentLength))
+            builder.field(for: \.htmlContent, type: .varchar(Post.contentLength))
+            builder.field(for: \.partOfContent, type: .varchar(Post.partOfContentLength))
+            builder.field(for: \.categoryId)
+            builder.field(for: \.userId)
+            builder.field(for: \.isStatic, type: .bool)
+            builder.field(for: \.isPublished, type: .bool)
+            builder.field(for: \.createdAt)
+            builder.field(for: \.updatedAt)
+            builder.reference(from: \.categoryId, to: \Category.id)
+            builder.reference(from: \.userId, to: \User.id)
         }
     }
 }
@@ -49,9 +51,11 @@ extension PostTag: Migration {
     static func prepare(on connection: MySQLConnection) -> Future<Void> {
         
         return Database.create(self, on: connection) { builder in
-            try builder.field(for: idKey)
-            try builder.field(for: leftIDKey, referencing: \Post.id, actions: .update)
-            try builder.field(for: rightIDKey, referencing: \Tag.id)
+            builder.field(for: idKey)
+            builder.field(for: leftIDKey)
+            builder.field(for: rightIDKey)
+            builder.reference(from: leftIDKey, to: \Post.id, onUpdate: .restrict, onDelete: .cascade)
+            builder.reference(from: rightIDKey, to: \Tag.id, onUpdate: .restrict, onDelete: .cascade)
         }
     }
 }
@@ -64,7 +68,7 @@ extension Image: Migration {
         
         return Database.create(self, on: connection) { builder in
             try addProperties(to: builder)
-            try builder.addIndex(to: \.path, isUnique: true)
+            builder.unique(on: \.path)
         }
     }
 }

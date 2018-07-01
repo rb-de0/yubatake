@@ -8,7 +8,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", from: "2.0.0"),
-        .package(url: "https://github.com/rb-de0/CSRF.git", .branch("vapor3")),
+        .package(url: "https://github.com/vapor-community/CSRF.git", from: "2.0.0"),
         .package(url: "https://github.com/rb-de0/Poppo.git", from: "1.0.0"),
         .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "1.0.0"),
         .package(url: "https://github.com/vapor-community/markdown.git", from: "0.4.0"),

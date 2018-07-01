@@ -113,7 +113,7 @@ ol {
 
 #menu-header-site-description {
   margin-top: .5rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   white-space: normal;
 }
 
@@ -128,7 +128,7 @@ ol {
 
 #menu-subcontents .menu-subcontents-item {
   margin: .125rem 0px;
-  font-size: .8125rem;
+  font-size: .9rem;
 }
 
 /* --------------------------
@@ -170,11 +170,7 @@ ol {
 */
 
 #content {
-  position: fixed;
-  top: 0px;
-  right: 0px;
-  bottom: 0px;
-  left: 0px;
+  margin-left: 0px;
   padding: 16px 32px 16px;
   color: #222222;
   overflow-y: scroll;
@@ -414,8 +410,7 @@ ol {
   }
 
   #content {
-    left: 240px;
-    z-index: 1;
+    margin-left: 240px;
   }
 
   #content #post-content {

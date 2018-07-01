@@ -5,6 +5,8 @@ import Vapor
 
 final class Post: DatabaseModel {
     
+    static let entity = "posts"
+    
     private enum CodingKeys: String, CodingKey {
         case id
         case title
@@ -103,8 +105,8 @@ final class Post: DatabaseModel {
     
     func formPublic(on request: Request) throws -> Future<Public> {
         
-        let _user = try user?.get(on: request)
-        let _category = try category?.get(on: request)
+        let _user = user?.get(on: request)
+        let _category = category?.get(on: request)
         let _tags = try tags.query(on: request).all()
         
         return _user.form(on: request.eventLoop)
@@ -120,7 +122,7 @@ final class Post: DatabaseModel {
     // MARK: - Static
     
     static func recentPosts(on conn: DatabaseConnectable, count: Int = Post.recentPostCount) throws -> Future<[Post]> {
-        return try Post.query(on: conn).noStaticAll()
+        return try Post.query(on: conn).noStaticAll().publicAll()
             .sort(\Post.createdAt, .descending)
             .range(lower: 0, upper: count)
             .all()
@@ -161,21 +163,21 @@ extension Post: Validatable {
     }
 }
 
-extension QueryBuilder where Model == Post {
+extension QueryBuilder where Result == Post {
     
     func publicAll() throws -> Self {
-        return try filter(\Post.isPublished == true)
+        return filter(\Post.isPublished == true)
     }
     
     func noStaticAll() throws -> Self {
-        return try filter(\Post.isStatic == false)
+        return filter(\Post.isStatic == false)
     }
     
     func staticAll() throws -> Self {
-        return try filter(\Post.isStatic == true)
+        return filter(\Post.isStatic == true)
     }
     
     func noCategoryAll() throws -> Self {
-        return try filter(\Post.categoryId == nil)
+        return filter(\Post.categoryId == nil)
     }
 }

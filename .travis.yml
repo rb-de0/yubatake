@@ -14,15 +14,16 @@ env:
     - MYSQL_PASSWORD=test
     - MYSQL_PORT=3306
 
-osx_image: xcode9.3
+osx_image: xcode9.4
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       brew update;
       brew tap vapor/tap;
       brew update;
       brew install vapor;
-      brew install cmysql;
-      mysql.server start;
+      brew install mysql@5.7;
+      brew services start mysql@5.7;
+      brew link mysql@5.7 --force;
       bundle install --path vendor/bundle;
     else
       eval "$(curl -sL https://apt.vapor.sh)";
