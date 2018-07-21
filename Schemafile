@@ -30,7 +30,7 @@ create_table "post_tag", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :
 end
 
 create_table "posts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-  t.string "title", limit: 127
+  t.string "title", limit: 128
   t.string "content", limit: 8192
   t.string "html_content", limit: 8192
   t.string "part_of_content", limit: 150
