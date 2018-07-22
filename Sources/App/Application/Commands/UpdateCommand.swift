@@ -137,7 +137,7 @@ final class UpdateCommand: Command, Service {
                     return Future<Void>.andAll(deleteAll, eventLoop: conn.eventLoop)
                 }
                 .flatMap {
-                    conn.query("alter table \(T.entity) auto_increment = 1;", []).transform(to: ())
+                    conn.simpleQuery("alter table \(T.entity) auto_increment = 1;").transform(to: ())
                 }
         }
     }
