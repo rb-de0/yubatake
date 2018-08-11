@@ -85,7 +85,7 @@ final class AdminTagControllerTests: ControllerTestCase, AdminTestCase {
 
         response = try waitResponse(method: .GET, url: "/admin/tags/1/edit")
         
-        XCTAssertEqual(response.http.status, .internalServerError)
+        XCTAssertEqual(response.http.status, .notFound)
         
         _ = try DataMaker.makeTag("Swift").save(on: conn).wait()
         
