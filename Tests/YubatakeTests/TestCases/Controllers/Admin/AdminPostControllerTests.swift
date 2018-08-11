@@ -98,7 +98,7 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         
         response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
         
-        XCTAssertEqual(response.http.status, .internalServerError)
+        XCTAssertEqual(response.http.status, .notFound)
         
         _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
         
