@@ -85,7 +85,7 @@ final class AdminCategoryControllerTests: ControllerTestCase, AdminTestCase {
         
         response = try waitResponse(method: .GET, url: "/admin/categories/1/edit")
         
-        XCTAssertEqual(response.http.status, .internalServerError)
+        XCTAssertEqual(response.http.status, .notFound)
         
         _ = try DataMaker.makeCategory("Programming").save(on: conn).wait()
         
