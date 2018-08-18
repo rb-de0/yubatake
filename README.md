@@ -1,7 +1,5 @@
 # yubatake
 
-### Current Version is Beta. The application may be unstable and some data may not be handed over to the next version.
-
 [![Build Status](https://travis-ci.org/rb-de0/yubatake.svg?branch=master)](https://travis-ci.org/rb-de0/yubatake)
 [![Coverage Status](https://coveralls.io/repos/github/rb-de0/yubatake/badge.svg?branch=master)](https://coveralls.io/github/rb-de0/yubatake?branch=master)
 
@@ -11,7 +9,7 @@ yubatake is simple blogging engine for Swift.
 
 ### Swift
 
-- 4.1
+- 4.1.2
 
 ### OS
 
@@ -30,7 +28,7 @@ If you are using Ubuntu, it is easy to install using swiftenv.
 Example(swiftenv)
 
 ```bash
-$ swiftenv install 4.1
+$ swiftenv install 4.1.2
 ```
 
 #### 2. Install MySQL
@@ -117,7 +115,7 @@ If you are using a version earlier than 3.0, you need to migrate the database.
 4. Execute the following command to migrate the database.
 
 ```bash
-$ swift run Run migrate -i <oldDatabase>
+$ swift run Run update -i <oldDatabase>
 ```
 
 # LICENSE
