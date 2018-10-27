@@ -17,14 +17,20 @@ extension API {
         
         func store(request: Request, form: ImageUploadForm) throws -> Future<HTTPStatus> {
             
+            guard let imageExtension = form.name.split(separator: ".").last else {
+                return request.future(HTTPStatus.badRequest)
+            }
+            
             let repository = try request.make(ImageRepository.self)
-            let newImage = try Image(from: form, on: request)
+            let imageName = try request.make(ImageNameGenerator.self).generateImageName(from: form.name)
+            let imageFileName = imageName.appending(".").appending(imageExtension)
+            let newImage = try Image(from: imageFileName, on: request)
             
             let deleteTransaction = request.withPooledConnection(to: .mysql) { conn in
                 
                 MySQLDatabase.transactionExecute({ transaction in
                     newImage.save(on: transaction).map { _ in
-                        try repository.save(image: form.data, for: form.name)
+                        try repository.save(image: form.data, for: imageFileName)
                     }
                 }, on: conn)
             }

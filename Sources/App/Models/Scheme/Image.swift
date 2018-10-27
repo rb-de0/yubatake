@@ -37,10 +37,10 @@ final class Image: DatabaseModel {
     var createdAt: Date?
     var updatedAt: Date?
     
-    init(from form: ImageUploadForm, on container: Container) throws {
+    init(from name: String, on container: Container) throws {
         let relativePath = try container.make(FileConfig.self).imageRoot
-        self.path = relativePath.started(with: "/").finished(with: "/").appending(form.name)
-        self.altDescription = form.name
+        self.path = relativePath.started(with: "/").finished(with: "/").appending(name)
+        self.altDescription = name
     }
     
     func formPublic(on container: Container) throws -> Public {

@@ -8,7 +8,7 @@ final class AuthErrorMiddleware<A>: Middleware, Service where A: Authenticatable
             return try next.respond(to: request)
         }
         
-        let response = request.makeResponse()
+        let response = request.response()
         response.http.status = .forbidden
         return Future.map(on: request) { response }
     }
