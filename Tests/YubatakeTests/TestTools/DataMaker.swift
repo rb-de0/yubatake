@@ -81,7 +81,7 @@ final class DataMaker {
     
     class func makeImage(_ name: String, on container: Container) throws -> (ImageUploadForm, Image){
         let form = try decode(ImageUploadForm.self, from: ["image_file_data": "data", "image_file_name": name])
-        let image = try Image(from: form, on: container)
+        let image = try Image(from: name, on: container)
         return (form, image)
     }
     

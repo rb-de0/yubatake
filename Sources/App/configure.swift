@@ -4,6 +4,7 @@ import Crypto
 import FluentMySQL
 import Leaf
 import Redis
+import Random
 import Vapor
 import VaporSecurityHeaders
 
@@ -32,9 +33,23 @@ public func configure(
         return try container.make(ConfigProvider.self).make(NIOServerConfig.self)
     }
     
+    // data
+    let random = try URandom()
+    services.register(random, as: DataGenerator.self)
+    
+    // generator
+    services.register(ImageNameGenerator.self) { container in
+        ImageNameGeneratorDefault(generator: try container.make())
+    }
+    
     // bcrypt
     try services.register(AuthenticationProvider())
-    config.prefer(BCryptDigest.self, for: PasswordVerifier.self)
+    if environment.isDevelopment {
+        services.register(StupidPasswordVeryfier(), as: PasswordVerifier.self)
+        config.prefer(StupidPasswordVeryfier.self, for: PasswordVerifier.self)
+    } else {
+        config.prefer(BCryptDigest.self, for: PasswordVerifier.self)
+    }
     
     // router
     let router = EngineRouter.default()
