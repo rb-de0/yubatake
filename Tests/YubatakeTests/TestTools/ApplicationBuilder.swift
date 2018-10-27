@@ -12,7 +12,7 @@ final class ApplicationBuilder {
     class func build(forAdminTests: Bool, envArgs: [String]? = nil, customize: ((Config, Services) -> (Config, Services))? = nil) throws -> Application {
         
         var config = Config.default()
-        var env = try Environment.detect()
+        var env = Environment(name: "test", isRelease: false)
         var services = Services.default()
         
         if let environmentArgs = envArgs {
