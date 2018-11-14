@@ -102,8 +102,10 @@ $ swift build -c release
 #### 5. Run the app.
 
 ```bash
-$ swift run -c release Run
+$ swift run -c release Run -e prod
 ```
+
+**Be sure to set `-e prod` as a option to use production middlewares.**
 
 # Migration
 
