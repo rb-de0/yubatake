@@ -9,7 +9,7 @@ yubatake is simple blogging engine for Swift.
 
 ### Swift
 
-- 4.1.2
+- 4.2.1
 
 ### OS
 
@@ -22,13 +22,13 @@ yubatake is simple blogging engine for Swift.
 
 #### 1. Install Swift
 
-Please install Swift in your environment. For macOS please download Xcode 9.3.
+Please install Swift in your environment. For macOS please download Xcode 10.1.
 If you are using Ubuntu, it is easy to install using swiftenv.
 
 Example(swiftenv)
 
 ```bash
-$ swiftenv install 4.1.2
+$ swiftenv install 4.2.1
 ```
 
 #### 2. Install MySQL
