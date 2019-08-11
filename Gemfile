@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem "fastlane", '2.81.0'
+gem "fastlane"
 gem "slather"
 gem "ridgepole"
 gem "mysql2"
