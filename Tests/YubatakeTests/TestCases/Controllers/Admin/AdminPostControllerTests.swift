@@ -333,6 +333,36 @@ final class AdminPostControllerTests: ControllerTestCase, AdminTestCase {
         XCTAssertEqual(response.http.status, .ok)
         XCTAssertEqual(view.get("post.tags_string")?.string, "Swift,iOS")
     }
+    
+    func testCanRefreshTagsOnUpdate() throws {
+        let tag1 = try DataMaker.makeTag("Swift").save(on: conn).wait()
+        let tag2 = try DataMaker.makeTag("Kotlin").save(on: conn).wait()
+        let post = try DataMaker.makePost(title: "beforeUpdate", isStatic: true, on: app, conn: conn).save(on: conn).wait()
+        _ = try post.tags.attach(tag1, on: conn).wait()
+        _ = try post.tags.attach(tag2, on: conn).wait()
+        
+        var response: Response!
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.tags_string")?.string, "Swift,Kotlin")
+        
+        let form = try DataMaker.makePostFormForTest(title: "afterUpdate", content: "content", tags: "iOS")
+        
+        response = try waitResponse(method: .POST, url: "/admin/posts/1/edit") { request in
+            try request.setFormData(form, csrfToken: self.csrfToken)
+        }
+        
+        XCTAssertEqual(response.http.status, .seeOther)
+        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/posts/1/edit")
+        XCTAssertEqual(try Tag.query(on: conn).count().wait(), 3)
+        
+        response = try waitResponse(method: .GET, url: "/admin/posts/1/edit")
+        
+        XCTAssertEqual(response.http.status, .ok)
+        XCTAssertEqual(view.get("post.tags_string")?.string, "iOS")
+    }
 }
 
 extension AdminPostControllerTests {
@@ -351,6 +381,7 @@ extension AdminPostControllerTests {
         ("testCannotStoreAPostHasInvalidCategory", testCannotStoreAPostHasInvalidCategory),
         ("testCanStoreAPostHasNotInsertedTags", testCanStoreAPostHasNotInsertedTags),
         ("testCanUpdateAPost", testCanUpdateAPost),
-        ("testCanAddTagsOnUpdate", testCanAddTagsOnUpdate)
+        ("testCanAddTagsOnUpdate", testCanAddTagsOnUpdate),
+        ("testCanRefreshTagsOnUpdate", testCanRefreshTagsOnUpdate)
     ]
 }

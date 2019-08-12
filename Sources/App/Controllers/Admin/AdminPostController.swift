@@ -166,13 +166,14 @@ final class AdminPostController {
                                 try Tag.insertedTags(in: tags, on: transaction)
                             }
                             .flatMap { insertedTags in
-                                let refresh = insertedTags.map { tag in
-                                    post.tags.detach(tag, on: transaction).flatMap {
-                                        post.tags.attach(tag, on: transaction).transform(to: ())
+                                return post.tags.detachAll(on: transaction)
+                                    .flatMap {
+                                        let refresh = insertedTags.map { tag in
+                                            post.tags.attach(tag, on: transaction).transform(to: ())
+                                        }
+                                        return Future<Void>.andAll(refresh, eventLoop: request.eventLoop)
                                     }
                                 }
-                                return Future<Void>.andAll(refresh, eventLoop: request.eventLoop)
-                            }
                     }
                 }, on: conn)
             }
