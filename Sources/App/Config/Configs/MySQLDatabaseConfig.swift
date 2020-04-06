@@ -1,12 +1,12 @@
-import FluentMySQL
 import Vapor
 
-extension MySQLDatabaseConfig: LocalConfig {
-    
-    static var fileName: String {
-        return "mysql"
-    }
-    
+struct MySQLDatabaseConfig: Decodable {
+    let hostname: String
+    let port: Int
+    let username: String
+    let password: String
+    let database: String
+
     private enum CodingKeys: String, CodingKey {
         case hostname
         case port
@@ -14,14 +14,30 @@ extension MySQLDatabaseConfig: LocalConfig {
         case password
         case database
     }
-    
-    public init(from decoder: Decoder) throws {
+
+    init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let hostname = try container.decode(String.self, forKey: .hostname)
-        let port = try container.decodeIfPresent(Int.self, forKey: .port) ?? 3306
-        let username = try container.decode(String.self, forKey: .username)
-        let password = try container.decodeIfPresent(String.self, forKey: .password)
-        let database = try container.decode(String.self, forKey: .database)
-        self.init(hostname: hostname, port: port, username: username, password: password, database: database)
+        hostname = try container.decode(String.self, forKey: .hostname)
+        port = try container.decodeIfPresent(Int.self, forKey: .port) ?? 3306
+        username = try container.decode(String.self, forKey: .username)
+        password = try container.decode(String.self, forKey: .password)
+        database = try container.decode(String.self, forKey: .database)
+    }
+}
+
+extension MySQLDatabaseConfig: StorageKey {
+    typealias Value = MySQLDatabaseConfig
+}
+
+extension Application {
+    func register(mysqlDatabaseConfig: MySQLDatabaseConfig) {
+        storage[MySQLDatabaseConfig.self] = mysqlDatabaseConfig
+    }
+
+    var mysqlDatabaseConfig: MySQLDatabaseConfig {
+        guard let mysqlDatabaseConfig = storage[MySQLDatabaseConfig.self] else {
+            fatalError("service not initialized")
+        }
+        return mysqlDatabaseConfig
     }
 }

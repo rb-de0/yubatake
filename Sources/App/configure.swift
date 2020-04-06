@@ -1,159 +1,124 @@
-import Authentication
-import CSRF
-import Crypto
-import FluentMySQL
+import Fluent
+import FluentMySQLDriver
 import Leaf
 import Redis
-import Random
 import Vapor
-import VaporSecurityHeaders
 
-public func configure(
-    _ config: inout Config,
-    _ env: inout Environment,
-    _ services: inout Services
-    ) throws {
-    
-    let environment = env
-    
-    // configs
-    services.register { container -> ConfigProvider in
-        return try ConfigProvider(directoryConfig: container.make(), environment: environment)
-    }
-    services.register { container -> ApplicationConfig in
-        return try container.make(ConfigProvider.self).make(ApplicationConfig.self)
-    }
-    services.register { container -> CSPConfig in
-        return try container.make(ConfigProvider.self).make(CSPConfig.self)
-    }
-    services.register { container -> FileConfig in
-        return FileConfig(directoryConfig: try container.make())
-    }
-    services.register { container -> NIOServerConfig in
-        return try container.make(ConfigProvider.self).make(NIOServerConfig.self)
-    }
-    
-    // data
-    let random = try URandom()
-    services.register(random, as: DataGenerator.self)
-    
-    // generator
-    services.register(ImageNameGenerator.self) { container in
-        ImageNameGeneratorDefault(generator: try container.make())
-    }
-    
-    // bcrypt
-    try services.register(AuthenticationProvider())
-    if environment.isDevelopment {
-        services.register(StupidPasswordVeryfier(), as: PasswordVerifier.self)
-        config.prefer(StupidPasswordVeryfier.self, for: PasswordVerifier.self)
+public func configure(_ app: Application) throws {
+
+    // set working directory
+    app.directory = DirectoryConfiguration(workingDirectory: .workingDirectory)
+
+    // register configs
+    try app.register(applicationConfig: ConfigJSONLoader.load(fo: app, name: "app"))
+    try app.register(mysqlDatabaseConfig: ConfigJSONLoader.load(fo: app, name: "mysql"))
+    app.register(fileConfig: FileConfig(directory: app.directory))
+
+    // register services
+    app.register(imageRepository: DefaultImageRepository(fileConfig: app.fileConfig))
+    app.register(imageNameGenerator: DefaultImageNameGenerator())
+    app.register(fileRepository: DefaultFileRepository(fileConfig: app.fileConfig))
+
+    // twitter
+    app.register(twitterRepository: DefaultTwitterRepository(applicationConfig: app.applicationConfig))
+
+    // auth
+    if app.environment == .development {
+        app.register(passwordVerifier: StupidPasswordVeryfier())
     } else {
-        config.prefer(BCryptDigest.self, for: PasswordVerifier.self)
+        app.register(passwordVerifier: Bcrypt)
     }
-    
-    // router
-    let router = EngineRouter.default()
-    try routes(router)
-    services.register(router, as: Router.self)
-    
-    // command
-    services.register { container -> CommandConfig in
-        var config = CommandConfig.default()
-        config.use(UpdateCommand.self, as: "update")
-        config.useFluentCommands()
-        return config
-    }
-    services.register(UpdateCommand())
-    
-    // view
-    do {
-        try services.register(LeafProvider())
-        config.prefer(LeafRenderer.self, for: TemplateRenderer.self)
 
-        services.register { container -> ViewCreator in
-            try ViewCreator.default()
-        }
-    }
-    
+    // views
+    app.leaf.cache.isEnabled = false
+    app.leaf.tags["count"] = CountTag()
+    app.leaf.tags["date"] = DateTag()
+    app.views.use(.leaf)
+    app.register(viewCreator: .default())
+
     // middleware
-    let handler: TokenRetrievalHandler = { request in request.content.get(at: "csrf-token") }
-    services.register(CSRF(tokenRetrieval: handler))
-    services.register(MessageDeliveryMiddleware())
-    services.register { container in
-        PublicFileMiddleware(base: try container.make())
-    }
-    
-    services.register { container -> SecurityHeaders in
-        let cspConfig = try container.make(CSPConfig.self)
-        let headerValue = cspConfig.makeHeader()
-        let securityHeadersFactory = SecurityHeadersFactory()
-            .with(contentSecurityPolicy: ContentSecurityPolicyConfiguration(value: headerValue))
-        return securityHeadersFactory.build()
-    }
-    
-    var middlewares = MiddlewareConfig()
-    middlewares.use(SecurityHeaders.self)
-    middlewares.use(ErrorMiddleware.self)
-    middlewares.use(PublicFileMiddleware.self)
-    middlewares.use(SessionsMiddleware.self)
-    middlewares.use(MessageDeliveryMiddleware.self)
-    middlewares.use(CSRF.self)
-    
-    services.register(middlewares)
-    
-    // repository
-    services.register(ImageRepository.self) { container in
-        ImageRepositoryDefault(fileConfig: try container.make())
-    }
-    
-    services.register(TwitterRepository.self) { container in
-        try TwitterRepositoryDefault(applicationConfig: try container.make())
-    }
-    
-    services.register(FileRepository.self) { container in
-        FileRepositoryDefault(fileConfig: try container.make())
-    }
-    
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    app.middleware.use(SessionsMiddleware(session: app.sessions.memory))
+
     // database
-    
-    try services.register(FluentMySQLProvider())
-    config.prefer(DatabaseKeyedCache<ConfiguredDatabase<RedisDatabase>>.self, for: KeyedCache.self)
-    
-    services.register(DatabaseConnectionPoolConfig(maxConnections: 100))
-    
-    services.register { container -> MySQLDatabaseConfig in
-        try container.make(ConfigProvider.self).make(MySQLDatabaseConfig.self)
+    let mysqlConfig = app.mysqlDatabaseConfig
+    let mysqlConfiguration = MySQLConfiguration(hostname: mysqlConfig.hostname,
+                                                username: mysqlConfig.username,
+                                                password: mysqlConfig.password,
+                                                database: mysqlConfig.database,
+                                                tlsConfiguration: nil)
+    app.databases.use(.mysql(configuration: mysqlConfiguration), as: .mysql, isDefault: true)
+
+    // migrations
+    app.migrations.add(CreateUser())
+    app.migrations.add(CreateCategory())
+    app.migrations.add(CreateTag())
+    app.migrations.add(CreatePost())
+    app.migrations.add(CreatePostTag())
+    app.migrations.add(CreateSiteInfo())
+    app.migrations.add(CreateImage())
+
+    // create initial data
+    if !app.environment.commandInput.arguments.contains("migrate") {
+        try createInitialData(app)
     }
 
-    services.register { container -> RedisClientConfig in
-        try container.make(ConfigProvider.self).make(RedisClientConfig.self)
+    // routes
+    try routes(app)
+}
+
+private func createInitialData(_ app: Application) throws {
+    try createRootUserIfNeeded(app)
+        .flatMap { _ -> EventLoopFuture<Void> in
+            createSiteInfoIfNeeded(app)
+        }
+        .wait()
+}
+
+private func createRootUserIfNeeded(_ app: Application) -> EventLoopFuture<Void> {
+    return User.query(on: app.db).count()
+        .flatMap { count -> EventLoopFuture<Void> in
+            guard count == 0 else {
+                return app.eventLoopGroup.future()
+            }
+            do {
+                let rootUser = try User.makeRootUser(using: app)
+                return rootUser.user.save(on: app.db).transform(to: ())
+                    .always { result in
+                        switch result {
+                        case .success:
+                            app.logger.warning("Root user created.")
+                            app.logger.warning("Username: root")
+                            app.logger.warning("Password: \(rootUser.rawPassword)")
+                        default: break
+                        }
+                    }
+            } catch {
+                return app.eventLoopGroup.future(error: error)
+            }
+        }
+}
+
+private func createSiteInfoIfNeeded(_ app: Application) -> EventLoopFuture<Void> {
+    return SiteInfo.query(on: app.db).count()
+        .flatMap { count -> EventLoopFuture<Void> in
+            guard count == 0 else {
+                return app.eventLoopGroup.future()
+            }
+            let siteInfo = SiteInfo(name: "SiteTitle", description: "Please set up a sentence describing your site.")
+            return siteInfo.save(on: app.db).transform(to: ())
+                .always { result in
+                    switch result {
+                    case .success:
+                        app.logger.info("SiteInfo created.")
+                    default: break
+                    }
+                }
+        }
+}
+
+extension String {
+    static var workingDirectory: String {
+        return #file.components(separatedBy: "/Sources/App").first ?? ""
     }
-    
-    services.register { container -> DatabasesConfig in
-        
-        let mysqlConfig = try container.make(MySQLDatabaseConfig.self)
-        let mysql = MySQLDatabase(config: mysqlConfig)
-        
-        let redisConfig = try container.make(RedisClientConfig.self)
-        let redis = try RedisDatabase(config: redisConfig)
-        
-        var databaseConfig = DatabasesConfig()
-        databaseConfig.add(database: mysql, as: .mysql)
-        databaseConfig.add(database: redis, as: .redis)
-        return databaseConfig
-    }
-    
-    services.register(KeyedCache.self) { container  in
-        try container.keyedCache(for: .redis)
-    }
-    
-    var migrations = MigrationConfig()
-    migrations.add(model: User.self, database: .mysql)
-    migrations.add(model: Category.self, database: .mysql)
-    migrations.add(model: Tag.self, database: .mysql)
-    migrations.add(model: Post.self, database: .mysql)
-    migrations.add(model: PostTag.self, database: .mysql)
-    migrations.add(model: SiteInfo.self, database: .mysql)
-    migrations.add(model: Image.self, database: .mysql)
-    services.register(migrations)
 }

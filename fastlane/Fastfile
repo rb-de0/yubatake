@@ -24,4 +24,8 @@ platform :mac do
     sh("bundle exec ridgepole -c ../database.yml --export --output ../Schemafile")
   end
 
+  lane :format do
+    sh("swiftformat ../Sources --config SwiftFormatConfig")
+    #sh("swiftformat ../Tests --config SwiftFormatConfig")
+  end
 end

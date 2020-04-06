@@ -1,22 +1,24 @@
-#set("resources") {
+#extend("admin-base"):
+
+#export("resources"):
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script async src="https://platform.twitter.com/widgets.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-}
+#endexport
 
-#set("script") {
+#export("script"):
   <script src="/js/post-editor.js"></script>
-}
+#endexport
 
-#set("content") {
+#export("content"):
 
-  <div id="page-title">#if(post.id) {Edit Post} else {New Post}</div>
+  <div id="page-title">#if(post.id):Edit Post#else:New Post#endif</div>
 
-  <form class="pure-form" action="/admin/posts#if(post.id) {/#(post.id)/edit}" method="post">
+  <form class="pure-form" action="/admin/posts#if(post.id):/#(post.id)/edit#endif" method="post">
 
-    <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
-    <div class="field-error">#(error_message)</div>
+    <input id="csrf-token" type="hidden" name="csrfToken" value="#(csrfToken)">
+    <div class="field-error">#(errorMessage)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -36,18 +38,18 @@
               <ul class="supplement-list">
                 <li>
                   <label class="radio-container">NonCategorized
-                    <input type="radio" name="category" #if(post.category) {} else {checked}>
+                    <input type="radio" name="category" #if(post.category.id == nil):checked#endif>
                     <span class="radio-button"></span>
                   </label>
                 </li>
-                #for(category in categories) {
+                #for(category in categories):
                   <li>
                     <label class="radio-container">#(category.name)
-                      <input type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id) {checked}>
+                      <input type="radio" name="category" value="#(category.id)" #if(category.id == post.category.id):checked#endif>
                       <span class="radio-button"></span>
                     </label>
                   </li>
-                }
+                #endfor
               </ul>
             </div>
           </div>
@@ -58,12 +60,12 @@
             <div class="form-label">
               <label for="edit-form-tag-text">Tags(comma separated)</label>
             </div>
-            <input id="edit-form-tag-text" v-model="tagString" class="pure-input-1" name="tags" value="#(post.tags_string)" type="text" placeholder="Tags">
+            <input id="edit-form-tag-text" v-model="tagString" class="pure-input-1" name="tags" value="#(post.tagsString)" type="text" placeholder="Tags">
             <div class="supplement-list-container">
               <ul class="supplement-list">
-                #for(tag in tags) {
+                #for(tag in tags):
                   <li class="supplement-tag-item" v-bind:class="[ isSelectedTag('#(tag.name)') ? 'selected' : '' ]" v-on:click="selectedTag">#(tag.name)</li>
-                }
+                #endfor
               </ul>
             </div>
           </div>
@@ -78,32 +80,32 @@
       </div>
 
       <fieldset class="pure-group">
-        #if(post.id) {
-          #if(post.is_published == false) {
+        #if(post.id):
+          #if(post.isPublished == false):
             <div class="option-item">
               <label class="checkbox-container">Share to Twitter
-                <input name="should_tweet" type="checkbox"/>
+                <input name="shouldTweet" type="checkbox"/>
                 <span class="checkbox"></span>
               </label>
             </div>
-          }
-        } else {
+          #endif
+        #else:
           <div class="option-item">
             <label class="checkbox-container">Share to Twitter
-              <input name="should_tweet" type="checkbox"/>
+              <input name="shouldTweet" type="checkbox"/>
               <span class="checkbox"></span>
             </label>
           </div>
-        }
+        #endif
         <div class="option-item">
           <label class="checkbox-container">Static Content
-            <input name="is_static" type="checkbox" #if(post.is_static) {checked="checked"}/>
+            <input name="isStatic" type="checkbox" #if(post.isStatic):checked="checked"#endif/>
             <span class="checkbox"></span>
           </label>
         </div>
         <div class="option-item">
           <label class="checkbox-container">Publish
-            <input name="is_published" type="checkbox" #if(post.is_published) {checked="checked"}/>
+            <input name="isPublished" type="checkbox" #if(post.isPublished):checked="checked"#endif/>
             <span class="checkbox"></span>
           </label>
         </div>
@@ -115,16 +117,16 @@
         <label class="form-label" for="edit-form-post-contents">Contents</label>
         <div>
           <button class="pure-button pure-button-primary" v-on:click="showPickerView">Add Image</button>
-          #if(post.id) {
+          #if(post.id):
             <button class="pure-button pure-button-primary" v-on:click="showPreview($event, #(post.id))">Preview</button>
-          }
+          #endif
         </div>
       </div>
       <textarea id="edit-form-post-contents" class="pure-input-1" name="content" placeholder="Contents" rows="24">#(post.content)</textarea>
     </fieldset>
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
-      #if(post.id) {Update} else {Post}
+      #if(post.id):Update#else:Post#endif
     </button>
   </form>
 
@@ -146,7 +148,7 @@
           <div v-for="image in group.images" class="pure-u-1-2 pure-u-md-1-4 pure-u-lg-1-8">
             <div class="image-card-container">
               <div class="image-card" v-on:click="selectImage(image)">
-                <img class="image-card-img" v-bind:src="image.path" v-bind:alt="image.alt_description"/>
+                <img class="image-card-img" v-bind:src="image.path" v-bind:alt="image.altDescription"/>
               </div>
             </div>
           </div>
@@ -163,6 +165,6 @@
 
     </div>
   </div>
-}
+#endexport
 
-#embed("admin-base")
+#endextend

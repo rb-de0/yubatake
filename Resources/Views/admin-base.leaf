@@ -2,17 +2,21 @@
 <html>
 
 <head>
-  <title>#(page_title)</title>
+  <title>#(pageTitle)</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="/js/common.js"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  #embed("embeds/resources")
-  #get(resources)
+  #import("resources")
 </head>
 
 <body>
 
   <div id="content">
-    #get(content)
+    #import("content")
   </div>
 
   <div id="toggle-menu" v-on:click="toggleMenu">
@@ -27,36 +31,36 @@
 
     <div class="pure-menu">
       <div class="pure-menu-heading">
-        <a href="/"><div id="menu-header-site-name">#(site_info.name)</div></a>
+        <a href="/"><div id="menu-header-site-name">#(siteInfo.name)</div></a>
       </div>
       <ul class="pure-menu-list">
         <div class="menu-section-border"></div>
-        <li class="pure-menu-item #if(menu_type == "new_posts") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "newPost"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/posts/create">NewPost</a>
         </li>
-        <li class="pure-menu-item #if(menu_type == "posts") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "posts"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/posts">Posts</a>
         </li>
-        <li class="pure-menu-item #if(menu_type == "static_content") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "staticContent"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/static-contents">StaticContents</a>
         </li>
-        <li class="pure-menu-item #if(menu_type == "tags") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "tags"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/tags">Tags</a>
         </li>
-        <li class="pure-menu-item #if(menu_type == "categories") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "categories"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/categories">Categories</a>
         </li>
-        <li class="pure-menu-item #if(menu_type == "images") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "images"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/images">Images</a>
         </li>
-        <li class="pure-menu-item #if(menu_type == "themes") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "themes"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/themes">Themes</a>
         </li>
         <div class="menu-section-border"></div>
-        <li class="pure-menu-item #if(menu_type == "site_info") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "siteInfo"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/siteinfo/edit">Site</a>
         </li>
-        <li class="pure-menu-item #if(menu_type == "user") { pure-menu-selected }">
+        <li class="pure-menu-item #if(menuType == "userSettings"):pure-menu-selected#endif">
           <a class="pure-menu-link" href="/admin/user/edit">User</a>
         </li>
         <div class="menu-section-border"></div>
@@ -68,7 +72,7 @@
   </div>
 
   <script src="/js/menu.js"></script>
-  #get(script)
+  #import("script")
 
 </body>
 

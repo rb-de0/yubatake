@@ -1,28 +1,31 @@
 import Vapor
 
 final class AdminUserController {
-    
+
     private struct ContextMaker {
-        
         static func makeCreateView() -> AdminViewContext {
             return AdminViewContext(path: "edit-user", menuType: .userSettings)
         }
     }
-    
-    func index(request: Request) throws -> Future<View> {
-        let user = try request.requireAuthenticated(User.self).formPublic()
+
+    func index(request: Request) throws -> EventLoopFuture<View> {
+        let user = try request.auth.require(User.self).formPublic()
         return try ContextMaker.makeCreateView().makeResponse(context: user, formDataType: UserForm.self, for: request)
     }
-    
-    func store(request: Request, form: UserForm) throws -> Future<Response> {
-        let user = try request.requireAuthenticated(User.self)
-        return try user.apply(form: form, on: request).flatMap { user in
-            user.save(on: request).transform(to: ())
-        }.map {
-            request.redirect(to: "/admin/user/edit")
-        }
-        .catchMap { error in
-            return try request.redirect(to: "/admin/user/edit", with: FormError(error: error, formData: form))
-        }
+
+    func store(request: Request) throws -> EventLoopFuture<Response> {
+        try UserForm.validate(request)
+        let form = try request.content.decode(UserForm.self)
+        let user = try request.auth.require(User.self)
+        return user.apply(form: form, on: request)
+            .flatMap {
+                user.save(on: request.db)
+            }
+            .map {
+                request.redirect(to: "/admin/user/edit")
+            }
+            .flatMapErrorThrowing { error in
+                try request.redirect(to: "/admin/user/edit", with: FormError(error: error, formData: form))
+            }
     }
 }

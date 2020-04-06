@@ -103,7 +103,7 @@ var viewModel = new Vue({
       axios.post(makeRequestURL('/api/files'), {
         body: body,
         path: path,
-        'csrf-token': csrfToken
+        csrfToken: csrfToken
       })
       .then(function (response) {
         receiver.hasError = false
@@ -139,7 +139,7 @@ var viewModel = new Vue({
       var receiver = this
       axios.post(makeRequestURL('/api/themes'), {
         name: name,
-        'csrf-token': csrfToken
+        csrfToken: csrfToken
       })
       .then(function (response) {
         location.reload()

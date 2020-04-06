@@ -1,57 +1,39 @@
 import Vapor
-import Fluent
 
-fileprivate struct MessageDeliveryMiddlewareConst {
-    static let errorMessageKey = "error_message"
+private struct MessageDeliveryMiddlewareConst {
+    static let errorMessageKey = "errorMessage"
 }
 
 struct MessageDeliveryViewDecorator: ViewDecorator {
-    
-    func decorate(context: inout [String : TemplateData], for request: Request) throws {
-        
-        guard let errorMessage = try request.session()[MessageDeliveryMiddlewareConst.errorMessageKey] else {
-            return
+    func decodate(context: Encodable, for request: Request) -> Encodable {
+        guard let errorMessage = request.session.data[MessageDeliveryMiddlewareConst.errorMessageKey] else {
+            return context
         }
-        
-        context[MessageDeliveryMiddlewareConst.errorMessageKey] = .string(errorMessage)
+        return context.add(MessageDeliveryMiddlewareConst.errorMessageKey, errorMessage)
     }
 }
 
-final class MessageDeliveryMiddleware: Middleware, Service {
+final class MessageDeliveryMiddleware: Middleware {
 
-    func respond(to request: Request, chainingTo next: Responder) throws -> Future<Response> {
-        
-        let promise = request.eventLoop.newPromise(Response.self)
-        let session = try request.session()
-        let hasErrorMessage = session[MessageDeliveryMiddlewareConst.errorMessageKey] != nil
-        
+    func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        let hasErrorMessage = request.session.data[MessageDeliveryMiddlewareConst.errorMessageKey] != nil
         func processAfterRequest() {
-            
             if hasErrorMessage {
-                session[MessageDeliveryMiddlewareConst.errorMessageKey] = nil
+                request.session.data[MessageDeliveryMiddlewareConst.errorMessageKey] = nil
             }
         }
-        
-        try next.respond(to: request)
-            .map { res in
+        return next.respond(to: request)
+            .map { response -> Response in
                 processAfterRequest()
-                return res
+                return response
             }
-            .do { res in
-                promise.succeed(result: res)
-            }
-            .catch { error in
-                promise.fail(error: error)
-            }
-        
-        return promise.futureResult
     }
 }
 
 extension Request {
-    
+
     func redirect(to location: String, with errorMessage: String) throws -> Response {
-        try session()[MessageDeliveryMiddlewareConst.errorMessageKey] = errorMessage
+        session.data[MessageDeliveryMiddlewareConst.errorMessageKey] = errorMessage
         return redirect(to: location)
     }
 }

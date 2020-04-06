@@ -1,13 +1,18 @@
-#set("script") {
-  <script src="/js/contents-form-table.js"></script>
-}
+#extend("admin-base"):
 
-#set("content") {
-  <div id="page-title">All #if(is_static) {StaticContents} else {Posts}</div>
+#export("resources"):
+#endexport
+
+#export("script"):
+  <script src="/js/contents-form-table.js"></script>
+#endexport
+
+#export("content"):
+  <div id="page-title">All #if(isStatic):StaticContents#else:Posts#endif</div>
 
   <form id="contents-form" action="/admin/posts/delete" method="post">
 
-    <input type="hidden" name="csrf-token" value="#(csrf_token)">
+    <input type="hidden" name="csrfToken" value="#(csrfToken)">
 
     <table id="contents-form-table" class="pure-table pure-table-horizontal">
 
@@ -35,30 +40,30 @@
       </thead>
 
       <tbody>
-        #for(post in data) {
+        #for(post in items):
           <tr>
             <td>
               <label class="checkbox-container">
-                <input class="one-checkbox" type="checkbox" name="posts[]" value="#(post.id)" v-on:click="selectOne"/>
+                <input class="one-checkbox" type="checkbox" name="posts" value="#(post.id)" v-on:click="selectOne"/>
                 <span class="checkbox"></span>
               </label>
             </td>
             <td>
-              #if(post.is_published == false) {
+              #if(post.isPublished == false):
                 <span class="posts-table-draft">(Draft)</span>
-              }
+              #endif
               <a href="/admin/posts/#(post.id)/edit">#(post.title)</a>
               <div class="post-table-description-container">
                 <div>User: #(post.user.name)</div>
                 <div>Category: #(post.category.name)</div>
-                <div>Last Update: #date(post.updated_at, date_format)</div>
+                <div>Last Update: #date(post.updatedAt, dateFormat)</div>
               </div>
             </td>
             <td class="collapsable-col">#(post.user.name)</td>
             <td class="collapsable-col">#(post.category.name)</td>
-            <td class="collapsable-col">#date(post.updated_at, date_format)</td>
+            <td class="collapsable-col">#date(post.updatedAt, dateFormat)</td>
           </tr>
-        }
+        #endfor
 
       </tbody>
     </table>
@@ -71,16 +76,16 @@
       </div>
 
       <div id="page-navigator">
-        #if(page.position.previous) {
-          <a class="pure-button" href="?page=#(page.position.previous)">Previous</a>
-        }
-        #if(page.position.next) {
-          <a class="pure-button" href="?page=#(page.position.next)">Next</a>
-        }
+        #if(metadata.page > 1):
+          <a class="pure-button" href="?page=#(metadata.page - 1)">Previous</a>
+        #endif
+        #if(metadata.page < metadata.totalPage):
+          <a class="pure-button" href="?page=#(metadata.page + 1)">Next</a>
+        #endif
       </div>
       <div class="clearfix"></div>
     </div>
   </div>
-}
+#endexport
 
-#embed("admin-base")
+#endextend

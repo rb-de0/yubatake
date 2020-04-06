@@ -1,47 +1,115 @@
-import FluentMySQL
-import Pagination
+import Fluent
 import SwiftSoup
 import Vapor
 
-final class Post: DatabaseModel {
-    
-    static let entity = "posts"
-    
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case title
-        case content
-        case htmlContent = "html_content"
-        case partOfContent = "part_of_content"
-        case categoryId = "category_id"
-        case userId = "user_id"
-        case isStatic = "is_static"
-        case isPublished = "is_published"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+final class Post: Model {
+
+    static let schema = "posts"
+
+    @ID(custom: .id)
+    var id: Int?
+
+    @Field(key: "title")
+    var title: String
+
+    @Field(key: "content")
+    var content: String
+
+    @Field(key: "html_content")
+    var htmlContent: String
+
+    @Field(key: "part_of_content")
+    var partOfContent: String
+
+    @OptionalParent(key: "category_id")
+    var category: Category?
+
+    @OptionalParent(key: "user_id")
+    var user: User?
+
+    @Field(key: "is_static")
+    var isStatic: Bool
+
+    @Field(key: "is_published")
+    var isPublished: Bool
+
+    @Timestamp(key: "created_at", on: .create)
+    var createdAt: Date?
+
+    @Timestamp(key: "updated_at", on: .update)
+    var updatedAt: Date?
+
+    @Siblings(through: PostTag.self, from: \.$post, to: \.$tag)
+    var tags: [Tag]
+
+    init() {}
+
+    init(from form: PostForm, userId: Int) throws {
+        title = form.title
+        content = form.content
+        htmlContent = content.htmlFromMarkdown ?? ""
+        partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentLength)
+        isStatic = form.isStatic
+        isPublished = form.isPublished
+        $category.id = form.category
+        $user.id = userId
+    }
+}
+
+extension Post {
+    func apply(form: PostForm, userId: Int) throws {
+        title = form.title
+        content = form.content
+        htmlContent = content.htmlFromMarkdown ?? ""
+        partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentLength)
+        isStatic = form.isStatic
+        isPublished = form.isPublished
+        $category.id = form.category
+        $user.id = userId
+    }
+}
+
+extension Post {
+    static func recentPosts(on db: Database, count: Int = Post.recentPostCount) -> EventLoopFuture<[Post]> {
+        return Post.query(on: db).publicAll().noStaticAll().withRelated()
+            .sort(\.$createdAt)
+            .range(lower: 0, upper: count)
+            .all()
     }
 
-    struct Public: PageResponse {
-        
+    static func staticContents(on db: Database) -> EventLoopFuture<[Post]> {
+        return Post.query(on: db).publicAll().staticAll().all()
+    }
+}
+
+extension Post {
+    static let recentPostCount = 10
+    static let titleLength = 128
+    static let contentLength = 8192
+    static let partOfContentLength = 150
+}
+
+extension Post {
+    struct Public: ResponseContent {
         private enum CodingKeys: String, CodingKey {
             case user
             case category
             case tags
-            case tagsString = "tags_string"
+            case tagsString
         }
-        
+
         let post: Post
         let user: User.Public?
         let category: Category?
         let tags: [Tag]
         let tagsString: String
-        
+
         init(post: Post, user: User.Public?, category: Category?, tags: [Tag]) {
             self.post = post
             self.user = user
             self.category = category
             self.tags = tags
-            self.tagsString = tags.map { $0.name }.joined(separator: Tag.separator)
+            tagsString = tags.map { $0.name }.joined(separator: Tag.separator)
         }
 
         func encode(to encoder: Encoder) throws {
@@ -53,131 +121,58 @@ final class Post: DatabaseModel {
             try container.encode(tagsString, forKey: .tagsString)
         }
     }
-    
-    static let recentPostCount = 10
-    static let titleLength = 128
-    static let contentLength = 8192
-    static let partOfContentLength = 150
 
-    var id: Int?
-    var title: String
-    var content: String
-    var htmlContent: String
-    var partOfContent: String
-    var categoryId: Int?
-    var userId: Int?
-    var isStatic: Bool
-    var isPublished: Bool
-    var createdAt: Date?
-    var updatedAt: Date?
-    
-    init(from form: PostForm, on request: Request) throws {
-        
-        title = form.title
-        content = form.content
-        htmlContent = content.htmlFromMarkdown ?? ""
-        partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentLength)
-        isStatic = form.isStatic
-        isPublished = form.isPublished
-        
-        categoryId = form.category
-        userId = try request.requireAuthenticated(User.self).id
-        
-        try validate()
-    }
-    
-    func apply(form: PostForm, on request: Request) throws -> Post {
-        
-        title = form.title
-        content = form.content
-        htmlContent = content.htmlFromMarkdown ?? ""
-        partOfContent = try SwiftSoup.parse(htmlContent).text().take(n: Post.partOfContentLength)
-        isStatic = form.isStatic
-        isPublished = form.isPublished
-        
-        categoryId = form.category
-        userId = try request.requireAuthenticated(User.self).id
-        
-        try validate()
-        
-        return self
-    }
-    
-    func formPublic(on request: Request) throws -> Future<Public> {
-        
-        let _user = user?.get(on: request)
-        let _category = category?.get(on: request)
-        let _tags = try tags.query(on: request).all()
-        
-        return _user.form(on: request.eventLoop)
-            .map { try $0?.formPublic() }
-            .and(_category.form(on: request.eventLoop))
-            .and(_tags)
-            .map { ($0.0.0, $0.0.1, $0.1) }
-            .map { (user, category, tags) in
-                return Public(post: self, user: user, category: category, tags: tags)
-            }
-    }
-    
-    // MARK: - Static
-    
-    static func recentPosts(on conn: DatabaseConnectable, count: Int = Post.recentPostCount) throws -> Future<[Post]> {
-        return try Post.query(on: conn).noStaticAll().publicAll()
-            .sort(\Post.createdAt, .descending)
-            .range(lower: 0, upper: count)
-            .all()
-    }
-    
-    static func staticContents(on conn: DatabaseConnectable) throws -> Future<[Post]> {
-        return try Post.query(on: conn).staticAll().publicAll().all()
+    func formPublic() throws -> Public {
+        return Public(
+            post: self,
+            user: try user?.formPublic(),
+            category: category,
+            tags: tags
+        )
     }
 }
 
-// MARK: - Relation
-extension Post {
-    
-    var category: Parent<Post, Category>? {
-        return parent(\.categoryId)
+extension QueryBuilder where Model == Post {
+    func publicAll() -> Self {
+        return filter(\.$isPublished == .sql(raw: "1"))
     }
-    
-    var user: Parent<Post, User>? {
-        return parent(\.userId)
+
+    func noStaticAll() -> Self {
+        return filter(\.$isStatic == .sql(raw: "0"))
     }
-    
-    var tags: Siblings<Post, Tag, PostTag> {
-        return siblings()
+
+    func staticAll() -> Self {
+        return filter(\.$isStatic == .sql(raw: "1"))
+    }
+
+    func noCategoryAll() -> Self {
+        return filter(\.$category.$id == nil)
+    }
+
+    func withRelated() -> Self {
+        return with(\.$user).with(\.$category).with(\.$tags)
     }
 }
 
-// MARK: - Paginatable
-extension Post: Paginatable {}
+struct CreatePost: Migration {
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(Post.schema)
+            .field(.id, .int64, .identifier(auto: true))
+            .field("title", .custom("varchar(\(Post.titleLength))"), .required)
+            .field("content", .custom("varchar(\(Post.contentLength))"), .required)
+            .field("html_content", .string, .required)
+            .field("part_of_content", .custom("varchar(\(Post.partOfContentLength))"), .required)
+            .field("category_id", .int64, .references(Category.schema, "id"))
+            .field("user_id", .int64, .references(User.schema, "id"))
+            .field("is_static", .bool, .required)
+            .field("is_published", .bool, .required)
+            .field("created_at", .datetime)
+            .field("updated_at", .datetime)
+            .ignoreExisting()
+            .create()
+    }
 
-// MARK: - Validatable
-extension Post: Validatable {
-    
-    static func validations() throws -> Validations<Post> {
-        var validations = Validations(Post.self)
-        try validations.add(\.title, .count(1...Post.titleLength))
-        try validations.add(\.content, .count(1...Post.contentLength))
-        return validations
-    }
-}
-
-extension QueryBuilder where Result == Post {
-    
-    func publicAll() throws -> Self {
-        return filter(\Post.isPublished == true)
-    }
-    
-    func noStaticAll() throws -> Self {
-        return filter(\Post.isStatic == false)
-    }
-    
-    func staticAll() throws -> Self {
-        return filter(\Post.isStatic == true)
-    }
-    
-    func noCategoryAll() throws -> Self {
-        return filter(\Post.categoryId == nil)
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(Post.schema).delete()
     }
 }

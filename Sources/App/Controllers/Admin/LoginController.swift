@@ -1,24 +1,20 @@
-import Authentication
 import Vapor
 
 final class LoginController {
-    
-    func index(request: Request) throws -> Future<View> {
+
+    func index(request: Request) throws -> EventLoopFuture<View> {
         return try AdminViewContext(path: "login", title: "Login").makeResponse(for: request)
     }
 
-    func store(request: Request, form: LoginForm) throws -> Future<Response> {
-        
-        let verifier = try request.make(PasswordVerifier.self)
-        
-        return User.authenticate(username: form.name, password: form.password, using: verifier, on: request)
-            .unwrap(or: Abort(.unauthorized))
+    func store(request: Request) throws -> EventLoopFuture<Response> {
+        let form = try request.content.decode(LoginForm.self)
+        return User.authenticate(username: form.name, password: form.password, verifier: request.application.passwordVerifier, on: request)
             .map { user -> Response in
-                try request.authenticate(user)
+                request.auth.login(user)
                 return request.redirect(to: "admin/posts")
             }
-            .catchMap { error in
-                return try request.redirect(to: "login", with: error.localizedDescription)
+            .flatMapErrorThrowing { _ in
+                request.redirect(to: "login")
             }
     }
 }

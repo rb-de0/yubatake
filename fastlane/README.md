@@ -26,6 +26,11 @@ fastlane mac send_coverage
 fastlane mac dump_schema
 ```
 
+### mac format
+```
+fastlane mac format
+```
+
 
 ----
 

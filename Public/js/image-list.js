@@ -35,9 +35,9 @@ var viewModel = new Vue({
       var tasks = Array.from(e.target.files).map(function(file) {
         var fileName = file.name
         var data = new FormData()
-        data.append('image_file_name', fileName)
-        data.append('image_file_data', file)
-        data.append('csrf-token', csrfToken)
+        data.append('imageFileName', fileName)
+        data.append('imageFileData', file)
+        data.append('csrfToken', csrfToken)
         return axios.post(makeRequestURL('/api/images'), data)
           .then(function(response) {
             receiver.completedTaskCount += 1
@@ -69,10 +69,10 @@ var viewModel = new Vue({
       }
     })
     .then(function (response) {
-      receiver.hasNext = response.data.page.position.next !== undefined
-      receiver.hasPrevious = response.data.page.position.previous !== undefined
-      receiver.groups = response.data.data
-      receiver.page = response.data.page.position.current
+      receiver.hasNext = response.data.metadata.page < response.data.metadata.totalPage
+      receiver.hasPrevious = response.data.metadata.page > 1
+      receiver.groups = response.data.items
+      receiver.page = response.data.metadata.page
     })
   }
 })
