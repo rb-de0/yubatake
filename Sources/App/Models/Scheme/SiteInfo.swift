@@ -58,8 +58,8 @@ struct CreateSiteInfo: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         database.schema(SiteInfo.schema)
             .field(.id, .int64, .identifier(auto: true))
-            .field("name", .custom("varchar(\(SiteInfo.nameLength))"), .required)
-            .field("description", .custom("varchar(\(SiteInfo.descriptionLength))"), .required)
+            .field("name", .string, .required)
+            .field("description", .string, .required)
             .field("theme", .string)
             .field("created_at", .datetime)
             .field("updated_at", .datetime)

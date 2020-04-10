@@ -20,8 +20,13 @@ final class AdminSiteInfoController {
     }
 
     func store(request: Request) throws -> EventLoopFuture<Response> {
-        try SiteInfoForm.validate(request)
         let form = try request.content.decode(SiteInfoForm.self)
+        do {
+            try SiteInfoForm.validate(request)
+        } catch {
+            let response = try request.redirect(to: "/admin/siteinfo/edit", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(response)
+        }
         return SiteInfo.shared(on: request.db)
             .flatMap { siteInfo in
                 siteInfo.apply(form: form)

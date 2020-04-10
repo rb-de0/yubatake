@@ -22,6 +22,7 @@ struct UserForm: Form, Content {
 extension UserForm: Validatable {
     static func validations(_ validations: inout Validations) {
         validations.add("name", as: String.self, is: .count(1 ... User.nameLength))
+        validations.add("password", as: String.self, is: .count(1...))
     }
 }
 

@@ -105,11 +105,16 @@ final class AdminPostController {
     }
 
     func store(request: Request) throws -> EventLoopFuture<Response> {
-        try PostForm.validate(request)
         let form = try request.content.decode(PostForm.self)
         let userId = try request.auth.require(User.self).requireID()
         let newPost = try Post(from: form, userId: userId)
         let tags = Tag.tags(from: form)
+        do {
+            try PostForm.validate(request)
+        } catch {
+            let response = try request.redirect(to: "/admin/posts/create", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(response)
+        }
         let saveTransaction = request.db.transaction { tx in
             return newPost.save(on: tx)
                 .flatMap {
@@ -166,10 +171,15 @@ final class AdminPostController {
         guard let postId = request.parameters.get("id", as: Int.self) else {
             throw Abort(.notFound)
         }
-        try PostForm.validate(request)
         let form = try request.content.decode(PostForm.self)
         let userId = try request.auth.require(User.self).requireID()
         let tags = Tag.tags(from: form)
+        do {
+            try PostForm.validate(request)
+        } catch {
+            let response = try request.redirect(to: "/admin/posts/\(postId)/edit", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(response)
+        }
         return Post.query(on: request.db).filter(\.$id == postId).withRelated()
             .first()
             .unwrap(or: Abort(.notFound))

@@ -22,11 +22,11 @@ public func configure(_ app: Application) throws {
     // twitter
     app.register(twitterRepository: DefaultTwitterRepository(applicationConfig: app.applicationConfig))
 
-    // auth
+    // password
     if app.environment == .development {
-        app.register(passwordVerifier: StupidPasswordVeryfier())
+        app.passwords.use(.stupid)
     } else {
-        app.register(passwordVerifier: Bcrypt)
+        app.passwords.use(.bcrypt)
     }
 
     // views
@@ -36,9 +36,12 @@ public func configure(_ app: Application) throws {
     app.views.use(.leaf)
     app.register(viewCreator: .default())
 
+    // session
+    app.sessions.use(.memory)
+
     // middleware
-    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    app.middleware.use(SessionsMiddleware(session: app.sessions.memory))
+    app.middleware.use(PublicFileMiddleware(base: FileMiddleware(publicDirectory: app.directory.publicDirectory)))
+    app.middleware.use(app.sessions.middleware)
 
     // database
     let mysqlConfig = app.mysqlDatabaseConfig
@@ -58,63 +61,11 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateSiteInfo())
     app.migrations.add(CreateImage())
 
-    // create initial data
-    if !app.environment.commandInput.arguments.contains("migrate") {
-        try createInitialData(app)
-    }
+    // lifecycles
+    app.lifecycle.use(InitialDataProvider())
 
     // routes
     try routes(app)
-}
-
-private func createInitialData(_ app: Application) throws {
-    try createRootUserIfNeeded(app)
-        .flatMap { _ -> EventLoopFuture<Void> in
-            createSiteInfoIfNeeded(app)
-        }
-        .wait()
-}
-
-private func createRootUserIfNeeded(_ app: Application) -> EventLoopFuture<Void> {
-    return User.query(on: app.db).count()
-        .flatMap { count -> EventLoopFuture<Void> in
-            guard count == 0 else {
-                return app.eventLoopGroup.future()
-            }
-            do {
-                let rootUser = try User.makeRootUser(using: app)
-                return rootUser.user.save(on: app.db).transform(to: ())
-                    .always { result in
-                        switch result {
-                        case .success:
-                            app.logger.warning("Root user created.")
-                            app.logger.warning("Username: root")
-                            app.logger.warning("Password: \(rootUser.rawPassword)")
-                        default: break
-                        }
-                    }
-            } catch {
-                return app.eventLoopGroup.future(error: error)
-            }
-        }
-}
-
-private func createSiteInfoIfNeeded(_ app: Application) -> EventLoopFuture<Void> {
-    return SiteInfo.query(on: app.db).count()
-        .flatMap { count -> EventLoopFuture<Void> in
-            guard count == 0 else {
-                return app.eventLoopGroup.future()
-            }
-            let siteInfo = SiteInfo(name: "SiteTitle", description: "Please set up a sentence describing your site.")
-            return siteInfo.save(on: app.db).transform(to: ())
-                .always { result in
-                    switch result {
-                    case .success:
-                        app.logger.info("SiteInfo created.")
-                    default: break
-                    }
-                }
-        }
 }
 
 extension String {

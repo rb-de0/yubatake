@@ -24,7 +24,7 @@ extension API {
             let imageNameGenerator = request.application.imageNameGenerator
             let imageName = try imageNameGenerator.generateImageName(from: form.name)
             let imageFileName = imageName.appending(".").appending(imageExtension)
-            let newImage = try Image(from: imageFileName, on: request.application)
+            let newImage = try Image(name: imageFileName, on: request.application)
             return request.db.transaction { tx in
                 newImage.save(on: tx)
                     .flatMapThrowing {

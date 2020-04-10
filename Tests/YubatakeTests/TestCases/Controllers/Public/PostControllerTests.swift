@@ -1,194 +1,117 @@
-//@testable import App
-//import Fluent
-//import Vapor
-//import XCTest
-//
-//final class PostControllerTests: ControllerTestCase {
-//    
-//    func testCanViewIndex() throws {
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        
-//        response = try waitResponse(method: .GET, url: "/")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//    }
-//    
-//    func testCanViewPageButtonAtOnePage() throws {
-//        
-//        try (1...10).forEach { _ in
-//            _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
-//        }
-//        
-//        XCTAssertEqual(try Post.query(on: conn).filter(\Post.isPublished == true).filter(\Post.isStatic == false).count().wait(), 10)
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("page.position.max")?.int, 1)
-//        XCTAssertEqual(view.get("page.position.current")?.int, 1)
-//        XCTAssertNil(view.get("page.position.next"))
-//        XCTAssertNil(view.get("page.position.previous"))
-//        XCTAssertEqual(view.get("data")?.array?.count, 10)
-//    }
-//    
-//    func testCanViewPageButtonAtTwoPages() throws {
-//        
-//        try (1...11).forEach { _ in
-//            _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
-//        }
-//        
-//        XCTAssertEqual(try Post.query(on: conn).filter(\Post.isPublished == true).filter(\Post.isStatic == false).count().wait(), 11)
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("page.position.max")?.int, 2)
-//        XCTAssertEqual(view.get("page.position.current")?.int, 1)
-//        XCTAssertEqual(view.get("page.position.next")?.int, 2)
-//        XCTAssertNil(view.get("page.position.previous"))
-//        XCTAssertEqual(view.get("data")?.array?.count, 10)
-//        
-//        response = try waitResponse(method: .GET, url: "/posts?page=2")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("page.position.current")?.int, 2)
-//        XCTAssertNil(view.get("page.position.next"))
-//        XCTAssertEqual(view.get("page.position.previous")?.int, 1)
-//        XCTAssertEqual(view.get("data")?.array?.count, 1)
-//    }
-//    
-//    func testCanViewPageButtonAtThreePages() throws {
-//
-//        try (1...21).forEach { _ in
-//            _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
-//        }
-//        
-//        XCTAssertEqual(try Post.query(on: conn).filter(\Post.isPublished == true).filter(\Post.isStatic == false).count().wait(), 21)
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/posts?page=2")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("page.position.max")?.int, 3)
-//        XCTAssertEqual(view.get("page.position.current")?.int, 2)
-//        XCTAssertEqual(view.get("page.position.next")?.int, 3)
-//        XCTAssertEqual(view.get("page.position.previous")?.int, 1)
-//        XCTAssertEqual(view.get("data")?.array?.count, 10)
-//    }
-//    
-//    func testCanViewStaticContent() throws {
-//        
-//        _ = try DataMaker.makePost(isStatic: true, on: app, conn: conn).save(on: conn).wait()
-//        
-//        let response = try waitResponse(method: .GET, url: "/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("data")?.array?.count, 0)
-//        XCTAssertEqual(view.get("static_contents")?.array?.count, 1)
-//    }
-//    
-//    func testCannotViewDraftContent() throws {
-//        
-//        _ = try DataMaker.makePost(isPublished: false, on: app, conn: conn).save(on: conn).wait()
-//        
-//        let response = try waitResponse(method: .GET, url: "/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("data")?.array?.count, 0)
-//    }
-//    
-//    func testCannotViewDraftStaticContent() throws {
-//        
-//        _ = try DataMaker.makePost(isStatic: true, isPublished: false, on: app, conn: conn).save(on: conn).wait()
-//        
-//        let response = try waitResponse(method: .GET, url: "/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("data")?.array?.count, 0)
-//        XCTAssertEqual(view.get("static_contents")?.array?.count, 0)
-//    }
-//    
-//    func testCanViewPostsInTags() throws {
-//        
-//        let tag = try DataMaker.makeTag("Swift").save(on: conn).wait()
-//        let post = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
-//        _ = try post.tags.attach(tag, on: conn).wait()
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/tags/1/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("page.position.max")?.int, 1)
-//        XCTAssertEqual(view.get("data")?.array?.count, 1)
-//    }
-//
-//    
-//    func testCanViewPostsInACategory() throws {
-//        
-//        let category = try DataMaker.makeCategory("Programming").save(on: conn).wait()
-//        _ = try DataMaker.makePost(categoryId: category.id, on: app, conn: conn).save(on: conn).wait()
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/categories/1/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("page.position.max")?.int, 1)
-//        XCTAssertEqual(view.get("data")?.array?.count, 1)
-//    }
-//    
-//    func testCanViewPostsNoCategory() throws {
-//        
-//        _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/categories/noncategorized/posts")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("page.position.max")?.int, 1)
-//        XCTAssertEqual(view.get("data")?.array?.count, 1)
-//    }
-//    
-//    func testCanViewAPost() throws {
-//        
-//        _ = try DataMaker.makePost(on: app, conn: conn).save(on: conn).wait()
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/posts/1")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        
-//        response = try waitResponse(method: .GET, url: "/1")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//    }
-//}
-//
-//extension PostControllerTests {
-//    public static let allTests = [
-//        ("testCanViewIndex", testCanViewIndex),
-//        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
-//        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
-//        ("testCanViewPageButtonAtThreePages", testCanViewPageButtonAtThreePages),
-//        ("testCanViewStaticContent", testCanViewStaticContent),
-//        ("testCannotViewDraftContent", testCannotViewDraftContent),
-//        ("testCannotViewDraftStaticContent", testCannotViewDraftStaticContent),
-//        ("testCanViewPostsInTags", testCanViewPostsInTags),
-//        ("testCanViewPostsInACategory", testCanViewPostsInACategory),
-//        ("testCanViewPostsNoCategory", testCanViewPostsNoCategory),
-//        ("testCanViewAPost", testCanViewAPost)
-//    ]
-//}
+@testable import App
+import XCTVapor
+
+final class PostControllerTests: ControllerTestCase {
+    
+    override func buildApp() -> Application {
+        return try! ApplicationBuilder.build()
+    }
+    
+    func testCanViewIndex() throws {
+        try test(.GET, "/") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+        try test(.GET, "/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+    }
+    
+    func testCanViewPageButtonAtOnePage() throws {
+        try (1...10).forEach { i in
+            let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1)
+            try post.save(on: db).wait()
+        }
+        try test(.GET, "/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("metadata.total")?.int, 10)
+            XCTAssertEqual(view.get("metadata.page")?.int, 1)
+            XCTAssertEqual(view.get("metadata.totalPage")?.int, 1)
+        }
+    }
+    
+    func testCanViewPageButtonAtTwoPages() throws {
+        try (1...11).forEach { i in
+            let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1)
+            try post.save(on: db).wait()
+        }
+        try test(.GET, "/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("metadata.total")?.int, 11)
+            XCTAssertEqual(view.get("metadata.page")?.int, 1)
+            XCTAssertEqual(view.get("metadata.totalPage")?.int, 2)
+        }
+    }
+    
+    func testCanViewStaticContent() throws {
+        let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1, isStatic: true)
+        try post.save(on: db).wait()
+        try test(.GET, "/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("items")?.array?.count, 0)
+            XCTAssertEqual(view.get("staticContents")?.array?.count, 1)
+        }
+    }
+    
+    func testCannotViewDraftContent() throws {
+        let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1, isPublished: false)
+        try post.save(on: db).wait()
+        try test(.GET, "/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("items")?.array?.count, 0)
+            XCTAssertEqual(view.get("staticContents")?.array?.count, 0)
+        }
+    }
+    
+    func testCannotViewDraftStaticContent() throws {
+        let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1, isStatic: true, isPublished: false)
+        try post.save(on: db).wait()
+        try test(.GET, "/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("items")?.array?.count, 0)
+            XCTAssertEqual(view.get("staticContents")?.array?.count, 0)
+        }
+    }
+    
+    func testCanViewPostsInTags() throws {
+        let tag = DataMaker.makeTag(name: "iOS")
+        try tag.save(on: db).wait()
+        let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1)
+        try post.save(on: db).wait()
+        try post.$tags.attach(tag, on: db).wait()
+        try test(.GET, "/tags/1/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("items")?.array?.count, 1)
+        }
+    }
+    
+    func testCanViewPostsInACategory() throws {
+        let category = DataMaker.makeCategory(name: "Programming")
+        try category.save(on: db).wait()
+        let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", categoryId: 1, userId: 1)
+        try post.save(on: db).wait()
+        try test(.GET, "/categories/1/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("items")?.array?.count, 1)
+        }
+    }
+    
+    func testCanViewPostsNoCategory() throws {
+        let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1)
+        try post.save(on: db).wait()
+        try test(.GET, "/categories/noncategorized/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("items")?.array?.count, 1)
+        }
+    }
+    
+    func testCanViewAPost() throws {
+        let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1)
+        try post.save(on: db).wait()
+        try test(.GET, "/posts/1") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+        try test(.GET, "/1") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+    }
+}

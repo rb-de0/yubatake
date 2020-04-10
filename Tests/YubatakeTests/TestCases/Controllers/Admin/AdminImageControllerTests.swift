@@ -1,164 +1,89 @@
-//@testable import App
-//import Vapor
-//import XCTest
-//
-//final class AdminImageControllerTests: ControllerTestCase, AdminTestCase {
-//    
-//    override func buildApp() throws -> Application {
-//        return try ApplicationBuilder.build(forAdminTests: true) { (_config, _services) in
-//            var services = _services
-//            var config = _config
-//            services.register(TestImageFileRepository(), as: ImageRepository.self)
-//            config.prefer(TestImageFileRepository.self, for: ImageRepository.self)
-//            return (config, services)
-//        }
-//    }
-//    
-//    override func setUp() {
-//        super.setUp()
-//        TestImageFileRepository.imageFiles.removeAll()
-//    }
-//    
-//    func testCanViewIndex() throws {
-//
-//        let repository = try app.make(ImageRepository.self)
-//        
-//        let image = try DataMaker.makeImage("favicon", on: app)
-//        let form = image.0
-//        let imageModel = image.1
-//        
-//        try repository.save(image: form.data, for: form.name)
-//        _ = try imageModel.save(on: conn).wait()
-//        
-//        let response = try waitResponse(method: .GET, url: "/admin/images")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("has_not_found")?.bool, false)
-//    }
-//    
-//    func testCanViewCleanButtonWhenHasNotFound() throws {
-//        
-//        let image = try DataMaker.makeImage("favicon", on: app)
-//        let imageModel = image.1
-//        
-//        _ = try imageModel.save(on: conn).wait()
-//        
-//        let response = try waitResponse(method: .GET, url: "/admin/images")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("has_not_found")?.bool, true)
-//    }
-//    
-//    func testCanViewEditView() throws {
-//        
-//        let repository = try app.make(ImageRepository.self)
-//        
-//        let image = try DataMaker.makeImage("favicon", on: app)
-//        let form = image.0
-//        let imageModel = image.1
-//        
-//        try repository.save(image: form.data, for: form.name)
-//        _ = try imageModel.save(on: conn).wait()
-//        
-//        let response = try waitResponse(method: .GET, url: "/admin/images/1/edit")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("path")?.string, "/documents/imgs/favicon")
-//        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/favicon")
-//    }
-//    
-//    func testCanCleanUp() throws {
-//
-//        let repository = try app.make(ImageRepository.self)
-//        
-//        let image1 = try DataMaker.makeImage("favicon", on: app)
-//        let imageModel1 = image1.1
-//        
-//        let image2 = try DataMaker.makeImage("sample", on: app)
-//        let form2 = image2.0
-//        let imageModel2 = image2.1
-//        
-//        _ = try imageModel1.save(on: conn).wait()
-//        
-//        try repository.save(image: form2.data, for: form2.name)
-//        _ = try imageModel2.save(on: conn).wait()
-//        
-//        let response = try waitResponse(method: .POST, url: "/admin/images/cleanup") { request in
-//            try request.setFormData([String: String](), csrfToken: self.csrfToken)
-//        }
-//        
-//        XCTAssertEqual(response.http.status, .seeOther)
-//        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/images")
-//        XCTAssertEqual(try Image.query(on: conn).count().wait(), 1)
-//        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/sample")
-//    }
-//    
-//    func testCanDestroyAImage() throws {
-//
-//        let repository = try app.make(ImageRepository.self)
-//        
-//        let image = try DataMaker.makeImage("favicon", on: app)
-//        let form = image.0
-//        let imageModel = image.1
-//        
-//        try repository.save(image: form.data, for: form.name)
-//        _ = try imageModel.save(on: conn).wait()
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/admin/images")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        
-//        response = try waitResponse(method: .POST, url: "/admin/images/1/delete") { request in
-//            try request.setFormData([String: String](), csrfToken: self.csrfToken)
-//        }
-//        
-//        XCTAssertEqual(response.http.status, .seeOther)
-//        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/images")
-//        XCTAssertEqual(try Image.query(on: conn).count().wait(), 0)
-//    }
-//    
-//    // MARK: - Store/Update
-//    
-//    func testCanUpdateAImage() throws {
-//
-//        let repository = try app.make(ImageRepository.self)
-//        
-//        var response: Response!
-//        
-//        let image = try DataMaker.makeImage("favicon", on: app)
-//        let form = image.0
-//        let imageModel = image.1
-//        
-//        try repository.save(image: form.data, for: form.name)
-//        _ = try imageModel.save(on: conn).wait()
-//        
-//        let updateForm = DataMaker.makeImageFormForTest(name: "sample", altDescription: "sample_description")
-//        
-//        response = try waitResponse(method: .POST, url: "/admin/images/1/edit") { request in
-//            try request.setFormData(updateForm, csrfToken: self.csrfToken)
-//        }
-//        
-//        XCTAssertEqual(response.http.status, .seeOther)
-//        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/images/1/edit")
-//        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/sample")
-//        
-//        response = try waitResponse(method: .GET, url: "/admin/images/1/edit")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("path")?.string, "/documents/imgs/sample")
-//        XCTAssertEqual(try Image.query(on: conn).first().wait()?.path, "/documents/imgs/sample")
-//    }
-//}
-//
-//extension AdminImageControllerTests {
-//    public static let allTests = [
-//        ("testCanViewIndex", testCanViewIndex),
-//        ("testCanViewCleanButtonWhenHasNotFound", testCanViewCleanButtonWhenHasNotFound),
-//        ("testCanViewEditView", testCanViewEditView),
-//        ("testCanCleanUp", testCanCleanUp),
-//        ("testCanDestroyAImage", testCanDestroyAImage),
-//        ("testCanUpdateAImage", testCanUpdateAImage)
-//    ]
-//}
+@testable import App
+import XCTVapor
+
+final class AdminImageControllerTests: ControllerTestCase {
+    
+    override func buildApp() -> Application {
+        let app = try! ApplicationBuilder.buildForAdmin()
+        app.register(imageRepository: TestImageFileRepository())
+        return app
+    }
+    
+    override func setUp() {
+        super.setUp()
+        TestImageFileRepository.imageFiles.removeAll()
+    }
+    
+    func testCanViewIndex() throws {
+        try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "favicon")
+        let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
+        try image.save(on: db).wait()
+        try test(.GET, "/admin/images") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("hasNotFound")?.bool, false)
+        }
+    }
+    
+    func testCanViewCleanButtonWhenHasNotFound() throws {
+        let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
+        try image.save(on: db).wait()
+        try test(.GET, "/admin/images") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("hasNotFound")?.bool, true)
+        }
+    }
+    
+    func testCanViewEditView() throws {
+        try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "favicon")
+        let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
+        try image.save(on: db).wait()
+        try test(.GET, "/admin/images/1/edit") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("name")?.string, "favicon")
+            XCTAssertEqual(view.get("altDescription")?.string, "favicon")
+        }
+    }
+    
+    func testCanCleanUp() throws {
+        do {
+            let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
+            try image.save(on: db).wait()
+        }
+        do {
+            try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "sample")
+            let image = DataMaker.makeImage(path: "/documents/imgs/sample", altDescription: "sample")
+            try image.save(on: db).wait()
+        }
+        try test(.POST, "/admin/images/cleanup") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/admin/images")
+        }
+        XCTAssertEqual(try Image.query(on: db).all().wait().count, 1)
+    }
+    
+    func testCanDestroyAImage() throws {
+        try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "favicon")
+        let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
+        try image.save(on: db).wait()
+        try test(.POST, "/admin/images/1/delete") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/admin/images")
+        }
+        XCTAssertEqual(try Image.query(on: db).all().wait().count, 0)
+    }
+    
+    func testCanUpdateAImage() throws {
+        try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "favicon")
+        let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
+        try image.save(on: db).wait()
+        try test(.POST, "/admin/images/1/edit", body: "name=favicon_updated&altDescription=alt") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/admin/images/1/edit")
+        }
+        try test(.GET, "/admin/images/1/edit") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("name")?.string, "favicon_updated")
+            XCTAssertEqual(view.get("altDescription")?.string, "alt")
+        }
+    }
+}

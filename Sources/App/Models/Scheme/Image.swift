@@ -22,7 +22,7 @@ final class Image: Model {
 
     init() {}
 
-    init(from name: String, on application: Application) throws {
+    init(name: String, on application: Application) throws {
         let relativePath = application.fileConfig.imageRoot
         path = relativePath.started(with: "/").finished(with: "/").appending(name)
         altDescription = name

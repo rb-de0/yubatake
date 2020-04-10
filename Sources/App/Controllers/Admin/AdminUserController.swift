@@ -14,9 +14,14 @@ final class AdminUserController {
     }
 
     func store(request: Request) throws -> EventLoopFuture<Response> {
-        try UserForm.validate(request)
         let form = try request.content.decode(UserForm.self)
         let user = try request.auth.require(User.self)
+        do {
+            try UserForm.validate(request)
+        } catch {
+            let response = try request.redirect(to: "/admin/user/edit", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(response)
+        }
         return user.apply(form: form, on: request)
             .flatMap {
                 user.save(on: request.db)

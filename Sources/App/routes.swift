@@ -1,7 +1,8 @@
+import Fluent
 import Vapor
 
-public func routes(_ app: Application) throws {
-    let root = app.routes.grouped(app.fluent.sessions.middleware(for: User.self))
+func routes(_ app: Application) throws {
+    let root = app.routes.grouped(User.sessionAuthenticator())
     try root.register(collection: PublicRoutes())
     try root.register(collection: AdminRoutes())
     try root.register(collection: APIRoutes())

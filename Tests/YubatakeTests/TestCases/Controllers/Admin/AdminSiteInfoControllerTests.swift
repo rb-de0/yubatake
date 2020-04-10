@@ -1,59 +1,86 @@
-//@testable import App
-//import Vapor
-//import XCTest
-//
-//final class AdminSiteInfoControllerTests: ControllerTestCase, AdminTestCase {
-//    
-//    func testCreateSharedSiteInfo() throws {
-//
-//        let count = try SiteInfo.query(on: conn).count().wait()
-//        let sharedSiteInfo = try SiteInfo.query(on: conn).all().wait().first
-//        
-//        XCTAssertEqual(count, 1)
-//        XCTAssertEqual(sharedSiteInfo?.name, "SiteTitle")
-//        XCTAssertEqual(sharedSiteInfo?.description, "Please set up a sentence describing your site.")
-//    }
-//    
-//    func testCanViewCreateView() throws {
-//        
-//        var response: Response!
-//        
-//        response = try waitResponse(method: .GET, url: "/admin/siteinfo/edit")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("name")?.string, "SiteTitle")
-//        XCTAssertEqual(view.get("description")?.string, "Please set up a sentence describing your site.")
-//    }
-//    
-//    func testCanUpdateASiteInfo() throws {
-//
-//        var response: Response!
-//        
-//        let form = ["name": "app", "description": "UpdateTest"]
-//        
-//        response = try waitResponse(method: .POST, url: "/admin/siteinfo/edit") { request in
-//            try request.setFormData(form, csrfToken: self.csrfToken)
-//        }
-//        
-//        XCTAssertEqual(response.http.status, .seeOther)
-//        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/siteinfo/edit")
-//        
-//        let sharedSiteInfo = try SiteInfo.query(on: conn).all().wait().first
-//        
-//        response = try waitResponse(method: .GET, url: "/admin/siteinfo/edit")
-//        
-//        XCTAssertEqual(response.http.status, .ok)
-//        XCTAssertEqual(view.get("name")?.string, "app")
-//        XCTAssertEqual(view.get("description")?.string, "UpdateTest")
-//        XCTAssertEqual(sharedSiteInfo?.name, "app")
-//        XCTAssertEqual(sharedSiteInfo?.description, "UpdateTest")
-//    }
-//}
-//
-//extension AdminSiteInfoControllerTests {
-//    public static let allTests = [
-//        ("testCreateSharedSiteInfo", testCreateSharedSiteInfo),
-//        ("testCanViewCreateView", testCanViewCreateView),
-//        ("testCanUpdateASiteInfo", testCanUpdateASiteInfo)
-//    ]
-//}
+@testable import App
+import XCTVapor
+
+final class AdminSiteInfoControllerTests: ControllerTestCase {
+    
+    func testCanCreateSharedSiteInfo() throws {
+        let count = try SiteInfo.query(on: db).count().wait()
+        let siteInfo = try SiteInfo.query(on: db).all().wait().first
+        XCTAssertEqual(count, 1)
+        XCTAssertEqual(siteInfo?.name, "SiteTitle")
+        XCTAssertEqual(siteInfo?.description, "Please set up a sentence describing your site.")
+    }
+    
+    func testCanViewCreateView() throws {
+        try test(.GET, "/admin/siteinfo/edit") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("name")?.string, "SiteTitle")
+            XCTAssertEqual(view.get("description")?.string, "Please set up a sentence describing your site.")
+        }
+    }
+    
+    func testCanUpdateASiteInfo() throws {
+        try test(.POST, "/admin/siteinfo/edit", body: "name=app&description=UpdateTest") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/admin/siteinfo/edit")
+        }
+        try test(.GET, "/admin/siteinfo/edit") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("name")?.string, "app")
+            XCTAssertEqual(view.get("description")?.string, "UpdateTest")
+        }
+    }
+    
+    func testCannotUpdateInvalidFormData() throws {
+        do {
+            try test(.POST, "/admin/siteinfo/edit", body: "name=&description=UpdateTest") { response in
+                XCTAssertEqual(response.status, .seeOther)
+                XCTAssertEqual(response.headers.first(name: .location), "/admin/siteinfo/edit")
+            }
+            try test(.GET, "/admin/siteinfo/edit") { response in
+                XCTAssertNotNil(view.get("errorMessage"))
+            }
+            let siteInfo = try SiteInfo.find(1, on: db).wait()
+            XCTAssertEqual(siteInfo?.name, "SiteTitle")
+            XCTAssertEqual(siteInfo?.description, "Please set up a sentence describing your site.")
+        }
+        do {
+            try test(.POST, "/admin/siteinfo/edit", body: "name=app&description=") { response in
+                XCTAssertEqual(response.status, .seeOther)
+                XCTAssertEqual(response.headers.first(name: .location), "/admin/siteinfo/edit")
+            }
+            try test(.GET, "/admin/siteinfo/edit") { response in
+                XCTAssertNotNil(view.get("errorMessage"))
+            }
+            let siteInfo = try SiteInfo.find(1, on: db).wait()
+            XCTAssertEqual(siteInfo?.name, "SiteTitle")
+            XCTAssertEqual(siteInfo?.description, "Please set up a sentence describing your site.")
+        }
+        do {
+            let longName = String(repeating: "a", count: 33)
+            try test(.POST, "/admin/siteinfo/edit", body: "name=\(longName)&description=UpdateTest") { response in
+                XCTAssertEqual(response.status, .seeOther)
+                XCTAssertEqual(response.headers.first(name: .location), "/admin/siteinfo/edit")
+            }
+            try test(.GET, "/admin/siteinfo/edit") { response in
+                XCTAssertNotNil(view.get("errorMessage"))
+            }
+            let siteInfo = try SiteInfo.find(1, on: db).wait()
+            XCTAssertEqual(siteInfo?.name, "SiteTitle")
+            XCTAssertEqual(siteInfo?.description, "Please set up a sentence describing your site.")
+        }
+        do {
+            let longDescription = String(repeating: "a", count: 129)
+            try test(.POST, "/admin/siteinfo/edit", body: "name=app&description=\(longDescription)") { response in
+                XCTAssertEqual(response.status, .seeOther)
+                XCTAssertEqual(response.headers.first(name: .location), "/admin/siteinfo/edit")
+            }
+            try test(.GET, "/admin/siteinfo/edit") { response in
+                XCTAssertNotNil(view.get("errorMessage"))
+            }
+            let siteInfo = try SiteInfo.find(1, on: db).wait()
+            XCTAssertEqual(siteInfo?.name, "SiteTitle")
+            XCTAssertEqual(siteInfo?.description, "Please set up a sentence describing your site.")
+        }
+    }
+}

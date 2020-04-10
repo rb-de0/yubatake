@@ -47,9 +47,14 @@ final class AdminCategoryController {
     }
 
     func store(request: Request) throws -> EventLoopFuture<Response> {
-        try CategoryForm.validate(request)
         let form = try request.content.decode(CategoryForm.self)
         let category = Category(form: form)
+        do {
+            try CategoryForm.validate(request)
+        } catch {
+            let resposne = try request.redirect(to: "/admin/categories/create", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(resposne)
+        }
         return category.save(on: request.db)
             .flatMapThrowing { _ -> Response in
                 let id = try category.requireID()
@@ -64,14 +69,18 @@ final class AdminCategoryController {
         guard let categoryId = request.parameters.get("id", as: Int.self) else {
             throw Abort(.notFound)
         }
-        try CategoryForm.validate(request)
         let form = try request.content.decode(CategoryForm.self)
         return Category.query(on: request.db).filter(\.$id == categoryId).withRelated()
             .first()
             .unwrap(or: Abort(.notFound))
             .flatMap { category in
-                category.apply(form: form)
-                return category.save(on: request.db)
+                do {
+                    try CategoryForm.validate(request)
+                    category.apply(form: form)
+                    return category.save(on: request.db)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
             }
             .map {
                 request.redirect(to: "/admin/categories/\(categoryId)/edit")

@@ -59,7 +59,7 @@ extension User {
         DispatchQueue.global().async {
             do {
                 self.name = form.name
-                self.password = try Bcrypt.hash(form.password)
+                self.password = try request.password.hash(form.password)
                 self.apiKey = form.apiKey ?? ""
                 self.apiSecret = form.apiSecret ?? ""
                 self.accessToken = form.accessToken ?? ""
@@ -112,20 +112,14 @@ extension User {
     }
 }
 
-extension User: SessionAuthenticatable {
-    var sessionID: Int? { id }
-}
+extension User: ModelSessionAuthenticatable {}
 
 extension User {
-    class func authenticate(username: String, password: String, verifier: PasswordVerifier, on request: Request) -> EventLoopFuture<User> {
+    class func authenticate(username: String, password: String, on request: Request) -> EventLoopFuture<User> {
         User.query(on: request.db).filter(\.$name == username).first()
             .unwrap(or: Abort(.unauthorized))
             .flatMapThrowing { user -> User in
-                guard let inputPasswordData = password.data(using: .utf8),
-                    let passwordData = user.password.data(using: .utf8) else {
-                    throw Abort(.unauthorized)
-                }
-                let isOk = try verifier.verify(inputPasswordData, created: passwordData)
+                let isOk = try request.password.verify(password, created: user.password)
                 if isOk {
                     return user
                 } else {
