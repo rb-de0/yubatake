@@ -1,7 +1,7 @@
 import Vapor
 
 final class ConfigJSONLoader {
-    class func load<T: Decodable>(fo app: Application, name: String) throws -> T {
+    class func load<T: Decodable>(for app: Application, name: String) throws -> T {
         let configDirectory = app.directory.workingDirectory.finished(with: "/").appending("Config")
         let targetDirectories = ["", "secrets", app.environment.name]
         var configFileData: Data?

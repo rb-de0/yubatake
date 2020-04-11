@@ -43,8 +43,8 @@ private func configure(_ app: Application, forAdmin: Bool, workingDirectory: Str
     app.directory = DirectoryConfiguration(workingDirectory: .workingDirectory)
 
     // register configs
-    try app.register(applicationConfig: ConfigJSONLoader.load(fo: app, name: "app"))
-    try app.register(mysqlDatabaseConfig: ConfigJSONLoader.load(fo: app, name: "mysql"))
+    try app.register(applicationConfig: ConfigJSONLoader.load(for: app, name: "app"))
+    try app.register(mysqlDatabaseConfig: ConfigJSONLoader.load(for: app, name: "mysql"))
     app.register(fileConfig: FileConfig(directory: DirectoryConfiguration(workingDirectory: workingDirectory)))
 
     // register services

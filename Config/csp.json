@@ -1,0 +1,45 @@
+[
+    {
+        "key": "default-src",
+        "values": []
+    },
+    {
+        "key": "style-src",
+        "values": [
+            "https://unpkg.com",
+            "https://cdnjs.cloudflare.com",
+            "https://*.twitter.com",
+            "https://*.twimg.com",
+            "'unsafe-inline'"
+        ]
+    },
+    {
+        "key": "script-src",
+        "values":  [
+            "https://code.jquery.com",
+            "https://cdnjs.cloudflare.com",
+            "https://unpkg.com",
+            "https://*.twitter.com",
+            "https://*.twimg.com",
+            "https://*.jsdelivr.net",
+            "https://*.githubusercontent.com",
+            "blob:",
+            "'unsafe-eval'",
+            "'unsafe-inline'"
+        ]
+    },
+    {
+        "key": "frame-src",
+        "values":  [
+            "https://*.twitter.com"
+        ]
+    },
+    {
+        "key": "img-src",
+        "values":  [
+            "https://*.twitter.com",
+            "https://*.twimg.com",
+            "data:"
+        ]
+    }
+]

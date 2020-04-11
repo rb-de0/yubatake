@@ -3,6 +3,7 @@ import FluentMySQLDriver
 import Leaf
 import Redis
 import Vapor
+import VaporSecurityHeaders
 
 public func configure(_ app: Application) throws {
 
@@ -10,8 +11,8 @@ public func configure(_ app: Application) throws {
     app.directory = DirectoryConfiguration(workingDirectory: .workingDirectory)
 
     // register configs
-    try app.register(applicationConfig: ConfigJSONLoader.load(fo: app, name: "app"))
-    try app.register(mysqlDatabaseConfig: ConfigJSONLoader.load(fo: app, name: "mysql"))
+    try app.register(applicationConfig: ConfigJSONLoader.load(for: app, name: "app"))
+    try app.register(mysqlDatabaseConfig: ConfigJSONLoader.load(for: app, name: "mysql"))
     app.register(fileConfig: FileConfig(directory: app.directory))
 
     // register services
@@ -40,6 +41,12 @@ public func configure(_ app: Application) throws {
     app.sessions.use(.memory)
 
     // middleware
+    let cspConfig: CSPConfig = try ConfigJSONLoader.load(for: app, name: "csp")
+    let cspHeaders = cspConfig.makeHeader()
+    let securityHeaders = SecurityHeadersFactory()
+        .with(contentSecurityPolicy: .init(value: cspHeaders))
+        .build()
+    app.middleware.use(securityHeaders)
     app.middleware.use(PublicFileMiddleware(base: FileMiddleware(publicDirectory: app.directory.publicDirectory)))
     app.middleware.use(app.sessions.middleware)
 
