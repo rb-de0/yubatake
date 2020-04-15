@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent-mysql-driver.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-rc"),
-        .package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", from: "5.0.0"),
+        .package(url: "https://github.com/diskshima/SwiftyJSON.git", .branch("rename-nsnumber-comparison-operators")),
         .package(name: "VaporSecurityHeaders", url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", from: "3.0.0")
     ],
     targets: [

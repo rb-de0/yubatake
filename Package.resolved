@@ -255,11 +255,11 @@
       },
       {
         "package": "SwiftyJSON",
-        "repositoryURL": "https://github.com/SwiftyJSON/SwiftyJSON.git",
+        "repositoryURL": "https://github.com/diskshima/SwiftyJSON.git",
         "state": {
-          "branch": null,
-          "revision": "2b6054efa051565954e1d2b9da831680026cd768",
-          "version": "5.0.0"
+          "branch": "rename-nsnumber-comparison-operators",
+          "revision": "329922bc3f9c20e54bf5b32d7fefb95c65880cfa",
+          "version": null
         }
       },
       {
