@@ -1,6 +1,6 @@
 #!/bin/bash
 
-swift run Run boot --env test
+swift run Run migrate -y --env test
 DIFF_LENGTH=`bundle exec ridgepole --diff database.yml Schemafile | wc -l`
 
 if [ $DIFF_LENGTH -gt 0 ] ; then

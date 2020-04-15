@@ -3,7 +3,7 @@ os:
   - osx
 language: generic
 sudo: required
-dist: trusty
+dist: xenial
 
 services:
   - mysql
@@ -13,8 +13,9 @@ env:
     - MYSQL_USER=test
     - MYSQL_PASSWORD=test
     - MYSQL_PORT=3306
+    - SWIFT_VERSION=5.2
 
-osx_image: xcode10
+osx_image: xcode11.4
 before_install:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       brew update;
@@ -26,10 +27,7 @@ before_install:
       brew link mysql@5.7 --force;
       bundle install --path vendor/bundle;
     else
-      eval "$(curl -sL https://apt.vapor.sh)";
-      sudo apt-get install vapor;
-      sudo apt-get install cmysql;
-      sudo chmod -R a+rx /usr/;
+      eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
     fi
   - mysql -u root -e "set global max_connections = 1000";
   - mysql -u root -e "create database yubatake_tests default character set utf8";
@@ -42,6 +40,6 @@ script:
   - if [ $TRAVIS_OS_NAME == "osx" ]; then
       bash schema_checker.sh && swift package generate-xcodeproj && bundle exec fastlane send_coverage;
     else
-      swift build -Xswiftc -DNOJSON && swift test -Xswiftc -DNOJSON;
+      swift build && swift test;
     fi
     

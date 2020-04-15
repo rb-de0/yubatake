@@ -15,10 +15,10 @@ final class StupidPasswordHasher: PasswordHasher {
 
 extension Application.Passwords.Provider {
     public static var stupid: Self {
-        .stupid(cost: 12)
+        .stupidHasher()
     }
 
-    public static func stupid(cost _: Int) -> Self {
+    public static func stupidHasher() -> Self {
         .init {
             $0.passwords.use { _ in
                 StupidPasswordHasher()

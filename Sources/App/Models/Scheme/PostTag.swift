@@ -22,8 +22,6 @@ struct CreatePostTag: Migration {
             .field(.id, .int64, .identifier(auto: true))
             .field("post_id", .int64, .required)
             .field("tag_id", .int64, .required)
-            .field("created_at", .datetime)
-            .field("updated_at", .datetime)
             .foreignKey("post_id", references: Post.schema, "id", onDelete: .cascade, onUpdate: .restrict)
             .foreignKey("tag_id", references: Tag.schema, "id", onDelete: .cascade, onUpdate: .restrict)
             .ignoreExisting()
