@@ -59,3 +59,10 @@ final class APIThemeControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension APIThemeControllerTests {
+    public static let allTests = [
+        ("testCanIndexView", testCanIndexView),
+        ("testCanChangeTheme", testCanChangeTheme)
+    ]
+}

@@ -61,3 +61,11 @@ final class AdminUserControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension AdminUserControllerTests {
+    public static let allTests = [
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanUpdateAUser", testCanUpdateAUser),
+        ("testCannotUpdateInvalidFormData", testCannotUpdateInvalidFormData)
+    ]
+}

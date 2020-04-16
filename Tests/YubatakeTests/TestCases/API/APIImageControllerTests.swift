@@ -27,3 +27,9 @@ final class APIImageControllerTests: ControllerTestCase {
     }
 }
     
+
+extension APIImageControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex)
+    ]
+}

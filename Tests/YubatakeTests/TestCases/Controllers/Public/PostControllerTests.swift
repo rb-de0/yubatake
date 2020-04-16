@@ -115,3 +115,18 @@ final class PostControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension PostControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtOnePage", testCanViewPageButtonAtOnePage),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewStaticContent", testCanViewStaticContent),
+        ("testCannotViewDraftContent", testCannotViewDraftContent),
+        ("testCannotViewDraftStaticContent", testCannotViewDraftStaticContent),
+        ("testCanViewPostsInTags", testCanViewPostsInTags),
+        ("testCanViewPostsInACategory", testCanViewPostsInACategory),
+        ("testCanViewPostsNoCategory", testCanViewPostsNoCategory),
+        ("testCanViewAPost", testCanViewAPost)
+    ]
+}

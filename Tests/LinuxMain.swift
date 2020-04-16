@@ -8,7 +8,6 @@ let tests: [XCTestCaseEntry] = [
     testCase(APIThemeControllerTests.allTests),
     testCase(ImageRepositoryTests.allTests),
     testCase(RoutingSecureGuardTests.allTests),
-    testCase(ValidationTests.allTests),
     testCase(AdminCategoryControllerTests.allTests),
     testCase(AdminImageControllerTests.allTests),
     testCase(AdminPostControllerTests.allTests),
@@ -18,20 +17,7 @@ let tests: [XCTestCaseEntry] = [
     testCase(AdminUserControllerTests.allTests),
     testCase(LoginControllerTests.allTests),
     testCase(PublicFileMiddlewareTests.allTests),
-    testCase(PostControllerTests.allTests),
-    testCase(APIFileControllerCSRFTests.allTests),
-    testCase(APIThemeControllerCSRFTests.allTests),
-    testCase(AdminCategoryControllerCSRFTests.allTests),
-    testCase(AdminPostControllerCSRFTests.allTests),
-    testCase(AdminSiteInfoControllerCSRFTests.allTests),
-    testCase(AdminTagControllerCSRFTests.allTests),
-    testCase(AdminUserControllerCSRFTests.allTests),
-    testCase(LoginControllerCSRFTests.allTests),
-    testCase(AdminCategoryControllerMessageTests.allTests),
-    testCase(AdminPostControllerMessageTests.allTests),
-    testCase(AdminSiteInfoControllerMessageTests.allTests),
-    testCase(AdminTagControllerMessageTests.allTests),
-    testCase(AdminUserControllerMessageTests.allTests)
+    testCase(PostControllerTests.allTests)
 ]
 
 XCTMain(tests)

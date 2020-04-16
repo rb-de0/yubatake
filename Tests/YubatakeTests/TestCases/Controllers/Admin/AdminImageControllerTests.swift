@@ -87,3 +87,14 @@ final class AdminImageControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension AdminImageControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewCleanButtonWhenHasNotFound", testCanViewCleanButtonWhenHasNotFound),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanCleanUp", testCanCleanUp),
+        ("testCanDestroyAImage", testCanDestroyAImage),
+        ("testCanUpdateAImage", testCanUpdateAImage)
+    ]
+}

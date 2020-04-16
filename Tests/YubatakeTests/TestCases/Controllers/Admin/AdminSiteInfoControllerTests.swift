@@ -84,3 +84,12 @@ final class AdminSiteInfoControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension AdminSiteInfoControllerTests {
+    public static let allTests = [
+        ("testCanCreateSharedSiteInfo", testCanCreateSharedSiteInfo),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanUpdateASiteInfo", testCanUpdateASiteInfo),
+        ("testCannotUpdateInvalidFormData", testCannotUpdateInvalidFormData)
+    ]
+}

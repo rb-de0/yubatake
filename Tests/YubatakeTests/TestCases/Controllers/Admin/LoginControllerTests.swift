@@ -51,3 +51,12 @@ final class LoginControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension LoginControllerTests {
+    public static let allTests = [
+        ("testCanCreateRootUser", testCanCreateRootUser),
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanLogin", testCanLogin),
+        ("testCannotLoginNoPassword", testCannotLoginNoPassword)
+    ]
+}

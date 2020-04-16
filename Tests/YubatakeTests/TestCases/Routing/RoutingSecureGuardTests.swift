@@ -85,3 +85,10 @@ final class RoutingSecureGuardTests: ControllerTestCase {
         }
     }
 }
+
+extension RoutingSecureGuardTests {
+    public static let allTests = [
+        ("testCanGuardRequest", testCanGuardRequest),
+        ("testCanGuardAPIRequest", testCanGuardAPIRequest)
+    ]
+}

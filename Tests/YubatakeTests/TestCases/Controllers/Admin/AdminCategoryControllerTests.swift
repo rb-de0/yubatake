@@ -131,3 +131,18 @@ final class AdminCategoryControllerTests: ControllerTestCase {
         XCTAssertEqual(try Category.find(1, on: db).wait()?.name, "Programming")
     }
 }
+
+extension AdminCategoryControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanDestroyACategory", testCanDestroyACategory),
+        ("testCanStoreACategory", testCanStoreACategory),
+        ("testCannotStoreInvalidNameCategory", testCannotStoreInvalidNameCategory),
+        ("testCannotCreateCategoryAtAlreadyExist", testCannotCreateCategoryAtAlreadyExist),
+        ("testCanUpdateACategory", testCanUpdateACategory),
+        ("testCannotUpdateToInvalidNameCategory", testCannotUpdateToInvalidNameCategory)
+    ]
+}

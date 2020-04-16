@@ -131,3 +131,18 @@ final class AdminTagControllerTests: ControllerTestCase {
         XCTAssertEqual(try Tag.find(1, on: db).wait()?.name, "Swift")
     }
 }
+
+extension AdminTagControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanDestroyATag", testCanDestroyATag),
+        ("testCanStoreATag", testCanStoreATag),
+        ("testCannotStoreInvalidNameTag", testCannotStoreInvalidNameTag),
+        ("testCannotCreateTagAtAlreadyExist", testCannotCreateTagAtAlreadyExist),
+        ("testCanUpdateATag", testCanUpdateATag),
+        ("testCannotUpdateToInvalidNameCategory", testCannotUpdateToInvalidNameCategory)
+    ]
+}

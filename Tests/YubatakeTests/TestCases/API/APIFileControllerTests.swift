@@ -85,3 +85,11 @@ final class APIFileControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension APIFileControllerTests {
+    public static let allTests = [
+        ("testCanIndexView", testCanIndexView),
+        ("testCanShowFileBody", testCanShowFileBody),
+        ("testCanUpdateFileBody", testCanUpdateFileBody)
+    ]
+}

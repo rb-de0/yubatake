@@ -25,3 +25,10 @@ final class PublicFileMiddlewareTests: ControllerTestCase {
         }
     }
 }
+
+extension PublicFileMiddlewareTests {
+    public static let allTests = [
+        ("testCanRespondFiles", testCanRespondFiles),
+        ("testCanProtectTemplateFiles", testCanProtectTemplateFiles)
+    ]
+}

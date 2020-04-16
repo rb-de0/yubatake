@@ -38,3 +38,10 @@ final class ImageRepositoryTests: XCTestCase {
         XCTAssertFalse(repository.isExist(at: "test.png"))
     }
 }
+
+extension ImageRepositoryTests {
+    public static let allTests = [
+        ("testCanSaveAndDeleteImage", testCanSaveAndDeleteImage),
+        ("testCanRenameImage", testCanRenameImage)
+    ]
+}

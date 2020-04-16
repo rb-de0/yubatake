@@ -9,3 +9,9 @@ final class AdminThemeControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension AdminThemeControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex)
+    ]
+}

@@ -292,3 +292,23 @@ final class AdminPostControllerTests: ControllerTestCase {
         }
     }
 }
+
+extension AdminPostControllerTests {
+    public static let allTests = [
+        ("testCanViewIndex", testCanViewIndex),
+        ("testCanViewPageButtonAtTwoPages", testCanViewPageButtonAtTwoPages),
+        ("testCanViewStaticContent", testCanViewStaticContent),
+        ("testCanViewCreateView", testCanViewCreateView),
+        ("testCanViewEditView", testCanViewEditView),
+        ("testCanDestroyPosts", testCanDestroyPosts),
+        ("testCanDestroyStaticContents", testCanDestroyStaticContents),
+        ("testCanStoreAPost", testCanStoreAPost),
+        ("testCanStoreAStaticPost", testCanStoreAStaticPost),
+        ("testCanStoreADraftPost", testCanStoreADraftPost),
+        ("testCannotStoreInvalidFormData", testCannotStoreInvalidFormData),
+        ("testCannotStoreAPostHasInvalidCategory", testCannotStoreAPostHasInvalidCategory),
+        ("testCanStoreAPostHasNotInsertedTags", testCanStoreAPostHasNotInsertedTags),
+        ("testCanUpdateAPost", testCanUpdateAPost),
+        ("testCannotUpdateInvalidFormData", testCannotUpdateInvalidFormData)
+    ]
+}
