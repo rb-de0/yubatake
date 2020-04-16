@@ -10,7 +10,7 @@ let package = Package(
         .executable(name: "Run", targets: ["Run"])
     ],
     dependencies: [
-        .package(url: "https://github.com/rb-de0/Poppo.git", from: "1.0.0"),
+        .package(url: "https://github.com/rb-de0/Poppo.git", from: "1.1.0"),
         .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "1.0.0"),
         .package(name: "SwiftMarkdown", url: "https://github.com/vapor-community/markdown.git", from: "0.6.0"),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0-rc"),
