@@ -14,7 +14,7 @@ final class SiteInfo: Model {
     @Field(key: "description")
     var description: String
 
-    @Field(key: "theme")
+    @OptionalField(key: "theme")
     var theme: String?
 
     @Timestamp(key: "created_at", on: .create)
