@@ -1,7 +1,6 @@
 import Fluent
 import FluentMySQLDriver
 import Leaf
-import Redis
 import Vapor
 import VaporSecurityHeaders
 import CSRF
