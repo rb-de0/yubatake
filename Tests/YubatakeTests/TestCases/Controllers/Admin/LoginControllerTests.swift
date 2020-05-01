@@ -25,6 +25,9 @@ final class LoginControllerTests: ControllerTestCase {
     func testCanLogin() throws {
         let hashedPassword = try Bcrypt.hash("passwd", cost: 12)
         try User(name: "login", password: hashedPassword).save(on: db).wait()
+        try test(.POST, "/login", body: "name=login&password=passwd", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/login", body: "name=login&password=passwd") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/posts")

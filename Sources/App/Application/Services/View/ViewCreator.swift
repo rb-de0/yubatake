@@ -44,7 +44,7 @@ final class ViewCreator {
 
 extension ViewCreator {
     class func `default`() -> ViewCreator {
-        return .init(decorators: [MessageDeliveryViewDecorator()])
+        return .init(decorators: [MessageDeliveryViewDecorator(), CSRFViewDecorator()])
     }
 }
 

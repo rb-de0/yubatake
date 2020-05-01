@@ -20,6 +20,9 @@ final class AdminSiteInfoControllerTests: ControllerTestCase {
     }
     
     func testCanUpdateASiteInfo() throws {
+        try test(.POST, "/admin/siteinfo/edit", body: "name=app&description=UpdateTest", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/siteinfo/edit", body: "name=app&description=UpdateTest") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/siteinfo/edit")

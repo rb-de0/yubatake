@@ -56,6 +56,9 @@ final class AdminCategoryControllerTests: ControllerTestCase {
     func testCanDestroyACategory() throws {
         let category = DataMaker.makeCategory(name: "Programming")
         try category.save(on: db).wait()
+        try test(.POST, "/admin/categories/delete", body: "categories[]=1", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/categories/delete", body: "categories[]=1") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/categories")
@@ -67,6 +70,9 @@ final class AdminCategoryControllerTests: ControllerTestCase {
     }
     
     func testCanStoreACategory() throws {
+        try test(.POST, "/admin/categories", body: "name=Programming", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/categories", body: "name=Programming") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/categories/1/edit")
@@ -107,6 +113,9 @@ final class AdminCategoryControllerTests: ControllerTestCase {
     func testCanUpdateACategory() throws {
         let category = DataMaker.makeCategory(name: "Programming")
         try category.save(on: db).wait()
+        try test(.POST, "/admin/categories/1/edit", body: "name=FX", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/categories/1/edit", body: "name=FX") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/categories/1/edit")

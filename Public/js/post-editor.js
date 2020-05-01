@@ -126,7 +126,7 @@ var viewModel = new Vue({
 
       var imageElement = document.createElement('img')
       imageElement.setAttribute('src', image.path)
-      imageElement.setAttribute('alt', image.altDescritpion)
+      imageElement.setAttribute('alt', image.altDescription)
 
       var beforeCursor = currentText.substr(0, cursorPosition)
       var afterCursor = currentText.substr(cursorPosition, currentTextLength)

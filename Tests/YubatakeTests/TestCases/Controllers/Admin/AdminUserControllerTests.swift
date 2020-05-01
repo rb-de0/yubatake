@@ -12,6 +12,9 @@ final class AdminUserControllerTests: ControllerTestCase {
     }
     
     func testCanUpdateAUser() throws {
+        try test(.POST, "/admin/user/edit", body: "name=rb_de0&password=123456789", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/user/edit", body: "name=rb_de0&password=123456789") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/user/edit")

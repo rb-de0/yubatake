@@ -45,6 +45,9 @@ final class APIThemeControllerTests: ControllerTestCase {
     }
     
     func testCanChangeTheme() throws {
+        try test(.POST, "/api/themes", body: "name=custom", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/api/themes", body: "name=custom") { response in
             XCTAssertEqual(response.status, .ok)
         }

@@ -12,7 +12,7 @@ final class APIRoutes: RouteCollection {
         do {
             let controller = API.ImageController()
             api.get("images", use: controller.index)
-            api.post("images", use: controller.store)
+            api.on(.POST, "images", body: .collect(maxSize: 1 << 20), use: controller.store)
         }
 
         // themes

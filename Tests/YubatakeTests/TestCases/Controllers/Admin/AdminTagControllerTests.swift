@@ -56,6 +56,9 @@ final class AdminTagControllerTests: ControllerTestCase {
     func testCanDestroyATag() throws {
         let tag = DataMaker.makeTag(name: "Swift")
         try tag.save(on: db).wait()
+        try test(.POST, "/admin/tags/delete", body: "tags[]=1", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/tags/delete", body: "tags[]=1") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/tags")
@@ -67,6 +70,9 @@ final class AdminTagControllerTests: ControllerTestCase {
     }
     
     func testCanStoreATag() throws {
+        try test(.POST, "/admin/tags", body: "name=Swift", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/tags", body: "name=Swift") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/tags/1/edit")
@@ -107,6 +113,9 @@ final class AdminTagControllerTests: ControllerTestCase {
     func testCanUpdateATag() throws {
         let tag = DataMaker.makeTag(name: "Swift")
         try tag.save(on: db).wait()
+        try test(.POST, "/admin/tags/1/edit", body: "name=Kotlin", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/tags/1/edit", body: "name=Kotlin") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/tags/1/edit")

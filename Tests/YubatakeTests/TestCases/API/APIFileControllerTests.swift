@@ -75,6 +75,9 @@ final class APIFileControllerTests: ControllerTestCase {
     
     func testCanUpdateFileBody() throws {
         let body = "path=/default/test.leaf&body=AfterUpdate"
+        try test(.POST, "/api/files", body: body, withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/api/files", body: body) { response in
             XCTAssertEqual(response.status, .ok)
         }

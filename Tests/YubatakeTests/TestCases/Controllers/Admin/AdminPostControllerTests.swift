@@ -75,6 +75,9 @@ final class AdminPostControllerTests: ControllerTestCase {
     func testCanDestroyPosts() throws {
         let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1)
         try post.save(on: db).wait()
+        try test(.POST, "/admin/posts/delete", body: "posts[]=1", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/posts/delete", body: "posts[]=1") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/posts")
@@ -102,6 +105,9 @@ final class AdminPostControllerTests: ControllerTestCase {
     
     func testCanStoreAPost() throws {
         let form = "title=title&content=content&tags=Swift,iOS&isPublished=true"
+        try test(.POST, "/admin/posts", body: form, withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/posts", body: form) { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/posts/1/edit")
@@ -221,6 +227,9 @@ final class AdminPostControllerTests: ControllerTestCase {
         let post = DataMaker.makePost(title: "title", content: "content", htmlContent: "htmlContent", partOfContent: "partOfContent", userId: 1)
         try post.save(on: db).wait()
         let form = "title=title_after&content=content_after&tags=Android"
+        try test(.POST, "/admin/posts/1/edit", body: form, withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/posts/1/edit", body: form) { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/posts/1/edit")

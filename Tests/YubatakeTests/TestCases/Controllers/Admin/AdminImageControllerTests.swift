@@ -54,6 +54,9 @@ final class AdminImageControllerTests: ControllerTestCase {
             let image = DataMaker.makeImage(path: "/documents/imgs/sample", altDescription: "sample")
             try image.save(on: db).wait()
         }
+        try test(.POST, "/admin/images/cleanup", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/images/cleanup") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/images")
@@ -65,6 +68,9 @@ final class AdminImageControllerTests: ControllerTestCase {
         try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "favicon")
         let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
         try image.save(on: db).wait()
+        try test(.POST, "/admin/images/1/delete", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/images/1/delete") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/images")
@@ -76,6 +82,9 @@ final class AdminImageControllerTests: ControllerTestCase {
         try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "favicon")
         let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
         try image.save(on: db).wait()
+        try test(.POST, "/admin/images/1/edit", body: "name=favicon_updated&altDescription=alt", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
         try test(.POST, "/admin/images/1/edit", body: "name=favicon_updated&altDescription=alt") { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/admin/images/1/edit")

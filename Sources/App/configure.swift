@@ -4,6 +4,7 @@ import Leaf
 import Redis
 import Vapor
 import VaporSecurityHeaders
+import CSRF
 
 public func configure(_ app: Application) throws {
 
@@ -49,6 +50,14 @@ public func configure(_ app: Application) throws {
     app.middleware.use(securityHeaders)
     app.middleware.use(PublicFileMiddleware(base: FileMiddleware(publicDirectory: app.directory.publicDirectory)))
     app.middleware.use(app.sessions.middleware)
+    let csrfMiddleware = CSRF(tokenRetrieval: { request in
+        do {
+            return request.eventLoop.future(try request.content.get(String.self, at: "csrfToken"))
+        } catch {
+            return request.eventLoop.makeFailedFuture(Abort(.forbidden, reason: "No CSRF token provided."))
+        }
+    })
+    app.middleware.use(csrfMiddleware)
 
     // database
     let mysqlConfig = app.mysqlDatabaseConfig

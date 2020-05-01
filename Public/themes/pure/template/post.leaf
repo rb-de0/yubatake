@@ -42,7 +42,7 @@
     </div>
 
     <div id="post-content-body">
-      #raw(htmlContent)
+      #(htmlContent)
     </div>
 
     <div id="post-content-share-container">

@@ -2,6 +2,7 @@
 import Vapor
 import Fluent
 import FluentMySQLDriver
+import CSRF
 
 final class ApplicationBuilder {
     
@@ -63,7 +64,7 @@ private func configure(_ app: Application, forAdmin: Bool, workingDirectory: Str
     app.leaf.tags["date"] = DateTag()
     app.views.use(.leaf)
     app.register(testViewDecorator: TestViewDecorator())
-    app.register(viewCreator: ViewCreator(decorators: [MessageDeliveryViewDecorator(), app.testViewDecorator]))
+    app.register(viewCreator: ViewCreator(decorators: [MessageDeliveryViewDecorator(), CSRFViewDecorator(), app.testViewDecorator]))
     
     // session
     app.sessions.use(.memory)
@@ -71,6 +72,14 @@ private func configure(_ app: Application, forAdmin: Bool, workingDirectory: Str
     // middleware
     app.middleware.use(PublicFileMiddleware(base: FileMiddleware(publicDirectory: app.directory.publicDirectory)))
     app.middleware.use(app.sessions.middleware)
+    let csrfMiddleware = CSRF(tokenRetrieval: { request in
+        do {
+            return request.eventLoop.future(try request.content.get(String.self, at: "csrfToken"))
+        } catch {
+            return request.eventLoop.makeFailedFuture(Abort(.forbidden, reason: "No CSRF token provided."))
+        }
+    })
+    app.middleware.use(csrfMiddleware)
     if forAdmin {
         app.middleware.use(AlwaysAuthMiddleware())
     }
@@ -89,6 +98,15 @@ private func configure(_ app: Application, forAdmin: Bool, workingDirectory: Str
 
     // routes
     try routes(app)
+    
+    // csrf route
+    app.get("csrf") { request in
+        return CSRFToken(token: CSRF().createToken(from: request))
+    }
+}
+
+struct CSRFToken: Content {
+    let token: String
 }
 
 // configure for migrate
