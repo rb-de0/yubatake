@@ -9,12 +9,13 @@ yubatake is simple blogging engine for Swift.
 
 ### Swift
 
-- 4.2.1
+- 5.2
 
 ### OS
 
-- macOS High Sierra 10.13.4
-- Ubuntu 14.04
+Tests passed on the following Systems.
+
+- Ubuntu 16.04
 
 # Usage
 
@@ -22,13 +23,13 @@ yubatake is simple blogging engine for Swift.
 
 #### 1. Install Swift
 
-Please install Swift in your environment. For macOS please download Xcode 10.1.
+Please install Swift in your environment. For macOS please download Xcode 11.4.
 If you are using Ubuntu, it is easy to install using swiftenv.
 
 Example(swiftenv)
 
 ```bash
-$ swiftenv install 4.2.1
+$ swiftenv install 5.2
 ```
 
 #### 2. Install MySQL
@@ -36,24 +37,6 @@ $ swiftenv install 4.2.1
 yubatake supports MySQL only.
 
 Please install MySQL Server in your environment.
-
-#### 3. Install Redis
-
-yubatake uses Redis Server as a session store. 
-
-Please install Redis in your environment.
-
-For macOS
-
-```bash
-$ brew install redis
-```
-
-For ubuntu
-
-```bash
-$ sudo apt-get install redis-server
-```
 
 ## Setup Application
 
@@ -81,44 +64,23 @@ The setting of the whole application.
 
 The setting of a mysql server.
 
-#### redis.json
-
-The setting of a redis server.
-
 #### csp.json
 
 The setting of a Content Security Policy.
 
-
-#### 4. Enter the following command.
+#### 4. Build Application
 
 ```bash
 $ swift build -c release
 ```
 
-※ Depending on the version of MySQL, you may need ```-Xswiftc -DNOJSON``` as argument.
-
-
-#### 5. Run the app.
+#### 5. Run Application
 
 ```bash
-$ swift run -c release Run -e prod
+$ swift run Run -e prod
 ```
 
 **Be sure to set `-e prod` as a option to use production middlewares.**
-
-# Migration
-
-If you are using a version earlier than 3.0, you need to migrate the database.
-
-1. Please update to 2.1.2
-2. Run the application to update scheme.
-3. Please update to 3.0.0
-4. Execute the following command to migrate the database.
-
-```bash
-$ swift run Run update -i <oldDatabase>
-```
 
 # LICENSE
 
