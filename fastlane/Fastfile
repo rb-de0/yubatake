@@ -26,6 +26,5 @@ platform :mac do
 
   lane :format do
     sh("swiftformat ../Sources --config SwiftFormatConfig")
-    #sh("swiftformat ../Tests --config SwiftFormatConfig")
   end
 end
