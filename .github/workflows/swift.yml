@@ -2,9 +2,12 @@ name: Swift
 
 on:
   push:
-    branches: [ master ]
+    branches: 
+      - master
   pull_request:
-    branches: [ master ]
+    branches: 
+      - master
+      - vapor4.0
 
 jobs:
   build:
