@@ -1,6 +1,5 @@
 os:
   - linux
-  - osx
 language: generic
 sudo: required
 dist: xenial
@@ -15,20 +14,8 @@ env:
     - MYSQL_PORT=3306
     - SWIFT_VERSION=5.2
 
-osx_image: xcode11.4
 before_install:
-  - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      brew update;
-      brew tap vapor/tap;
-      brew update;
-      brew install vapor;
-      brew install mysql@5.7;
-      brew services start mysql@5.7;
-      brew link mysql@5.7 --force;
-      bundle install --path vendor/bundle;
-    else
-      eval "$(curl -sL https://swiftenv.fuller.li/install.sh)";
-    fi
+  - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)";
   - mysql -u root -e "set global max_connections = 1000";
   - mysql -u root -e "create database yubatake_tests default character set utf8";
   - mysql -u root -e "create database schema_check default character set utf8";
@@ -37,9 +24,4 @@ before_install:
   - mysql -u root -e "grant all on schema_check.* TO 'test'@'localhost'";
 
 script:
-  - if [ $TRAVIS_OS_NAME == "osx" ]; then
-      bash schema_checker.sh && swift package generate-xcodeproj && bundle exec fastlane send_coverage;
-    else
-      swift build && swift test;
-    fi
-    
+  - swift build && swift test;
