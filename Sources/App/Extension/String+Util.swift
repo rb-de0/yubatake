@@ -6,7 +6,7 @@ extension String {
         if n >= count {
             return self
         }
-        return String(self[..<index(self.startIndex, offsetBy: n)])
+        return String(self[..<index(startIndex, offsetBy: n)])
     }
 
     func started(with start: String) -> String {

@@ -2,4 +2,4 @@
 --exclude ../.build
 
 # rules
---disable blankLinesAtStartOfScope,trailingCommas
+--disable blankLinesAtStartOfScope,trailingCommas,redundantReturn

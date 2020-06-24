@@ -26,11 +26,16 @@ final class ViewCreator {
             let themeDirectory = request.application.fileConfig.templateDirectory(in: siteInfo.selectedTheme)
             let configuration = LeafConfiguration(rootDirectory: themeDirectory)
             let original = request.leaf
+            let sources = LeafSources.singleSource(
+                NIOLeafFiles(fileio: request.application.fileio,
+                             limits: .default,
+                             sandboxDirectory: configuration.rootDirectory,
+                             viewDirectory: configuration.rootDirectory))
             let renderer = LeafRenderer(configuration: configuration,
                                         tags: original.tags,
-                                        cache: original.cache,
-                                        files: original.files,
-                                        eventLoop: original.eventLoop)
+                                        sources: sources,
+                                        eventLoop: original.eventLoop,
+                                        userInfo: original.userInfo)
             return renderer
                 .render(path: path, context: viewData)
                 .map { buffer in

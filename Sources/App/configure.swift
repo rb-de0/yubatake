@@ -1,9 +1,9 @@
+import CSRF
 import Fluent
 import FluentMySQLDriver
 import Leaf
 import Vapor
 import VaporSecurityHeaders
-import CSRF
 
 public func configure(_ app: Application) throws {
 

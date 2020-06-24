@@ -11,7 +11,7 @@ extension Request {
             configuration: application.leaf.configuration,
             tags: application.leaf.tags,
             cache: application.leaf.cache,
-            files: application.leaf.files,
+            sources: application.leaf.sources,
             eventLoop: eventLoop,
             userInfo: userInfo
         )
