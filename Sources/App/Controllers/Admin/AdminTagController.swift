@@ -51,7 +51,7 @@ final class AdminTagController {
         let tag = Tag(form: form)
         return tag.save(on: request.db)
             .flatMapThrowing { _ -> Response in
-                try TagForm.validate(request)
+                try TagForm.validate(content: request)
                 let id = try tag.requireID()
                 return request.redirect(to: "/admin/tags/\(id)/edit")
             }
@@ -66,7 +66,7 @@ final class AdminTagController {
         }
         let form = try request.content.decode(TagForm.self)
         do {
-            try TagForm.validate(request)
+            try TagForm.validate(content: request)
         } catch {
             let response = try request.redirect(to: "/admin/tags/\(tagId)/edit", with: FormError(error: error, formData: form))
             return request.eventLoop.future(response)

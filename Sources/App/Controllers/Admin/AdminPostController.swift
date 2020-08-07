@@ -110,7 +110,7 @@ final class AdminPostController {
         let newPost = try Post(from: form, userId: userId)
         let tags = Tag.tags(from: form)
         do {
-            try PostForm.validate(request)
+            try PostForm.validate(content: request)
         } catch {
             let response = try request.redirect(to: "/admin/posts/create", with: FormError(error: error, formData: form))
             return request.eventLoop.future(response)
@@ -175,7 +175,7 @@ final class AdminPostController {
         let userId = try request.auth.require(User.self).requireID()
         let tags = Tag.tags(from: form)
         do {
-            try PostForm.validate(request)
+            try PostForm.validate(content: request)
         } catch {
             let response = try request.redirect(to: "/admin/posts/\(postId)/edit", with: FormError(error: error, formData: form))
             return request.eventLoop.future(response)

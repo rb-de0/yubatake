@@ -30,9 +30,7 @@ final class LeafDataEncoder {
             if let intValue = value.object as? Int {
                 result.append(.int(intValue))
             } else if let leafData = value.object as? LeafDataRepresentable {
-                if let data = leafData.leafData {
-                    result.append(data)
-                }
+                result.append(leafData.leafData)
             } else if let array = value.array {
                 result.append(.array(encode(array: array)))
             } else if let dictionary = value.dictionary {

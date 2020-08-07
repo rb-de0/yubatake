@@ -17,7 +17,7 @@ final class AdminUserController {
         let form = try request.content.decode(UserForm.self)
         let user = try request.auth.require(User.self)
         do {
-            try UserForm.validate(request)
+            try UserForm.validate(content: request)
         } catch {
             let response = try request.redirect(to: "/admin/user/edit", with: FormError(error: error, formData: form))
             return request.eventLoop.future(response)

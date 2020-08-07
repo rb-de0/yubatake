@@ -24,13 +24,14 @@ final class ViewCreator {
                     }
             }
             let themeDirectory = request.application.fileConfig.templateDirectory(in: siteInfo.selectedTheme)
-            let configuration = LeafConfiguration(rootDirectory: themeDirectory)
+            var configuration = LeafConfiguration(rootDirectory: themeDirectory)
+            let rootDirectory = configuration.rootDirectory
             let original = request.leaf
             let sources = LeafSources.singleSource(
                 NIOLeafFiles(fileio: request.application.fileio,
                              limits: .default,
-                             sandboxDirectory: configuration.rootDirectory,
-                             viewDirectory: configuration.rootDirectory))
+                             sandboxDirectory: rootDirectory,
+                             viewDirectory: rootDirectory))
             let renderer = LeafRenderer(configuration: configuration,
                                         tags: original.tags,
                                         sources: sources,

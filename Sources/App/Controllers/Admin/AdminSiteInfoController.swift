@@ -22,7 +22,7 @@ final class AdminSiteInfoController {
     func store(request: Request) throws -> EventLoopFuture<Response> {
         let form = try request.content.decode(SiteInfoForm.self)
         do {
-            try SiteInfoForm.validate(request)
+            try SiteInfoForm.validate(content: request)
         } catch {
             let response = try request.redirect(to: "/admin/siteinfo/edit", with: FormError(error: error, formData: form))
             return request.eventLoop.future(response)

@@ -50,7 +50,7 @@ final class AdminCategoryController {
         let form = try request.content.decode(CategoryForm.self)
         let category = Category(form: form)
         do {
-            try CategoryForm.validate(request)
+            try CategoryForm.validate(content: request)
         } catch {
             let resposne = try request.redirect(to: "/admin/categories/create", with: FormError(error: error, formData: form))
             return request.eventLoop.future(resposne)
@@ -75,7 +75,7 @@ final class AdminCategoryController {
             .unwrap(or: Abort(.notFound))
             .flatMap { category in
                 do {
-                    try CategoryForm.validate(request)
+                    try CategoryForm.validate(content: request)
                     category.apply(form: form)
                     return category.save(on: request.db)
                 } catch {

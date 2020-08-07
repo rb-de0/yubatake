@@ -14,9 +14,9 @@ let package = Package(
         .package(url: "https://github.com/scinfu/SwiftSoup.git", from: "1.0.0"),
         .package(name: "SwiftMarkdown", url: "https://github.com/vapor-community/markdown.git", from: "0.6.0"),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0-rc"),
-        .package(url: "https://github.com/vapor/fluent-mysql-driver.git", from: "4.0.0-rc"),
-        .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-rc"),
-        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0-rc"),
+        .package(url: "https://github.com/vapor/fluent-mysql-driver.git", from: "4.0.0"),
+        .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
+        .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor-community/CSRF.git", from: "3.0.0"),
         .package(url: "https://github.com/diskshima/SwiftyJSON.git", .branch("rename-nsnumber-comparison-operators")),
         .package(name: "VaporSecurityHeaders", url: "https://github.com/brokenhandsio/VaporSecurityHeaders.git", from: "3.0.0")
