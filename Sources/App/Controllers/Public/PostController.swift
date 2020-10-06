@@ -20,6 +20,7 @@ final class PostController {
 
     func index(request: Request) throws -> EventLoopFuture<View> {
         return Post.query(on: request.db).publicAll().noStaticAll().withRelated()
+            .sort(\.$createdAt, .descending)
             .paginate(for: request)
             .flatMapThrowing { page -> PageResponse<Post.Public> in
                 let posts = try page.items.map { try $0.formPublic() }
@@ -44,6 +45,7 @@ final class PostController {
             .unwrap(or: Abort(.notFound))
             .flatMap { tag -> EventLoopFuture<View> in
                 tag.$posts.query(on: request.db).publicAll().noStaticAll().withRelated()
+                    .sort(\.$createdAt, .descending)
                     .paginate(for: request)
                     .flatMapThrowing { page -> PageResponse<Post.Public> in
                         let posts = try page.items.map { try $0.formPublic() }
@@ -70,6 +72,7 @@ final class PostController {
             .unwrap(or: Abort(.notFound))
             .flatMap { category -> EventLoopFuture<View> in
                 category.$posts.query(on: request.db).publicAll().noStaticAll().withRelated()
+                    .sort(\.$createdAt, .descending)
                     .paginate(for: request)
                     .flatMapThrowing { page -> PageResponse<Post.Public> in
                         let posts = try page.items.map { try $0.formPublic() }
@@ -90,6 +93,7 @@ final class PostController {
 
     func indexNoCategory(request: Request) throws -> EventLoopFuture<View> {
         return Post.query(on: request.db).publicAll().noCategoryAll().withRelated()
+            .sort(\.$createdAt, .descending)
             .paginate(for: request)
             .flatMapThrowing { page -> PageResponse<Post.Public> in
                 let posts = try page.items.map { try $0.formPublic() }
