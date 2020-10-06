@@ -1,32 +1,34 @@
-import FluentMySQL
+import Fluent
+import Vapor
 
-final class PostTag: ModifiablePivot, MySQLModel {
-    
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case postId = "post_id"
-        case tagId = "tag_id"
-    }
-    
-    static let entity = "post_tag"
-    
-    static var leftIDKey: LeftIDKey {
-        return \.postId
-    }
-    
-    static var rightIDKey: RightIDKey {
-        return \.tagId
-    }
-    
-    typealias Left = Post
-    typealias Right = Tag
-    
+final class PostTag: Model {
+
+    static let schema = "post_tag"
+
+    @ID(custom: .id)
     var id: Int?
-    var postId: Int
-    var tagId: Int
-    
-    init(_ left: Left, _ right: Right) throws {
-        postId = try left.requireID()
-        tagId = try right.requireID()
+
+    @Parent(key: "post_id")
+    var post: Post
+
+    @Parent(key: "tag_id")
+    var tag: Tag
+}
+
+struct CreatePostTag: Migration {
+
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(PostTag.schema)
+            .field(.id, .int64, .identifier(auto: true))
+            .field("post_id", .int64, .required)
+            .field("tag_id", .int64, .required)
+            .foreignKey("post_id", references: Post.schema, "id", onDelete: .cascade, onUpdate: .restrict)
+            .foreignKey("tag_id", references: Tag.schema, "id", onDelete: .cascade, onUpdate: .restrict)
+            .ignoreExisting()
+            .create()
+    }
+
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(PostTag.schema).delete()
     }
 }

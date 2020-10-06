@@ -1,76 +1,100 @@
+import Fluent
 import Vapor
 
 final class AdminCategoryController {
-    
+
     private struct ContextMaker {
-        
         static func makeIndexView() -> AdminViewContext {
             return AdminViewContext(path: "categories", menuType: .categories)
         }
-        
+
         static func makeCreateView() -> AdminViewContext {
             return AdminViewContext(path: "new-category", menuType: .categories)
         }
     }
-    
-    func index(request: Request) throws -> Future<View> {
-        return try Category.query(on: request).paginate(for: request).flatMap { page in
-            try ContextMaker.makeIndexView().makeResponse(context: page.response(), for: request)
-        }
+
+    func index(request: Request) throws -> EventLoopFuture<View> {
+        return Category.query(on: request.db).withRelated()
+            .paginate(for: request)
+            .flatMap { page in
+                do {
+                    let pageResponse = PageResponse(page: page)
+                    return try ContextMaker.makeIndexView().makeResponse(context: pageResponse, for: request)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
     }
-    
-    func create(request: Request) throws -> Future<View> {
+
+    func create(request: Request) throws -> EventLoopFuture<View> {
         return try ContextMaker.makeCreateView().makeResponse(formDataType: CategoryForm.self, for: request)
     }
-    
-    func edit(request: Request) throws -> Future<View> {
-        
-        return try request.parameters.next(Category.self).flatMap { category in
-            try ContextMaker.makeCreateView().makeResponse(context: category, formDataType: CategoryForm.self, for: request)
+
+    func edit(request: Request) throws -> EventLoopFuture<View> {
+        guard let categoryId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
         }
+        return Category.query(on: request.db).filter(\.$id == categoryId).withRelated()
+            .first()
+            .unwrap(or: Abort(.notFound))
+            .flatMap { category in
+                do {
+                    return try ContextMaker.makeCreateView().makeResponse(context: category, formDataType: CategoryForm.self, for: request)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
     }
-    
-    func store(request: Request, form: CategoryForm) throws -> Future<Response> {
-        
-        return Future.flatMap(on: request) {
-            try Category(from: form).save(on: request).map { category in
+
+    func store(request: Request) throws -> EventLoopFuture<Response> {
+        let form = try request.content.decode(CategoryForm.self)
+        let category = Category(form: form)
+        do {
+            try CategoryForm.validate(content: request)
+        } catch {
+            let resposne = try request.redirect(to: "/admin/categories/create", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(resposne)
+        }
+        return category.save(on: request.db)
+            .flatMapThrowing { _ -> Response in
                 let id = try category.requireID()
                 return request.redirect(to: "/admin/categories/\(id)/edit")
             }
-        }
-        .catchMap { error in
-            return try request.redirect(to: "/admin/categories/create", with: FormError(error: error, formData: form))
-        }
+            .flatMapErrorThrowing { error in
+                try request.redirect(to: "/admin/categories/create", with: FormError(error: error, formData: form))
+            }
     }
-    
-    func update(request: Request, form: CategoryForm) throws -> Future<Response> {
-        let existingCategory = try request.parameters.next(Category.self)
-        
-        return existingCategory.flatMap { category in
-            let id = try category.requireID()
-            return Future.flatMap(on: request) {
-                try category.apply(form: form).save(on: request).map { _ in
-                    request.redirect(to: "/admin/categories/\(id)/edit")
+
+    func update(request: Request) throws -> EventLoopFuture<Response> {
+        guard let categoryId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
+        }
+        let form = try request.content.decode(CategoryForm.self)
+        return Category.query(on: request.db).filter(\.$id == categoryId).withRelated()
+            .first()
+            .unwrap(or: Abort(.notFound))
+            .flatMap { category in
+                do {
+                    try CategoryForm.validate(content: request)
+                    category.apply(form: form)
+                    return category.save(on: request.db)
+                } catch {
+                    return request.eventLoop.future(error: error)
                 }
             }
-            .catchMap { error in
-                return try request.redirect(to: "/admin/categories/\(id)/edit", with: FormError(error: error, formData: form))
+            .map {
+                request.redirect(to: "/admin/categories/\(categoryId)/edit")
             }
-        }
+            .flatMapErrorThrowing { error in
+                try request.redirect(to: "/admin/categories/\(categoryId)/edit", with: FormError(error: error, formData: form))
+            }
     }
-    
-    func delete(request: Request, form: DeleteCategoriesForm) throws -> Future<Response> {
-        
-        let ids = form.categories ?? []
-        let eventLoop = request.eventLoop
-        let deleteCategories = ids.map {
-            Category.find($0, on: request)
-                .unwrap(or: Abort(.badRequest))
-                .delete(on: request)
-                .transform(to: ())
-        }
-        
-        return Future<Void>.andAll(deleteCategories, eventLoop: eventLoop)
+
+    func delete(request: Request) throws -> EventLoopFuture<Response> {
+        let form = try request.content.decode(DeleteCategoriesForm.self)
+        let ids = form.categories
+        return Category.query(on: request.db).filter(\.$id ~~ ids)
+            .delete()
             .map {
                 request.redirect(to: "/admin/categories")
             }

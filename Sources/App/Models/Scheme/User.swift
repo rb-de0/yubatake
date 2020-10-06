@@ -1,37 +1,95 @@
-import Authentication
-import Crypto
-import FluentMySQL
-import Foundation
+import Cryptor
+import Fluent
 import Poppo
 import Vapor
 
-final class User: DatabaseModel {
-    
-    static let entity = "users"
-    
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case password
-        case apiKey = "api_key"
-        case apiSecret = "api_secret"
-        case accessToken = "access_token"
-        case accessTokenSecret = "access_token_secret"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
+final class User: Model {
+
+    static let schema = "users"
+
+    @ID(custom: .id)
+    var id: Int?
+
+    @Field(key: "name")
+    var name: String
+
+    @Field(key: "password")
+    var password: String
+
+    @Field(key: "api_key")
+    var apiKey: String
+
+    @Field(key: "api_secret")
+    var apiSecret: String
+
+    @Field(key: "access_token")
+    var accessToken: String
+
+    @Field(key: "access_token_secret")
+    var accessTokenSecret: String
+
+    @Timestamp(key: "created_at", on: .create)
+    var createdAt: Date?
+
+    @Timestamp(key: "updated_at", on: .update)
+    var updatedAt: Date?
+
+    @Children(for: \.$user)
+    var posts: [Post]
+
+    init() {}
+
+    init(name: String, password: String) {
+        self.name = name
+        self.password = password
+        apiKey = ""
+        apiSecret = ""
+        accessToken = ""
+        accessTokenSecret = ""
     }
-    
+}
+
+extension User {
+    static let nameLength = 32
+}
+
+extension User {
+    func apply(form: UserForm, on request: Request) -> EventLoopFuture<Void> {
+        let promise = request.eventLoop.makePromise(of: Void.self)
+        DispatchQueue.global().async {
+            do {
+                self.name = form.name
+                self.password = try request.password.hash(form.password)
+                self.apiKey = form.apiKey ?? ""
+                self.apiSecret = form.apiSecret ?? ""
+                self.accessToken = form.accessToken ?? ""
+                self.accessTokenSecret = form.accessTokenSecret ?? ""
+                promise.succeed(())
+            } catch {
+                promise.fail(error)
+            }
+        }
+        return promise.futureResult
+    }
+}
+
+extension QueryBuilder where Model == User {
+    func withRelated() -> Self {
+        return with(\.$posts)
+    }
+}
+
+extension User {
     struct Public: ResponseContent {
-        
         private enum CodingKeys: String, CodingKey {
             case id
             case name
-            case apiKey = "api_key"
-            case apiSecret = "api_secret"
-            case accessToken = "access_token"
-            case accessTokenSecret = "access_token_secret"
+            case apiKey
+            case apiSecret
+            case accessToken
+            case accessTokenSecret
         }
-        
+
         let id: Int
         let name: String
         let apiKey: String
@@ -39,57 +97,48 @@ final class User: DatabaseModel {
         let accessToken: String
         let accessTokenSecret: String
     }
-    
-    static let nameLength = 32
-    
-    var id: Int?
-    var name: String
-    var password: String
-    var apiKey = ""
-    var apiSecret = ""
-    var accessToken = ""
-    var accessTokenSecret = ""
-    var createdAt: Date?
-    var updatedAt: Date?
-    
-    init(name: String, password: String) {
-        self.name = name
-        self.password = password
-    }
-    
-    func apply(form: UserForm, on container: Container) throws -> Future<User>  {
-        
-        let promise = container.eventLoop.newPromise(User.self)
-        let bcrypt = try container.make(BCryptDigest.self)
-        
-        DispatchQueue.global().async {
-            
-            do {
-                let password = try bcrypt.hash(form.password)
-                self.name = form.name
-                self.password = password
-                self.apiKey = form.apiKey ?? ""
-                self.apiSecret = form.apiSecret ?? ""
-                self.accessToken = form.accessToken ?? ""
-                self.accessTokenSecret = form.accessTokenSecret ?? ""
-                
-                try self.validate()
-                
-                promise.succeed(result: self)
-            } catch {
-                promise.fail(error: error)
-            }
-        }
-        
-        return promise.futureResult
-    }
-    
+}
+
+extension User {
     func formPublic() throws -> Public {
-        return Public(id: try requireID(), name: name, apiKey: apiKey, apiSecret: apiSecret, accessToken: accessToken, accessTokenSecret: accessTokenSecret)
+        return Public(
+            id: try requireID(),
+            name: name,
+            apiKey: apiKey,
+            apiSecret: apiSecret,
+            accessToken: accessToken,
+            accessTokenSecret: accessTokenSecret
+        )
     }
-    
+}
+
+extension User: ModelSessionAuthenticatable {}
+
+extension User {
+    class func authenticate(username: String, password: String, on request: Request) -> EventLoopFuture<User> {
+        User.query(on: request.db).filter(\.$name == username).first()
+            .unwrap(or: Abort(.unauthorized))
+            .flatMapThrowing { user -> User in
+                let isOk = try request.password.verify(password, created: user.password)
+                if isOk {
+                    return user
+                } else {
+                    throw Abort(.unauthorized)
+                }
+            }
+    }
+}
+
+extension User {
+    class func makeRootUser(using _: Application) throws -> (user: User, rawPassword: String) {
+        let rawPassword = try Random.generate(byteCount: 16).base64
+        let password = try Bcrypt.hash(rawPassword)
+        return (User(name: "root", password: password), rawPassword)
+    }
+}
+
+extension User {
     func makePoppo() -> Poppo {
-        
         return Poppo(
             consumerKey: apiKey,
             consumerKeySecret: apiSecret,
@@ -99,43 +148,24 @@ final class User: DatabaseModel {
     }
 }
 
-extension User {
-    
-    static func makeRootUser(using container: Container) throws -> (user: User, rawPassword: String) {
-        let rawPassword = try CryptoRandom().generateData(count: 16).base64EncodedString()
-        let password = try container.make(BCryptDigest.self).hash(rawPassword)
-        return (User(name: "root", password: password), rawPassword)
-    }
-}
+struct CreateUser: Migration {
 
-extension User {
-    
-    var posts: Children<User, Post> {
-        return children(\Post.userId)
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(User.schema)
+            .field(.id, .int64, .identifier(auto: true))
+            .field("name", .string, .required)
+            .field("password", .string, .required)
+            .field("api_key", .string, .required)
+            .field("api_secret", .string, .required)
+            .field("access_token", .string, .required)
+            .field("access_token_secret", .string, .required)
+            .field("created_at", .datetime)
+            .field("updated_at", .datetime)
+            .ignoreExisting()
+            .create()
     }
-}
 
-// MARK: - Validatable
-extension User: Validatable {
-    
-    static func validations() throws -> Validations<User> {
-        var validations = Validations(User.self)
-        try validations.add(\.name, .count(1...User.nameLength))
-        return validations
-    }
-}
-
-// MARK: - SessionAuthenticatable
-extension User: SessionAuthenticatable {}
-
-// MARK: - PasswordAuthenticatable
-extension User: PasswordAuthenticatable {
-    
-    static var usernameKey: WritableKeyPath<User, String> {
-        return \.name
-    }
-    
-    static var passwordKey: WritableKeyPath<User, String> {
-        return \.password
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(User.schema).delete()
     }
 }

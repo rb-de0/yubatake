@@ -1,26 +1,33 @@
 import Vapor
 
 extension API {
-    
+
     final class FileController {
-        
-        func index(request: Request) throws -> Future<[EditableFileGroup]> {
-            let repository = try request.make(FileRepository.self)
-            return try request.parameters.next(Theme.self).map { theme in
-                try repository.files(in: theme)
+
+        func index(request: Request) throws -> EventLoopFuture<[EditableFileGroup]> {
+            guard let parameter = request.parameters.get("name", as: String.self) else {
+                throw Abort(.badRequest)
             }
+            let path = try parameter.requireAllowedPath()
+            let repository = request.application.fileRepository
+            guard repository.isExistTheme(name: path) else {
+                throw Abort(.notFound)
+            }
+            let fileGroups = try repository.files(in: path)
+            return request.eventLoop.future(fileGroups)
         }
-        
-        func show(request: Request) throws -> Future<EditableFileBody> {
-            let repository = try request.make(FileRepository.self)
-            let form = try request.query.decode(EditableFileForm.self)
-            return repository.readFileBody(using: try request.fileio(), path: form.path)
+
+        func show(request: Request) throws -> EventLoopFuture<EditableFileBody> {
+            let query = try request.query.decode(EditableFileForm.self)
+            let repository = request.application.fileRepository
+            return repository.readFileBody(using: request.fileio, path: query.path)
         }
-        
-        func store(request: Request, form: EditableFileUpdateForm) throws -> HTTPStatus {
-            let repository = try request.make(FileRepository.self)
+
+        func store(request: Request) throws -> EventLoopFuture<Response> {
+            let form = try request.content.decode(EditableFileUpdateForm.self)
+            let repository = request.application.fileRepository
             try repository.writeFileBody(path: form.path, body: form.body)
-            return HTTPStatus.ok
+            return request.eventLoop.future(Response(status: .ok))
         }
     }
 }

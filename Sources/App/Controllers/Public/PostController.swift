@@ -1,96 +1,132 @@
-import Pagination
+import Fluent
 import Vapor
 
 final class PostController {
-    
+
     private struct Keys {
         static let tag = "tag"
         static let category = "category"
     }
-    
+
     private struct ContextMaker {
-        
         static func makeIndexView() -> PublicViewContext {
             return PublicViewContext(path: "posts")
         }
-        
+
         static func makeShowView(title: String) -> PublicViewContext {
             return PublicViewContext(path: "post", title: title)
         }
     }
 
-    func index(request: Request) throws -> Future<View> {
-        return try Post.query(on: request).publicAll().noStaticAll().paginate(for: request)
-            .flatMap { page in
-                try page.data.map { try $0.formPublic(on: request) }
-                    .flatten(on: request)
-                    .map { posts in
-                        try page.transform(posts)
-                }
+    func index(request: Request) throws -> EventLoopFuture<View> {
+        return Post.query(on: request.db).publicAll().noStaticAll().withRelated()
+            .sort(\.$createdAt, .descending)
+            .paginate(for: request)
+            .flatMapThrowing { page -> PageResponse<Post.Public> in
+                let posts = try page.items.map { try $0.formPublic() }
+                let publicPage = Page<Post.Public>(items: posts, metadata: page.metadata)
+                let pageResponse = PageResponse(page: publicPage)
+                return pageResponse
             }
             .flatMap { page in
-                try ContextMaker.makeIndexView().makeResponse(context: page.response(), for: request)
+                do {
+                    return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
             }
     }
-    
-    func indexInTag(request: Request) throws -> Future<View> {
-        return try request.parameters.next(Tag.self).flatMap { tag in
-            try tag.posts.query(on: request).publicAll().noStaticAll().paginate(for: request)
-                .flatMap { page in
-                    try page.data.map { try $0.formPublic(on: request) }
-                        .flatten(on: request)
-                        .map { posts in
-                            try page.transform(posts)
-                        }
-                }
-                .flatMap { page in
-                    let context = page.response().add(Keys.tag, tag)
-                    return try ContextMaker.makeIndexView().makeResponse(context: context, for: request)
-                }
+
+    func indexInTag(request: Request) throws -> EventLoopFuture<View> {
+        guard let tagId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
         }
-    }
-    
-    func indexInCategory(request: Request) throws -> Future<View> {
-        return try request.parameters.next(Category.self).flatMap { category in
-            try category.posts.query(on: request).publicAll().noStaticAll().paginate(for: request)
-                .flatMap { page in
-                    try page.data.map { try $0.formPublic(on: request) }
-                        .flatten(on: request)
-                        .map { posts in
-                            try page.transform(posts)
+        return Tag.query(on: request.db).filter(\.$id == tagId).withRelated().first()
+            .unwrap(or: Abort(.notFound))
+            .flatMap { tag -> EventLoopFuture<View> in
+                tag.$posts.query(on: request.db).publicAll().noStaticAll().withRelated()
+                    .sort(\.$createdAt, .descending)
+                    .paginate(for: request)
+                    .flatMapThrowing { page -> PageResponse<Post.Public> in
+                        let posts = try page.items.map { try $0.formPublic() }
+                        let publicPage = Page<Post.Public>(items: posts, metadata: page.metadata)
+                        let pageResponse = PageResponse(page: publicPage)
+                        return pageResponse
+                    }
+                    .flatMap { page in
+                        do {
+                            let context = page.add("tag", tag)
+                            return try ContextMaker.makeIndexView().makeResponse(context: context, for: request)
+                        } catch {
+                            return request.eventLoop.future(error: error)
                         }
-                }
-                .flatMap { page in
-                    let context = page.response().add(Keys.category, category)
-                    return try ContextMaker.makeIndexView().makeResponse(context: context, for: request)
-                }
-        }
-    }
-    
-    func indexNoCategory(request: Request) throws -> Future<View> {
-        return try Post.query(on: request).publicAll().noCategoryAll().paginate(for: request)
-            .flatMap { page in
-                try page.data.map { try $0.formPublic(on: request) }
-                    .flatten(on: request)
-                    .map { posts in
-                        try page.transform(posts)
                     }
             }
-            .flatMap { page in
-                try ContextMaker.makeIndexView().makeResponse(context: page.response(), for: request)
+    }
+
+    func indexInCategory(request: Request) throws -> EventLoopFuture<View> {
+        guard let categoryId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
+        }
+        return Category.query(on: request.db).filter(\.$id == categoryId).withRelated().first()
+            .unwrap(or: Abort(.notFound))
+            .flatMap { category -> EventLoopFuture<View> in
+                category.$posts.query(on: request.db).publicAll().noStaticAll().withRelated()
+                    .sort(\.$createdAt, .descending)
+                    .paginate(for: request)
+                    .flatMapThrowing { page -> PageResponse<Post.Public> in
+                        let posts = try page.items.map { try $0.formPublic() }
+                        let publicPage = Page<Post.Public>(items: posts, metadata: page.metadata)
+                        let pageResponse = PageResponse(page: publicPage)
+                        return pageResponse
+                    }
+                    .flatMap { page in
+                        do {
+                            let context = page.add("category", category)
+                            return try ContextMaker.makeIndexView().makeResponse(context: context, for: request)
+                        } catch {
+                            return request.eventLoop.future(error: error)
+                        }
+                    }
             }
     }
-    
-    func show(request: Request) throws -> Future<View> {
-        return try request.parameters.next(Post.self).flatMap { post in
-            
-            guard post.isPublished else {
-                throw Abort(.notFound)
+
+    func indexNoCategory(request: Request) throws -> EventLoopFuture<View> {
+        return Post.query(on: request.db).publicAll().noCategoryAll().withRelated()
+            .sort(\.$createdAt, .descending)
+            .paginate(for: request)
+            .flatMapThrowing { page -> PageResponse<Post.Public> in
+                let posts = try page.items.map { try $0.formPublic() }
+                let publicPage = Page<Post.Public>(items: posts, metadata: page.metadata)
+                let pageResponse = PageResponse(page: publicPage)
+                return pageResponse
             }
-            
-            return try post.formPublic(on: request).flatMap { publicPost in
-                try ContextMaker.makeShowView(title: post.title).makeResponse(context: publicPost, for: request)
+            .flatMap { page in
+                do {
+                    return try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
             }
+    }
+
+    func show(request: Request) throws -> EventLoopFuture<View> {
+        guard let postId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
         }
+        return Post.query(on: request.db).filter(\.$id == postId).withRelated()
+            .first()
+            .unwrap(or: Abort(.notFound))
+            .flatMap { post in
+                guard post.isPublished else {
+                    return request.eventLoop.future(error: Abort(.notFound))
+                }
+                do {
+                    let publicPost = try post.formPublic()
+                    return try ContextMaker.makeShowView(title: publicPost.post.title).makeResponse(context: publicPost, for: request)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
     }
 }

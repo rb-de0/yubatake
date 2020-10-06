@@ -1,10 +1,18 @@
-#set("content") {
+#extend("admin-base"):
+
+#export("resources"):
+#endexport
+
+#export("script"):
+#endexport
+
+#export("content"):
   <div id="page-title">Edit SiteInfo</div>
 
   <form class="pure-form" action="/admin/siteinfo/edit" method="post">
 
-    <input type="hidden" name="csrf-token" value="#(csrf_token)">
-    <div class="field-error">#(error_message)</div>
+    <input type="hidden" name="csrfToken" value="#(csrfToken)">
+    <div class="field-error">#(errorMessage)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -24,6 +32,6 @@
       Update
     </button>
   </form>
-}
+#endexport
 
-#embed("admin-base")
+#endextend

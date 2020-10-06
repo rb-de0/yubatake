@@ -1,0 +1,5 @@
+# file options
+--exclude ../.build
+
+# rules
+--disable blankLinesAtStartOfScope,trailingCommas,redundantReturn

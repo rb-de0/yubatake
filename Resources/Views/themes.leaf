@@ -1,16 +1,18 @@
-#set("resources") {
+#extend("admin-base"):
+
+#export("resources"):
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.9/ace.js"></script>
-}
+#endexport
 
-#set("script") {
+#export("script"):
   <script src="/js/file-editor.js"></script>
-}
+#endexport
 
-#set("content") {
+#export("content"):
 
   <div id="file-editor-app" class="pure-g" v-cloak>
-    <input id="csrf-token" type="hidden" name="csrf-token" value="#(csrf_token)">
+    <input id="csrf-token" type="hidden" name="csrfToken" value="#(csrfToken)">
 
     <div id="theme-list" class="pure-u-1 pure-u-lg-1-5 pure-u-xl-1-8">
       <div class="pure-menu">
@@ -70,6 +72,6 @@
     </div>
 
   </div>
-}
+#endexport
 
-#embed("admin-base")
+#endextend

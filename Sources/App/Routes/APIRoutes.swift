@@ -1,34 +1,33 @@
-import Authentication
 import Vapor
 
 final class APIRoutes: RouteCollection {
-    
-    func boot(router: Router) throws {
-        
-        let api = router
+
+    func boot(routes: RoutesBuilder) throws {
+
+        let api = routes
             .grouped("api")
             .grouped(AuthErrorMiddleware<User>())
-        
+
         // images
         do {
             let controller = API.ImageController()
             api.get("images", use: controller.index)
-            api.post(ImageUploadForm.self, at: "images", use: controller.store)
+            api.on(.POST, "images", body: .collect(maxSize: nil), use: controller.store)
         }
-        
+
         // themes
         do {
             let controller = API.ThemeController()
             api.get("themes", use: controller.index)
-            api.post(ThemeForm.self, at: "themes", use: controller.store)
+            api.post("themes", use: controller.store)
         }
-        
+
         // files
         do {
             let controller = API.FileController()
-            api.get("themes", Theme.parameter, "files", use: controller.index)
+            api.get("themes", ":name", "files", use: controller.index)
             api.get("files", use: controller.show)
-            api.post(EditableFileUpdateForm.self, at: "files", use: controller.store)
+            api.post("files", use: controller.store)
         }
     }
 }

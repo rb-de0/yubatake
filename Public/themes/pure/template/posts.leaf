@@ -1,58 +1,63 @@
-#set("content") {
+#extend("base"):
 
-  #if(category) {
+#export("resources"):
+#endexport
+
+#export("content"):
+
+  #if(category):
     <div id="content-page-title">Category: #(category.name)</div>
-  } 
-  #if(tag) {
+  #endif
+  #if(tag):
     <div id="content-page-title">Tag: #(tag.name)</div>
-  }
+  #endif
 
   <div class="pure-g">
 
-    #for(post in data) {
+    #for(post in items):
       <div class="pure-u-1 pure-u-lg-1-2 pure-u-xl-1-3 post-card-container">
         <div class="post-card">
           <div class="post-card-content">
             <a class="title-link" href="/posts/#(post.id)"><div class="post-card-title">#(post.title)</div></a>
-            <div class="post-card-created-at">#date(post.created_at, date_format)</div>
+            <div class="post-card-created-at">#date(post.createdAt, dateFormat)</div>
             <div class="post-card-part-of-content-container">
               <div class="post-card-part-of-content">
-                #(post.part_of_content)
+                #(post.partOfContent)
               </div>
             </div>
             <div class="post-card-category">
-              Category: #if(post.category) {
+              Category: #if(post.category.id):
                 <a class="category-link" href="/categories/#(post.category.id)/posts">#(post.category.name)</a>
-              } else {
+              #else:
                 <a class="category-link" href="/categories/noncategorized/posts">NonCategorized</a>
-              }
+              #endif
             </div>
             <div class="post-card-tags">
-              Tags: #if(count(post.tags) != 0) {
-                #for(tag in post.tags) {
+              Tags: #if(count(post.tags) != 0):
+                #for(tag in post.tags):
                   <span><a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a></span>
-                }
-              } else {
+                #endfor
+              #else:
                 None
-              }
+              #endif
             </div>
           </div>
         </div>
       </div>
-    }
+    #endfor
 
   </div>
 
   <div id="public-page-footer">
     <div id="page-navigator">
-      #if(page.position.previous) {
-        <a class="pure-button" href="?page=#(page.position.previous)">Previous</a>
-      }
-      #if(page.position.next) {
-        <a class="pure-button" href="?page=#(page.position.next)">Next</a>
-      }
+      #if(metadata.page > 1):
+        <a class="no-decoration" href="?page=#(metadata.page - 1)">Previous</a>
+      #endif
+      #if(metadata.page < metadata.totalPage):
+        <a class="no-decoration" href="?page=#(metadata.page + 1)">Next</a>
+      #endif
     </div>
   </div>
-}
+#endexport
 
-#embed("base")
+#endextend

@@ -1,74 +1,132 @@
 @testable import App
-import CSRF
-import FluentMySQL
-import Leaf
-import Redis
 import Vapor
-import VaporSecurityHeaders
-import XCTest
+import Fluent
+import FluentMySQLDriver
+import CSRF
 
 final class ApplicationBuilder {
     
-    class func build(forAdminTests: Bool, envArgs: [String]? = nil, customize: ((Config, Services) -> (Config, Services))? = nil) throws -> Application {
-        
-        var config = Config.default()
-        var env = Environment(name: "test", isRelease: false)
-        var services = Services.default()
-        
-        if let environmentArgs = envArgs {
-            env.arguments = environmentArgs
-        }
-        
-        try App.configure(&config, &env, &services)
-        
-        if let _customize = customize {
-            let customized = _customize(config, services)
-            config = customized.0
-            services = customized.1
-        }
-        
-        let mysqlDatabaseConfig = MySQLDatabaseConfig(hostname: DB.hostName, port: DB.port, username: DB.user, password: DB.password, database: "yubatake_tests")
-        services.register(mysqlDatabaseConfig)
-        
-        let redisClientConfig = RedisClientConfig(url: URL(string: "redis://user:pass@localhost:6379")!)
-        services.register(redisClientConfig)
-        
-        services.register(TestViewDecorator())
-        services.register { container -> ViewCreator in
-            let original = try ViewCreator.default()
-            return try ViewCreator.default(decorators: original.decorators + [try container.make(TestViewDecorator.self)])
-        }
-        
-        services.register(DatabaseConnectionPoolConfig(maxConnections: 100))
-        
-        if forAdminTests {
-            services.register(AlwaysAuthMiddleware())
-        
-            var middlewares = MiddlewareConfig()
-            middlewares.use(SecurityHeaders.self)
-            middlewares.use(ErrorMiddleware.self)
-            middlewares.use(PublicFileMiddleware.self)
-            middlewares.use(SessionsMiddleware.self)
-            middlewares.use(MessageDeliveryMiddleware.self)
-            middlewares.use(CSRF.self)
-            middlewares.use(AlwaysAuthMiddleware.self)
-            services.register(middlewares)
-        }
-        
-        config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
-
-        let app = try Application(
-            config: config,
-            environment: env,
-            services: services
-        )
-        
-        try App.boot(app)
-        
+    class func build() throws -> Application {
+        let app = Application(.testing)
+        try configure(app, forAdmin: false, workingDirectory: .workingDirectory)
         return app
     }
     
-    class func clear() throws {
-        try build(forAdminTests: false, envArgs: ["vapor", "revert", "--all", "-y"]).asyncRun().wait()
+    class func buildForAdmin(workingDirectory: String = .workingDirectory) throws -> Application {
+        let app = Application(.testing)
+        try configure(app, forAdmin: true, workingDirectory: workingDirectory)
+        return app
     }
+    
+    class func migrate() throws {
+        var env = Environment.testing
+        env.arguments += ["migrate", "-y"]
+        let app = Application(env)
+        defer { app.shutdown() }
+        try configureForMigrate(app)
+        try app.run()
+    }
+    
+    class func revert() throws {
+        var env = Environment.testing
+        env.arguments += ["migrate", "--revert", "-y"]
+        let app = Application(env)
+        defer { app.shutdown() }
+        try configureForMigrate(app)
+        try app.run()
+    }
+}
+
+// configure for test
+private func configure(_ app: Application, forAdmin: Bool, workingDirectory: String) throws {
+    
+    // set working directory
+    app.directory = DirectoryConfiguration(workingDirectory: .workingDirectory)
+
+    // register configs
+    try app.register(applicationConfig: ConfigJSONLoader.load(for: app, name: "app"))
+    try app.register(mysqlDatabaseConfig: ConfigJSONLoader.load(for: app, name: "mysql"))
+    app.register(fileConfig: FileConfig(directory: DirectoryConfiguration(workingDirectory: workingDirectory)))
+
+    // register services
+    app.register(imageRepository: DefaultImageRepository(fileConfig: app.fileConfig))
+    app.register(imageNameGenerator: DefaultImageNameGenerator())
+    app.register(fileRepository: DefaultFileRepository(fileConfig: app.fileConfig))
+
+    // twitter
+    app.register(twitterRepository: DefaultTwitterRepository(applicationConfig: app.applicationConfig))
+
+    // password
+    app.passwords.use(.bcrypt)
+
+    // views
+    app.leaf.tags["count"] = CountTag()
+    app.leaf.tags["date"] = DateTag()
+    app.views.use(.leaf)
+    app.register(testViewDecorator: TestViewDecorator())
+    app.register(viewCreator: ViewCreator(decorators: [MessageDeliveryViewDecorator(), CSRFViewDecorator(), app.testViewDecorator]))
+    
+    // session
+    app.sessions.use(.memory)
+
+    // middleware
+    app.middleware.use(PublicFileMiddleware(base: FileMiddleware(publicDirectory: app.directory.publicDirectory)))
+    app.middleware.use(app.sessions.middleware)
+    let csrfMiddleware = CSRF(tokenRetrieval: { request in
+        do {
+            return request.eventLoop.future(try request.content.get(String.self, at: "csrfToken"))
+        } catch {
+            return request.eventLoop.makeFailedFuture(Abort(.forbidden, reason: "No CSRF token provided."))
+        }
+    })
+    app.middleware.use(csrfMiddleware)
+    if forAdmin {
+        app.middleware.use(AlwaysAuthMiddleware())
+    }
+
+    // database
+    let mysqlConfiguration = MySQLConfiguration(hostname: DB.hostName,
+                                                port: DB.port,
+                                                username: DB.user,
+                                                password: DB.password,
+                                                database: "yubatake_tests",
+                                                tlsConfiguration: nil)
+    app.databases.use(.mysql(configuration: mysqlConfiguration), as: .mysql, isDefault: true)
+    
+    // lifecycles
+    app.lifecycle.use(InitialDataProvider())
+
+    // routes
+    try routes(app)
+    
+    // csrf route
+    app.get("csrf") { request in
+        return CSRFToken(token: CSRF().createToken(from: request))
+    }
+}
+
+struct CSRFToken: Content {
+    let token: String
+}
+
+// configure for migrate
+private func configureForMigrate(_ app: Application) throws {
+    
+    // database
+    let mysqlConfiguration = MySQLConfiguration(hostname: DB.hostName,
+                                                port: DB.port,
+                                                username: DB.user,
+                                                password: DB.password,
+                                                database: "yubatake_tests",
+                                                tlsConfiguration: nil)
+    app.databases.use(.mysql(configuration: mysqlConfiguration), as: .mysql, isDefault: true)
+    
+    // migrations
+    app.migrations.add(CreateUser())
+    app.migrations.add(CreateCategory())
+    app.migrations.add(CreateTag())
+    app.migrations.add(CreatePost())
+    app.migrations.add(CreatePostTag())
+    app.migrations.add(CreateSiteInfo())
+    app.migrations.add(CreateImage())
 }

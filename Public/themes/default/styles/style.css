@@ -140,7 +140,17 @@ main a {
   font-size: .8rem;
   overflow-y: hidden;
   overflow-x: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   white-space: nowrap;
+}
+
+.post-card-tags::-webkit-scrollbar {
+  display: none;
+}
+
+.post-card-category::-webkit-scrollbar {
+  display: none;
 }
 
 #content-page-footer {

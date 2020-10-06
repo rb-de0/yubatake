@@ -1,6 +1,5 @@
-import Leaf
 import Vapor
 
 protocol ViewDecorator {
-    func decorate(context: inout [String: TemplateData], for request: Request) throws
+    func decodate(context: Encodable, for request: Request) -> Encodable
 }

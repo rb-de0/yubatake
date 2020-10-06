@@ -2,8 +2,12 @@
 <html>
 
 <head>
-  <title>Login</title>
-  #embed("embeds/resources")
+  <title>#(title)</title>
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+  <link rel="stylesheet" href="/styles/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <script src="/js/common.js"></script>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -15,8 +19,8 @@
 
       <form class="pure-form" action="/login" method="post">
 
-        <input type="hidden" name="csrf-token" value="#(csrf_token)">
-        <div class="field-error">#(error_message)</div>
+        <input type="hidden" name="csrfToken" value="#(csrfToken)">
+        <div class="field-error">#(errorMessage)</div>
 
         <fieldset class="pure-group">
           <div class="form-label">

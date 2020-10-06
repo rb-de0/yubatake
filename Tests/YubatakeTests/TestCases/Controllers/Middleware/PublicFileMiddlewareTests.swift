@@ -1,27 +1,28 @@
 @testable import App
-import Vapor
-import XCTest
+import XCTVapor
 
 final class PublicFileMiddlewareTests: ControllerTestCase {
     
+    override func buildApp() -> Application {
+        return try! ApplicationBuilder.build()
+    }
+    
     func testCanRespondFiles() throws {
-        
-        var response: Response!
-        
-        response = try waitResponse(method: .GET, url: "/themes/default/styles/style.css")
-        XCTAssertEqual(response.http.status, .ok)
-        
-        response = try waitResponse(method: .GET, url: "/themes/pure/js/menu.js")
-        XCTAssertEqual(response.http.status, .ok)
-        
-        response = try waitResponse(method: .GET, url: "/js/file-editor.js")
-        XCTAssertEqual(response.http.status, .ok)
+        try test(.GET, "/themes/default/styles/style.css") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+        try test(.GET, "/themes/pure/js/menu.js") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+        try test(.GET, "/js/file-editor.js") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
     }
     
     func testCanProtectTemplateFiles() throws {
-        
-        let response = try waitResponse(method: .GET, url: "/themes/default/template/post.leaf")
-        XCTAssertEqual(response.http.status, .notFound)
+        try test(.GET, "/themes/default/template/post.leaf") { response in
+            XCTAssertEqual(response.status, .notFound)
+        }
     }
 }
 

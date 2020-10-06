@@ -1,16 +1,12 @@
 import Vapor
 
-struct CSPConfig: LocalConfig, Service {
-    
-    static var fileName: String {
-        return "csp"
-    }
-    
+struct CSPConfig: Decodable {
+
     private struct Value: Decodable {
         let key: String
         let values: [String]
     }
-    
+
     private let values: [Value]
 
     init(from decoder: Decoder) throws {
@@ -22,14 +18,12 @@ struct CSPConfig: LocalConfig, Service {
         }
         self.values = values
     }
-    
+
     func makeHeader() -> String {
-        
         let space = " "
         let semicolon = ";"
-        
         return values
-            .map {([$0.key, "'self'"] + $0.values).joined(separator: space)}
+            .map { ([$0.key, "'self'"] + $0.values).joined(separator: space) }
             .joined(separator: semicolon)
     }
 }

@@ -1,52 +1,72 @@
-import CSRF
 import Leaf
 import Vapor
 
-final class ViewCreator: Service {
-    
+final class ViewCreator {
+
     let decorators: [ViewDecorator]
-    
+
     init(decorators: [ViewDecorator]) {
         self.decorators = decorators
     }
-    
-    func make<T: Encodable>(_ path: String, _ encodable: T, for request: Request, forAdmin: Bool) throws -> Future<View> {
-        
-        func render(templateData: TemplateData) throws -> Future<View> {
-            
-            guard var context = templateData.dictionary else {
-                throw Abort(.internalServerError)
-            }
-            
-            try decorators.forEach { decorator in
-                try decorator.decorate(context: &context, for: request)
-            }
-            
-            let base = try request.make(TemplateRenderer.self)
-            
-            if forAdmin {
-                return base.render(path, .dictionary(context))
-            }
-            
-            return try SiteInfo.shared(on: request).flatMap { siteInfo in
-                let relativeDirectory = try request.make(FileConfig.self).templateDir(in: siteInfo.selectedTheme)
-                let renderer: TemplateRenderer = PublicTemplateRenderer(base: base, relativeDirectory: relativeDirectory)
-                return renderer.render(path, .dictionary(context))
-            }
+
+    func create(path: String, context: Encodable, siteInfo: SiteInfo, forAdmin: Bool, for request: Request) -> EventLoopFuture<View> {
+        var decoratad = context
+        decorators.forEach {
+            decoratad = $0.decodate(context: decoratad, for: request)
         }
-        
-        return try TemplateDataEncoder().encode(encodable, on: request)
-            .flatMap { templateData in
-                try render(templateData: templateData)
+        do {
+            let viewData = try LeafDataEncoder().encode(encodable: decoratad)
+            if forAdmin {
+                return request.leaf
+                    .render(path: path, context: viewData)
+                    .map { buffer in
+                        View(data: buffer)
+                    }
             }
+            let themeDirectory = request.application.fileConfig.templateDirectory(in: siteInfo.selectedTheme)
+            var configuration = LeafConfiguration(rootDirectory: themeDirectory)
+            let rootDirectory = configuration.rootDirectory
+            let original = request.leaf
+            let sources = LeafSources.singleSource(
+                NIOLeafFiles(fileio: request.application.fileio,
+                             limits: .default,
+                             sandboxDirectory: rootDirectory,
+                             viewDirectory: rootDirectory))
+            let renderer = LeafRenderer(configuration: configuration,
+                                        tags: original.tags,
+                                        sources: sources,
+                                        eventLoop: original.eventLoop,
+                                        userInfo: original.userInfo)
+            return renderer
+                .render(path: path, context: viewData)
+                .map { buffer in
+                    View(data: buffer)
+                }
+        } catch {
+            return request.eventLoop.makeFailedFuture(error)
+        }
     }
 }
 
-
-// MARK: - Default
 extension ViewCreator {
-    
-    class func `default`(decorators: [ViewDecorator] = [MessageDeliveryViewDecorator(), CSRFViewDecorator()]) throws -> ViewCreator {
-        return ViewCreator(decorators: decorators)
+    class func `default`() -> ViewCreator {
+        return .init(decorators: [MessageDeliveryViewDecorator(), CSRFViewDecorator()])
+    }
+}
+
+extension ViewCreator: StorageKey {
+    typealias Value = ViewCreator
+}
+
+extension Application {
+    func register(viewCreator: ViewCreator) {
+        storage[ViewCreator.self] = viewCreator
+    }
+
+    var viewCreator: ViewCreator {
+        guard let viewCreator = storage[ViewCreator.self] else {
+            fatalError("service not initialized")
+        }
+        return viewCreator
     }
 }

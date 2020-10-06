@@ -1,10 +1,18 @@
-#set("content") {
+#extend("admin-base"):
+
+#export("resources"):
+#endexport
+
+#export("script"):
+#endexport
+
+#export("content"):
   <div id="page-title">Edit User</div>
 
   <form class="pure-form" action="/admin/user/edit" method="post">
 
-    <input type="hidden" name="csrf-token" value="#(csrf_token)">
-    <div class="field-error">#(error_message)</div>
+    <input type="hidden" name="csrfToken" value="#(csrfToken)">
+    <div class="field-error">#(errorMessage)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -22,25 +30,25 @@
       <div class="form-label">
         <label for="edit-form-user-api-key">APIKey</label>
       </div>
-      <input id="edit-form-user-api-key" class="pure-input-1" type="text" name="api_key" value="#(api_key)">
+      <input id="edit-form-user-api-key" class="pure-input-1" type="text" name="apiKey" value="#(apiKey)">
       <div class="form-label">
         <label for="edit-form-user-api-secret">APISecret</label>
       </div>
-      <input id="edit-form-user-api-secret" class="pure-input-1" type="text" name="api_secret" value="#(api_secret)">
+      <input id="edit-form-user-api-secret" class="pure-input-1" type="text" name="apiSecret" value="#(apiSecret)">
       <div class="form-label">
         <label for="edit-form-user-access-token">AccessToken</label>
       </div>
-      <input id="edit-form-user-access-token" class="pure-input-1" type="text" name="access_token" value="#(access_token)">
+      <input id="edit-form-user-access-token" class="pure-input-1" type="text" name="accessToken" value="#(accessToken)">
       <div class="form-label">
         <label for="edit-form-user-access-token-secret">AccessTokenSecret</label>
       </div>
-      <input id="edit-form-user-access-token-secret" class="pure-input-1" type="text" name="access_token_secret" value="#(access_token_secret)">
+      <input id="edit-form-user-access-token-secret" class="pure-input-1" type="text" name="accessTokenSecret" value="#(accessTokenSecret)">
     </fieldset>
 
     <button type="submit" class="pure-button pure-input-1 pure-button-primary">
       Update
     </button>
   </form>
-}
+#endexport
 
-#embed("admin-base")
+#endextend

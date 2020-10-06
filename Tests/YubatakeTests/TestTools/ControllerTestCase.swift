@@ -1,70 +1,80 @@
 @testable import App
-import CSRF
-import Crypto
-import FluentMySQL
-import Vapor
+import XCTVapor
 import XCTest
-
-protocol AdminTestCase {}
+import Fluent
 
 class ControllerTestCase: XCTestCase {
     
     private(set) var app: Application!
+    private(set) var testable: XCTApplicationTester!
     private(set) var view: TestViewDecorator!
-    private(set) var conn: MySQLConnection!
-    private(set) var csrfToken: String!
+    private(set) var db: Database!
+    private(set) var cookies: HTTPCookies?
+    private(set) var csrfToken = ""
     
-    private var responder: Responder!
-    private var cookies: HTTPCookies?
-    
-    // MARK: - Life Cycle
-
     override func setUp() {
-        try! ApplicationBuilder.clear()
-        
-        app = try! buildApp()
-        view = try! app.make(TestViewDecorator.self)
-        responder = try! app.make(Responder.self)
-        conn = try! app.newConnection(to: .mysql).wait()
-        csrfToken = try! prepareSession()
+        super.setUp()
+        try! ApplicationBuilder.migrate()
+        app = buildApp()
+        testable = try! app.testable()
+        view = app.testViewDecorator
+        db = app.db
+        cookies = nil
+        try! test(.GET, "csrf") { response in
+            self.csrfToken = try! response.content.decode(CSRFToken.self).token
+        }
     }
     
     override func tearDown() {
-        try! app.make(BlockingIOThreadPool.self).syncShutdownGracefully()
-        conn.close()
+        super.tearDown()
+        app.shutdown()
+        try! ApplicationBuilder.revert()
     }
     
-    // MARK: - Build App
-    
-    func buildApp() throws -> Application {
-        return try ApplicationBuilder.build(forAdminTests: self is AdminTestCase)
+    func buildApp() -> Application {
+        return try! ApplicationBuilder.buildForAdmin()
     }
-
-    // MARK: - Utility
     
-    func waitResponse(method: HTTPMethod, url: String, build: ((Request) throws -> ())? = nil) throws -> Response {
-        
-        let request = HTTPRequest(method: method, url: url).makeRequest(using: app)
-        try build?(request)
-        
-        if let _cookies = cookies {
-            request.http.cookies = _cookies
+    func test( _ method: HTTPMethod,
+               _ path: String,
+               headers: HTTPHeaders = [:],
+               body: String? = nil,
+               withCSRFToken: Bool = true,
+               beforeRequest: (inout XCTHTTPRequest) throws -> () = { _ in },
+               afterResponse: (XCTHTTPResponse) throws -> () = { _ in }) throws {
+        var requestHeaders = HTTPHeaders()
+        requestHeaders.contentType = .urlEncodedForm
+        requestHeaders.add(contentsOf: headers)
+        let bodyData: ByteBuffer?
+        if var body = body {
+            if withCSRFToken {
+                body = body + "&csrfToken=\(csrfToken)"
+            }
+            var bodyBuffer = ByteBufferAllocator().buffer(capacity: 0)
+            bodyBuffer.writeString(body)
+            bodyData = bodyBuffer
+        } else {
+            if withCSRFToken {
+                let body = "csrfToken=\(csrfToken)"
+                var bodyBuffer = ByteBufferAllocator().buffer(capacity: 0)
+                bodyBuffer.writeString(body)
+                bodyData = bodyBuffer
+            } else {
+                bodyData = nil
+            }
         }
-        
-        let response = try responder.respond(to: request).wait()
-        cookies = response.http.cookies
-
-        return response
-    }
-
-    // MARK: - Private
-    
-    private func prepareSession() throws -> String {
-        
-        let request = HTTPRequest(method: .GET, url: "/login").makeRequest(using: app)
-        let response = try responder.respond(to: request).wait()
-        cookies = response.http.cookies
-        
-        return try CSRF().createToken(from: request)
+        let beforeRequestHandler: (inout XCTHTTPRequest) throws -> () = { [weak self] request in
+            request.headers.cookie = self?.cookies
+            try beforeRequest(&request)
+        }
+        let afterResponseHandler: (XCTHTTPResponse) throws -> () = { [weak self] response in
+            if let setCookie = response.headers.setCookie {
+                self?.cookies = setCookie
+            }
+            try afterResponse(response)
+        }
+        try testable.test(method, path, headers: requestHeaders, body: bodyData,
+                          beforeRequest: beforeRequestHandler,
+                          afterResponse: afterResponseHandler)
     }
 }

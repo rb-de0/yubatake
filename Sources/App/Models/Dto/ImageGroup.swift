@@ -1,28 +1,24 @@
 import Vapor
 
-struct ImageGroup: PageResponse {
-    
+struct ImageGroup: ResponseContent {
+
     let date: String
     let images: [Image.Public]
-    
-    static func make(from images: [Image.Public], on container: Container) throws -> [ImageGroup] {
-        
+
+    static func make(from images: [Image.Public], on application: Application) -> [ImageGroup] {
         class Group {
             let date: Date
             var images: [Image.Public]
-            
+
             init(date: Date, images: [Image.Public]) {
                 self.date = date
                 self.images = images
             }
         }
-        
         let formatter = DateFormatter()
-        formatter.dateFormat = try container.make(ApplicationConfig.self).imageGroupDateFormat
-        
+        formatter.dateFormat = application.applicationConfig.imageGroupDateFormat
         let calendar = Calendar.current
         var groups = [Group]()
-        
         for image in images {
             guard let createdAt = image.image.createdAt else {
                 continue
@@ -33,7 +29,6 @@ struct ImageGroup: PageResponse {
                 groups.append(Group(date: createdAt, images: [image]))
             }
         }
-        
         return groups
             .sorted(by: { $0.date > $1.date })
             .map {

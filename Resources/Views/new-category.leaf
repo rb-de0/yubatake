@@ -1,10 +1,18 @@
-#set("content") {
-  <div id="page-title">#if(id) {Edit Category} else {New Category}</div>
+#extend("admin-base"):
 
-  <form class="pure-form" action="/admin/categories#if(id) {/#(id)/edit}" method="post">
+#export("resources"):
+#endexport
 
-    <input type="hidden" name="csrf-token" value="#(csrf_token)">
-    <div class="field-error">#(error_message)</div>
+#export("script"):
+#endexport
+
+#export("content"):
+  <div id="page-title">#if(id):Edit Category#else:New Category#endif</div>
+
+  <form class="pure-form" action="/admin/categories#if(id):/#(id)/edit#endif" method="post">
+
+    <input type="hidden" name="csrfToken" value="#(csrfToken)">
+    <div class="field-error">#(errorMessage)</div>
 
     <fieldset class="pure-group">
       <div class="form-label">
@@ -13,9 +21,8 @@
       <input id="edit-form-category-title" class="pure-input-1" name="name" value="#(name)" type="text" placeholder="Name">
     </fieldset>
 
-    <button type="submit" class="pure-button pure-input-1 pure-button-primary">#if(id) {Update} else {Create}</button>
+    <button type="submit" class="pure-button pure-input-1 pure-button-primary">#if(id):Update#else:Create#endif</button>
   </form>
+#endexport
 
-}
-
-#embed("admin-base")
+#endextend

@@ -1,8 +1,10 @@
 @testable import App
-import Vapor
-import XCTest
+import XCTVapor
 
-final class APIFileControllerTests: FileHandleTestCase, AdminTestCase {
+final class APIFileControllerTests: ControllerTestCase {
+    
+    private let fm = FileManager.default
+    private static let workDirectory = String.workingDirectory.appending("/.test")
     
     struct FileGroup: Decodable {
         let name: String
@@ -19,63 +21,71 @@ final class APIFileControllerTests: FileHandleTestCase, AdminTestCase {
         let body: String
     }
 
+    override func buildApp() -> Application {
+        let app = try! ApplicationBuilder.buildForAdmin(workingDirectory: Self.workDirectory)
+        return app
+    }
+    
     override func setUp() {
         super.setUp()
-        
-        let defaultDir = fileConfig.themeDir.finished(with: "/").appending("default")
-        let fm = FileManager.default
-        
+        if !fm.fileExists(atPath: Self.workDirectory) {
+            try! fm.createDirectory(atPath: Self.workDirectory, withIntermediateDirectories: true, attributes: nil)
+        }
+        let defaultDir = app.fileConfig.themeDirectory.finished(with: "/").appending("default")
         try! fm.createDirectory(atPath: defaultDir, withIntermediateDirectories: true, attributes: nil)
         fm.createFile(atPath: defaultDir.finished(with: "/").appending("test.leaf"), contents: "Template".data(using: .utf8), attributes: nil)
         fm.createFile(atPath: defaultDir.finished(with: "/").appending("test.css"), contents: "Style".data(using: .utf8), attributes: nil)
         fm.createFile(atPath: defaultDir.finished(with: "/").appending("test.js"), contents: "Script".data(using: .utf8), attributes: nil)
     }
     
+    override func tearDown() {
+        super.tearDown()
+        if fm.fileExists(atPath: Self.workDirectory) {
+            try! fm.removeItem(atPath: Self.workDirectory)
+        }
+    }
+    
     func testCanIndexView() throws {
-        
-        let response = try waitResponse(method: .GET, url: "/api/themes/default/files")
-        let groups = try response.content.syncDecode([FileGroup].self)
-        
-        XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(groups.count, 3)
-        
-        XCTAssertEqual(groups[0].files.count, 1)
-        XCTAssertEqual(groups[0].files.first?.name, "test.js")
-        XCTAssertEqual(groups[0].name, "js")
-        
-        XCTAssertEqual(groups[1].files.count, 1)
-        XCTAssertEqual(groups[1].files.first?.name, "test.css")
-        XCTAssertEqual(groups[1].name, "css")
-        
-        XCTAssertEqual(groups[2].files.count, 1)
-        XCTAssertEqual(groups[2].files.first?.name, "test.leaf")
-        XCTAssertEqual(groups[2].name, "leaf")
+        try test(.GET, "/api/themes/default/files") { response in
+            let groups = try response.content.decode([FileGroup].self)
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(groups.count, 3)
+    
+            XCTAssertEqual(groups[0].files.count, 1)
+            XCTAssertEqual(groups[0].files.first?.name, "test.js")
+            XCTAssertEqual(groups[0].name, "js")
+            
+            XCTAssertEqual(groups[1].files.count, 1)
+            XCTAssertEqual(groups[1].files.first?.name, "test.css")
+            XCTAssertEqual(groups[1].name, "css")
+            
+            XCTAssertEqual(groups[2].files.count, 1)
+            XCTAssertEqual(groups[2].files.first?.name, "test.leaf")
+            XCTAssertEqual(groups[2].name, "leaf")
+        }
     }
     
     func testCanShowFileBody() throws {
-        
-        let response = try waitResponse(method: .GET, url: "/api/files?path=/default/test.leaf")
-        let body = try response.content.syncDecode(FileBody.self)
-        
-        XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(body.body, "Template")
+        try test(.GET, "/api/files?path=/default/test.leaf") { response in
+            let body = try response.content.decode(FileBody.self)
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(body.body, "Template")
+        }
     }
     
     func testCanUpdateFileBody() throws {
-        
-        var response: Response!
-        
-        response = try waitResponse(method: .POST, url: "/api/files") { request in
-            try request.setJSONData(["path": "/default/test.leaf", "body": "AfterUpdate"], csrfToken: self.csrfToken)
+        let body = "path=/default/test.leaf&body=AfterUpdate"
+        try test(.POST, "/api/files", body: body, withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
         }
-        
-        XCTAssertEqual(response.http.status, .ok)
-        
-        response = try waitResponse(method: .GET, url: "/api/files?path=/default/test.leaf")
-        let body = try response.content.syncDecode(FileBody.self)
-        
-        XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(body.body, "AfterUpdate")
+        try test(.POST, "/api/files", body: body) { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+        try test(.GET, "/api/files?path=/default/test.leaf") { response in
+            let body = try response.content.decode(FileBody.self)
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(body.body, "AfterUpdate")
+        }
     }
 }
 

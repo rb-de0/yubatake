@@ -1,41 +1,36 @@
-import MySQL
-import Pagination
+import Fluent
 import Vapor
 
 extension API {
-    
+
     final class ImageController {
-        
-        func index(request: Request) throws -> Future<Paginated<ImageGroup>> {
-            
-            return try Image.query(on: request).paginate(for: request).map { (page: Page<Image>) in
-                let publicImages = try page.data.map { try $0.formPublic(on: request) }
-                let groups = try ImageGroup.make(from: publicImages, on: request)
-                return try page.transform(groups).response()
-            }
+
+        func index(request: Request) throws -> EventLoopFuture<PageResponse<ImageGroup>> {
+            return Image.query(on: request.db).paginate(for: request)
+                .map { page -> PageResponse<ImageGroup> in
+                    let publicImages = page.items.map { $0.formPublic(on: request.application) }
+                    let groups = ImageGroup.make(from: publicImages, on: request.application)
+                    let page = Page<ImageGroup>(items: groups, metadata: page.metadata)
+                    return PageResponse(page: page)
+                }
         }
-        
-        func store(request: Request, form: ImageUploadForm) throws -> Future<HTTPStatus> {
-            
+
+        func store(request: Request) throws -> EventLoopFuture<Response> {
+            let form = try request.content.decode(ImageUploadForm.self)
             guard let imageExtension = form.name.split(separator: ".").last else {
-                return request.future(HTTPStatus.badRequest)
+                throw Abort(.badRequest)
             }
-            
-            let repository = try request.make(ImageRepository.self)
-            let imageName = try request.make(ImageNameGenerator.self).generateImageName(from: form.name)
+            let repository = request.application.imageRepository
+            let imageNameGenerator = request.application.imageNameGenerator
+            let imageName = try imageNameGenerator.generateImageName(from: form.name)
             let imageFileName = imageName.appending(".").appending(imageExtension)
-            let newImage = try Image(from: imageFileName, on: request)
-            
-            let deleteTransaction = request.withPooledConnection(to: .mysql) { conn in
-                
-                MySQLDatabase.transactionExecute({ transaction in
-                    newImage.save(on: transaction).map { _ in
+            let newImage = try Image(name: imageFileName, on: request.application)
+            return request.db.transaction { tx in
+                newImage.save(on: tx)
+                    .flatMapThrowing {
                         try repository.save(image: form.data, for: imageFileName)
                     }
-                }, on: conn)
-            }
-            
-            return deleteTransaction.transform(to: .ok)
+            }.transform(to: Response(status: .ok))
         }
     }
 }

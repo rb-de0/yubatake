@@ -1,99 +1,113 @@
-import FluentMySQL
-import Pagination
+import Fluent
 import Vapor
 
-final class Tag: DatabaseModel, Content {
-    
-    static let entity = "tags"
-    
+final class Tag: Model {
+
+    static let schema = "tags"
+
+    @ID(custom: .id)
+    var id: Int?
+
+    @Field(key: "name")
+    var name: String
+
+    @Timestamp(key: "created_at", on: .create)
+    var createdAt: Date?
+
+    @Timestamp(key: "updated_at", on: .update)
+    var updatedAt: Date?
+
+    @Siblings(through: PostTag.self, from: \.$tag, to: \.$post)
+    var posts: [Post]
+
+    init() {}
+
+    init(name: String) {
+        self.name = name
+    }
+
+    init(form: TagForm) {
+        name = form.name
+    }
+}
+
+extension Tag {
+    static let nameLength = 16
+}
+
+extension Tag {
+    func apply(form: TagForm) {
+        name = form.name
+    }
+}
+
+extension Tag {
+    static func tags(from form: PostForm) -> [Tag] {
+        let tagStrings = form.tags.components(separatedBy: Tag.separator)
+        return tagStrings.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }.map { Tag(name: $0) }
+    }
+
+    static func notInsertedTags(in tags: [Tag], on db: Database) -> EventLoopFuture<[Tag]> {
+        return tags
+            .map { tag in Tag.query(on: db).filter(\.$name == tag.name).count().map { count in (count, tag) } }
+            .flatten(on: db.eventLoop)
+            .map { tags in tags.filter { $0.0 == 0 }.map { $0.1 } }
+    }
+
+    static func insertedTags(in tags: [Tag], on db: Database) -> EventLoopFuture<[Tag]> {
+        return tags
+            .map { Tag.query(on: db).filter(\.$name == $0.name).first() }
+            .flatten(on: db.eventLoop)
+            .map { tags in tags.compactMap { $0 } }
+    }
+}
+
+extension Tag {
     struct NumberOfPosts: Content {
         let tag: Tag
         let count: Int
     }
-    
-    static let separator = ","
-    
-    private enum CodingKeys: String, CodingKey {
-        case id
-        case name
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-    }
-    
-    static let nameLength = 16
-    
-    var id: Int?
-    var name: String
-    var createdAt: Date?
-    var updatedAt: Date?
-    
-    private init(name: String) {
-        self.name = name
-    }
-    
-    init(from form: TagForm) throws {
-        name = form.name
-        try validate()
-    }
-    
-    func apply(form: TagForm) throws -> Self  {
-        name = form.name
-        try validate()
-        return self
-    }
-    
-    // MARK: - Static
-    
-    static func tags(from form: PostForm) throws -> [Tag] {
-        let tagStrings = form.tags.components(separatedBy: Tag.separator)
-        return tagStrings.filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }.map { Tag(name: $0) }
-    }
-    
-    static func notInsertedTags(in tags: [Tag], on conn: DatabaseConnectable) throws -> Future<[Tag]> {
-        return tags
-            .map { tag in Tag.query(on: conn).filter(\Tag.name == tag.name).count().map { count in (count, tag) } }
-            .flatten(on: conn)
-            .map { tags in tags.filter { $0.0 == 0 }.map { $0.1 } }
-    }
-    
-    static func insertedTags(in tags: [Tag], on conn: DatabaseConnectable) throws -> Future<[Tag]> {
-        return tags.map { Tag.query(on: conn).filter(\Tag.name == $0.name).first() }
-            .flatten(on: conn)
-            .map { tags in tags.compactMap { $0 } }
-    }
-    
-    static func numberOfPosts(on conn: DatabaseConnectable, count: Int = 10) -> Future<[NumberOfPosts]> {
-        
-        return Tag.query(on: conn).all()
+}
+
+extension Tag {
+    static func numberOfPosts(on db: Database, count: Int = 10) -> EventLoopFuture<[NumberOfPosts]> {
+        return Tag.query(on: db).withRelated()
+            .all()
             .flatMap { tags in
-                let counts = try tags.compactMap { tag in
-                    try tag.posts.query(on: conn).publicAll().noStaticAll().count().map {
-                        NumberOfPosts(tag: tag, count: $0)
-                    }
+                let counts = tags.map { tag in
+                    tag.$posts.query(on: db).publicAll().noStaticAll().withRelated()
+                        .count()
+                        .map { NumberOfPosts(tag: tag, count: $0) }
                 }
-                return counts.flatten(on: conn)
+                return counts.flatten(on: db.eventLoop)
                     .map { $0.filter { $0.count > 0 }.sorted(by: { $0.count > $1.count }).take(n: count) }
             }
     }
 }
 
-// MARK: - Relation
-extension Tag {
-
-    var posts: Siblings<Tag, Post, PostTag> {
-        return siblings()
+extension QueryBuilder where Model == Tag {
+    func withRelated() -> Self {
+        return with(\.$posts)
     }
 }
 
-// MARK: - Paginatable
-extension Tag: Paginatable {}
+extension Tag {
+    static let separator = ","
+}
 
-// MARK: - Validatable
-extension Tag: Validatable {
-    
-    static func validations() throws -> Validations<Tag> {
-        var validations = Validations(Tag.self)
-        try validations.add(\.name, .count(1...Tag.nameLength))
-        return validations
+struct CreateTag: Migration {
+    func prepare(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(Tag.schema)
+            .field(.id, .int64, .identifier(auto: true))
+            .field("name", .string, .required)
+            .field("created_at", .datetime)
+            .field("updated_at", .datetime)
+            .unique(on: "name")
+            .ignoreExisting()
+            .create()
+    }
+
+    func revert(on database: Database) -> EventLoopFuture<Void> {
+        database.schema(Tag.schema).delete()
     }
 }

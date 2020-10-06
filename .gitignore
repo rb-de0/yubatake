@@ -16,10 +16,19 @@ DerivedData/
 favicon.ico
 Public/documents/
 
+### SwiftPM ###
+.swiftpm
+
 ### User Files ###
 Public/themes/*
 !Public/themes/default
 !Public/themes/pure
+
+### fastlane ###
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
 
 ### Dev ###
 .vagrant

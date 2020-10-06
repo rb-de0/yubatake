@@ -1,225 +1,246 @@
-import FluentMySQL
-import Pagination
+import Fluent
 import Vapor
 
 final class AdminPostController {
-    
-    private struct Keys {
-        static let isStatic = "is_static"
-    }
-    
+
     private struct ContextMaker {
-        
         static func makeIndexView(menuType: AdminMenuType = .posts) -> AdminViewContext {
             return AdminViewContext(path: "posts", menuType: menuType)
         }
-        
+
         static func makeCreateView(menuType: AdminMenuType = .posts) -> AdminViewContext {
             return AdminViewContext(path: "new-post", menuType: menuType)
         }
-        
+
         static func makePreviewView(title: String) -> PublicViewContext {
             return PublicViewContext(path: "post", title: title)
         }
     }
-    
+
     private struct TagsAndCategories: Encodable {
-        
-        let tags: Future<[Tag]>
-        let categories: Future<[Category]>
-        
-        static func make(from request: Request) -> TagsAndCategories {
-            let tags = Tag.query(on: request).all()
-            let categories = Category.query(on: request).all()
-            return TagsAndCategories(tags: tags, categories: categories)
+        let tags: [Tag]
+        let categories: [Category]
+
+        static func make(from request: Request) -> EventLoopFuture<TagsAndCategories> {
+            let tags = Tag.query(on: request.db).all()
+            let categories = Category.query(on: request.db).all()
+            return tags.and(categories).map {
+                TagsAndCategories(tags: $0.0, categories: $0.1)
+            }
         }
     }
-    
+
     private struct EditViewContext: Encodable {
-        
         private enum CodingKeys: String, CodingKey {
             case post
         }
-        
+
         let post: Post.Public
         let tagsAndCategories: TagsAndCategories
-        
+
         func encode(to encoder: Encoder) throws {
             try tagsAndCategories.encode(to: encoder)
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(post, forKey: .post)
         }
     }
-    
-    // MARK: - Controller Logic
-    
-    func index(request: Request) throws -> Future<View> {
-        
-        return try Post.query(on: request).noStaticAll().paginate(for: request)
-            .flatMap { page in
-                try page.data.map { try $0.formPublic(on: request) }
-                    .flatten(on: request)
-                    .map { posts in
-                        try page.transform(posts)
-                    }
-            }
-            .flatMap { page in
-                try ContextMaker.makeIndexView().makeResponse(context: page.response(), formDataType: PostForm.self, for: request)
-            }
-    }
-    
-    func indexStaticContent(request: Request) throws -> Future<View> {
-        
-        return try Post.query(on: request).staticAll().paginate(for: request)
-            .flatMap { page in
-                try page.data.map { try $0.formPublic(on: request) }
-                    .flatten(on: request)
-                    .map { posts in
-                        try page.transform(posts)
-                    }
-            }
-            .flatMap { page in
-                let context = page.response().add(Keys.isStatic, true)
-                return try ContextMaker.makeIndexView(menuType: .staticContent).makeResponse(context: context, formDataType: PostForm.self, for: request)
-            }
-    }
-    
-    func create(request: Request) throws -> Future<View> {
-        
-        return try ContextMaker.makeCreateView(menuType: .newPost)
-            .makeResponse(context: TagsAndCategories.make(from: request), formDataType: PostForm.self, for: request)
-    }
-    
-    func store(request: Request, form: PostForm) throws -> Future<Response> {
 
-        let saveTransaction = request.withPooledConnection(to: .mysql) { conn -> Future<Post> in
-            
-            let newPost = try Post(from: form, on: request)
-            let tags = try Tag.tags(from: form)
-            
-            return MySQLDatabase.transactionExecute({ transaction in
-                
-                newPost.save(on: transaction).flatMap { post in
-                    
-                    return try Tag.notInsertedTags(in: tags, on: transaction)
+    func index(request: Request) throws -> EventLoopFuture<View> {
+        return Post.query(on: request.db).noStaticAll().withRelated()
+            .paginate(for: request)
+            .flatMap { page -> EventLoopFuture<PageResponse<Post.Public>> in
+                do {
+                    let posts = try page.items.map { try $0.formPublic() }
+                    let page = Page<Post.Public>(items: posts, metadata: page.metadata)
+                    let pageResponse = PageResponse(page: page)
+                    return request.eventLoop.future(pageResponse)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
+            .flatMap { page in
+                do {
+                    let response = try ContextMaker.makeIndexView().makeResponse(context: page, for: request)
+                    return response
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
+    }
+
+    func indexStaticContent(request: Request) throws -> EventLoopFuture<View> {
+        return Post.query(on: request.db).staticAll().withRelated()
+            .paginate(for: request)
+            .flatMap { page -> EventLoopFuture<PageResponse<Post.Public>> in
+                do {
+                    let posts = try page.items.map { try $0.formPublic() }
+                    let page = Page<Post.Public>(items: posts, metadata: page.metadata)
+                    let pageResponse = PageResponse(page: page)
+                    return request.eventLoop.future(pageResponse)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
+            .flatMap { page in
+                do {
+                    let context = page.add("isStatic", true)
+                    let response = try ContextMaker.makeIndexView(menuType: .staticContent).makeResponse(context: context, for: request)
+                    return response
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
+    }
+
+    func create(request: Request) throws -> EventLoopFuture<View> {
+        return TagsAndCategories.make(from: request)
+            .flatMap { tagAndCategories in
+                do {
+                    return try ContextMaker.makeCreateView(menuType: .newPost)
+                        .makeResponse(context: tagAndCategories, formDataType: PostForm.self, for: request)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
+    }
+
+    func store(request: Request) throws -> EventLoopFuture<Response> {
+        let form = try request.content.decode(PostForm.self)
+        let userId = try request.auth.require(User.self).requireID()
+        let newPost = try Post(from: form, userId: userId)
+        let tags = Tag.tags(from: form)
+        do {
+            try PostForm.validate(content: request)
+        } catch {
+            let response = try request.redirect(to: "/admin/posts/create", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(response)
+        }
+        let saveTransaction = request.db.transaction { tx in
+            return newPost.save(on: tx)
+                .flatMap {
+                    Tag.notInsertedTags(in: tags, on: tx)
                         .flatMap { notInsertedTags in
-                            Future<Void>.andAll(notInsertedTags.map { $0.save(on: transaction).transform(to: ()) }, eventLoop: request.eventLoop)
+                            EventLoopFuture<Void>.andAllSucceed(notInsertedTags.map { $0.save(on: tx).transform(to: ()) }, on: request.eventLoop)
                         }
-                        .flatMap { _ in
-                            try Tag.insertedTags(in: tags, on: transaction)
+                        .flatMap { _ -> EventLoopFuture<[Tag]> in
+                            Tag.insertedTags(in: tags, on: tx)
                         }
                         .flatMap { insertedTags in
-                            Future<Void>.andAll(insertedTags.map { post.tags.attach($0, on: transaction).transform(to: ()) }, eventLoop: request.eventLoop)
+                            EventLoopFuture<Void>.andAllSucceed(insertedTags.map { newPost.$tags.attach($0, on: tx).transform(to: ()) }, on: request.eventLoop)
                         }
-                        .transform(to: post)
+                        .transform(to: newPost)
                 }
-            }, on: conn)
         }
-        
         return saveTransaction
-            .map { post in
+            .flatMapThrowing { post -> Response in
                 let id = try post.requireID()
                 if form.shouldTweet {
-                    try request.make(TwitterRepository.self).post(post, on: request)
+                    try request.application.twitterRepository.post(post, on: request)
                 }
                 return request.redirect(to: "/admin/posts/\(id)/edit")
             }
-            .catchMap { error in
-                return try request.redirect(to: "/admin/posts/create", with: FormError(error: error, formData: form))
+            .flatMapErrorThrowing { error in
+                try request.redirect(to: "/admin/posts/create", with: FormError(error: error, formData: form))
             }
     }
-    
-    func edit(request: Request) throws -> Future<View> {
-        
-        return try request.parameters.next(Post.self)
-            .flatMap { post in
-                try post.formPublic(on: request)
+
+    func edit(request: Request) throws -> EventLoopFuture<View> {
+        guard let postId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
+        }
+        return Post.query(on: request.db).filter(\.$id == postId).withRelated()
+            .first()
+            .unwrap(or: Abort(.notFound))
+            .flatMapThrowing {
+                try $0.formPublic()
             }
             .flatMap { post in
-                let context = EditViewContext(post: post, tagsAndCategories: TagsAndCategories.make(from: request))
-                return try ContextMaker.makeCreateView().makeResponse(context: context, formDataType: PostForm.self, for: request)
+                TagsAndCategories.make(from: request)
+                    .flatMap { tagAndCategories in
+                        do {
+                            let context = EditViewContext(post: post, tagsAndCategories: tagAndCategories)
+                            return try ContextMaker.makeCreateView().makeResponse(context: context, formDataType: PostForm.self, for: request)
+                        } catch {
+                            return request.eventLoop.future(error: error)
+                        }
+                    }
             }
     }
-    
-    func update(request: Request, form: PostForm) throws -> Future<Response> {
-        
-        let existingPost = try request.parameters.next(Post.self)
-        let tags = try Tag.tags(from: form)
-        
-        return existingPost.flatMap { post in
-            
-            let postId = try post.requireID()
-            
-            let updateTransaction = request.withPooledConnection(to: .mysql) { conn -> Future<Void> in
-                
-                let applied = try post.apply(form: form, on: request)
-                
-                return MySQLDatabase.transactionExecute ({ transaction in
-                    
-                    applied.save(on: transaction).flatMap { post in
-                        
-                        return try Tag.notInsertedTags(in: tags, on: transaction)
-                            .flatMap { notInsertedTags in
-                                Future<Void>.andAll(notInsertedTags.map { $0.save(on: transaction).transform(to: ()) }, eventLoop: request.eventLoop)
-                            }
-                            .flatMap { _ in
-                                try Tag.insertedTags(in: tags, on: transaction)
-                            }
-                            .flatMap { insertedTags in
-                                return post.tags.detachAll(on: transaction)
-                                    .flatMap {
-                                        let refresh = insertedTags.map { tag in
-                                            post.tags.attach(tag, on: transaction).transform(to: ())
-                                        }
-                                        return Future<Void>.andAll(refresh, eventLoop: request.eventLoop)
-                                    }
+
+    func update(request: Request) throws -> EventLoopFuture<Response> {
+        guard let postId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
+        }
+        let form = try request.content.decode(PostForm.self)
+        let userId = try request.auth.require(User.self).requireID()
+        let tags = Tag.tags(from: form)
+        do {
+            try PostForm.validate(content: request)
+        } catch {
+            let response = try request.redirect(to: "/admin/posts/\(postId)/edit", with: FormError(error: error, formData: form))
+            return request.eventLoop.future(response)
+        }
+        return Post.query(on: request.db).filter(\.$id == postId).withRelated()
+            .first()
+            .unwrap(or: Abort(.notFound))
+            .flatMapThrowing { post -> Post in
+                try post.apply(form: form, userId: userId)
+                return post
+            }
+            .flatMap { post in
+                request.db.transaction { tx -> EventLoopFuture<Post> in
+                    post.save(on: tx)
+                        .flatMap {
+                            Tag.notInsertedTags(in: tags, on: tx)
+                                .flatMap { notInsertedTags in
+                                    EventLoopFuture<Void>.andAllSucceed(notInsertedTags.map { $0.save(on: tx).transform(to: ()) }, on: request.eventLoop)
                                 }
-                    }
-                }, on: conn)
-            }
-            
-            return updateTransaction
-                .map {
-                    if form.shouldTweet {
-                        try request.make(TwitterRepository.self).post(post, on: request)
-                    }
-                    return request.redirect(to: "/admin/posts/\(postId)/edit")
+                                .flatMap { _ -> EventLoopFuture<[Tag]> in
+                                    Tag.insertedTags(in: tags, on: tx)
+                                }
+                                .flatMap { insertedTags in
+                                    post.$tags.detach(insertedTags, on: tx).transform(to: insertedTags)
+                                }
+                                .flatMap { insertedTags in
+                                    EventLoopFuture<Void>.andAllSucceed(insertedTags.map { post.$tags.attach($0, on: tx).transform(to: ()) }, on: request.eventLoop)
+                                }
+                                .transform(to: post)
+                        }
                 }
-                .catchMap { error in
-                    try request.redirect(to: "/admin/posts/\(postId)/edit", with: FormError(error: error, formData: form))
-                }
-        }
-    }
-    
-    func delete(request: Request, form: DeletePostsForm) throws -> Future<Response> {
-        
-        var isStatic = false
-        let ids = form.posts ?? []
-        let eventLoop = request.eventLoop
-        let deletePosts = ids
-            .map {
-                Post.find($0, on: request)
-                    .unwrap(or: Abort(.badRequest))
-                    .do { isStatic = $0.isStatic }
-                    .delete(on: request)
-                    .transform(to: ())
             }
-        
-        return Future<Void>.andAll(deletePosts, eventLoop: eventLoop)
-            .map {
-                isStatic ? request.redirect(to: "/admin/static-contents") : request.redirect(to: "/admin/posts")
+            .map { _ in
+                request.redirect(to: "/admin/posts/\(postId)/edit")
+            }
+            .flatMapErrorThrowing { error in
+                try request.redirect(to: "/admin/posts/\(postId)/edit", with: FormError(error: error, formData: form))
             }
     }
-    
-    // MARK: - Preview
-    
-    func showPreview(request: Request) throws -> Future<View> {
-        
-        return try request.parameters.next(Post.self).flatMap { post in
-            
-            return try post.formPublic(on: request).flatMap { publicPost in
-                try ContextMaker.makePreviewView(title: post.title).makeResponse(context: publicPost, for: request)
+
+    func delete(request: Request) throws -> EventLoopFuture<Response> {
+        let form = try request.content.decode(DeletePostsForm.self)
+        let ids = form.posts
+        let forStaticContents = request.headers[.referer].first?.contains("static-contents") == true
+        return Post.query(on: request.db).filter(\.$id ~~ ids)
+            .delete()
+            .map {
+                forStaticContents ? request.redirect(to: "/admin/static-contents") : request.redirect(to: "/admin/posts")
             }
+    }
+
+    func showPreview(request: Request) throws -> EventLoopFuture<View> {
+        guard let postId = request.parameters.get("id", as: Int.self) else {
+            throw Abort(.notFound)
         }
+        return Post.query(on: request.db).filter(\.$id == postId).withRelated()
+            .first()
+            .unwrap(or: Abort(.notFound))
+            .flatMap { post in
+                do {
+                    let publicPost = try post.formPublic()
+                    return try ContextMaker.makePreviewView(title: publicPost.post.title).makeResponse(context: publicPost, for: request)
+                } catch {
+                    return request.eventLoop.future(error: error)
+                }
+            }
     }
 }

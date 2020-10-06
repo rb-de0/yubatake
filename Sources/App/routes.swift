@@ -1,9 +1,8 @@
-import Routing
+import Fluent
 import Vapor
-import Leaf
 
-public func routes(_ router: Router) throws {
-    let root = router.grouped(User.authSessionsMiddleware())
+func routes(_ app: Application) throws {
+    let root = app.routes.grouped(User.sessionAuthenticator())
     try root.register(collection: PublicRoutes())
     try root.register(collection: AdminRoutes())
     try root.register(collection: APIRoutes())

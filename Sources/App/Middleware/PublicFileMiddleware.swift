@@ -1,19 +1,17 @@
 import Vapor
 
-final class PublicFileMiddleware: Middleware, Service {
-    
+final class PublicFileMiddleware: Middleware {
+
     private let base: FileMiddleware
-    
+
     init(base: FileMiddleware) {
         self.base = base
     }
-    
-    func respond(to request: Request, chainingTo next: Responder) throws -> EventLoopFuture<Response> {
-        
-        if request.http.url.path.hasSuffix(".leaf") {
-            throw Abort(.notFound)
+
+    func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        if request.url.path.hasSuffix(".leaf") {
+            return request.eventLoop.future(Response(status: .notFound))
         }
-        
-        return try base.respond(to: request, chainingTo: next)
+        return base.respond(to: request, chainingTo: next)
     }
 }

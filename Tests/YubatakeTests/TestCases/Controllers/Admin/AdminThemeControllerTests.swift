@@ -1,13 +1,12 @@
 @testable import App
-import Vapor
-import XCTest
+import XCTVapor
 
-final class AdminThemeControllerTests: ControllerTestCase, AdminTestCase {
+final class AdminThemeControllerTests: ControllerTestCase {
     
     func testCanViewIndex() throws {
-        
-        let response = try waitResponse(method: .GET, url: "/admin/themes")
-        XCTAssertEqual(response.http.status, .ok)
+        try test(.GET, "/admin/themes") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
     }
 }
 

@@ -5,12 +5,12 @@ enum TestError: Error {
     case unexpected
 }
 
-final class AlwaysAuthMiddleware: Middleware, Service {
+final class AlwaysAuthMiddleware: Middleware {
     
-    func respond(to request: Request, chainingTo next: Responder) throws -> Future<Response> {
-        return User.find(1, on: request).unwrap(or: TestError.unexpected).flatMap(to: Response.self) { user in
-            try request.authenticate(user)
-            return try next.respond(to: request)
+    func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        return User.find(1, on: request.db).unwrap(or: TestError.unexpected).flatMap { user in
+            request.auth.login(user)
+            return next.respond(to: request)
         }
     }
 }

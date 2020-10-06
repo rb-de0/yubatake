@@ -1,7 +1,7 @@
 @testable import App
-import Vapor
+import Foundation
 
-final class TestImageFileRepository: ImageRepository, Service {
+final class TestImageFileRepository: ImageRepository {
     
     static var imageFiles = Set<String>()
     

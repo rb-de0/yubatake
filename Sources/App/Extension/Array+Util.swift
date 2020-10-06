@@ -1,11 +1,8 @@
 extension Array {
-    
     func take(n: Int) -> [Element] {
-        
-        if n >= self.count {
+        if n >= count {
             return self
         }
-        
-        return Array(self[..<index(self.startIndex, offsetBy: n)])
+        return Array(self[..<index(startIndex, offsetBy: n)])
     }
 }

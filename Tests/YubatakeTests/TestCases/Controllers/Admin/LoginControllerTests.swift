@@ -1,68 +1,57 @@
 @testable import App
-import Crypto
-import Vapor
-import XCTest
+import XCTVapor
 
 final class LoginControllerTests: ControllerTestCase {
     
+    override func buildApp() -> Application {
+        return try! ApplicationBuilder.build()
+    }
+    
     func testCanCreateRootUser() throws {
         
-        let count = try User.query(on: conn).count().wait()
-        let rootUser = try User.query(on: conn).all().wait().first
+        let count = try User.query(on: db).all().wait().count
+        let rootUser = try User.query(on: db).all().wait().first
         
         XCTAssertEqual(count, 1)
         XCTAssertEqual(rootUser?.name, "root")
     }
     
     func testCanViewIndex() throws {
-        let loginResponse = try waitResponse(method: .GET, url: "/login")
-        XCTAssertEqual(loginResponse.http.status, .ok)
-    }
-
-    func testCanLogin() throws {
-        
-        let hassedPassword = try app.make(BCryptDigest.self).hash("passwd")
-        let user = User(name: "login", password: hassedPassword)
-        _ = try user.save(on: conn).wait()
-        
-        var response: Response
-        
-        response = try waitResponse(method: .POST, url: "/login") { request in
-            try request.setFormData(["name": "login", "password": "passwd"], csrfToken: self.csrfToken)
+        try test(.GET, "/login") { response in
+            XCTAssertEqual(response.status, .ok)
         }
-        
-        XCTAssertEqual(response.http.status, .seeOther)
-        XCTAssertEqual(response.http.headers.firstValue(name: .location), "admin/posts")
-        
-        response = try waitResponse(method: .GET, url: "/admin/posts")
-        
-        XCTAssertEqual(response.http.status, .ok)
-
-        response = try waitResponse(method: .GET, url: "/logout")
-        
-        XCTAssertEqual(response.http.status, .seeOther)
-        XCTAssertEqual(response.http.headers.firstValue(name: .location), "login")
-        
-        response = try waitResponse(method: .GET, url: "/admin/posts")
-        
-        XCTAssertEqual(response.http.status, .seeOther)
-        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/login")
+    }
+    
+    func testCanLogin() throws {
+        let hashedPassword = try Bcrypt.hash("passwd", cost: 12)
+        try User(name: "login", password: hashedPassword).save(on: db).wait()
+        try test(.POST, "/login", body: "name=login&password=passwd", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
+        }
+        try test(.POST, "/login", body: "name=login&password=passwd") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/admin/posts")
+        }
+        try test(.GET, "admin/posts") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+        try test(.GET, "/logout") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/login")
+        }
+        try test(.GET, "admin/posts") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/login")
+        }
     }
     
     func testCannotLoginNoPassword() throws {
-
-        let hassedPassword = try app.make(BCryptDigest.self).hash("passwd")
-        let user = User(name: "login", password: hassedPassword)
-        _ = try user.save(on: conn).wait()
-        
-        var response: Response!
-        
-        response = try waitResponse(method: .POST, url: "/login") { request in
-            try request.setFormData(["name": "login", "password": ""], csrfToken: self.csrfToken)
+        let hashedPassword = try Bcrypt.hash("passwd", cost: 12)
+        try User(name: "login", password: hashedPassword).save(on: db).wait()
+        try test(.POST, "/login", body: "name=login&password=") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/login")
         }
-        
-        XCTAssertEqual(response.http.status, .seeOther)
-        XCTAssertEqual(response.http.headers.firstValue(name: .location), "login")
     }
 }
 

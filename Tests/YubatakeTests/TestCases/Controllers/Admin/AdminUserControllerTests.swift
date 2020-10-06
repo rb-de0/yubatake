@@ -1,47 +1,74 @@
 @testable import App
-import Crypto
-import Vapor
-import XCTest
+import XCTVapor
 
-final class AdminUserControllerTests: ControllerTestCase, AdminTestCase {
+final class AdminUserControllerTests: ControllerTestCase {
     
     func testCanViewCreateView() throws {
-
-        var response: Response!
-        
-        response = try waitResponse(method: .GET, url: "/admin/user/edit")
-
-        XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(view.get("name")?.string, "root")
-        XCTAssertNil(view.get("password"))
+        try test(.GET, "/admin/user/edit") { response in
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(view.get("name")?.string, "root")
+            XCTAssertNil(view.get("password"))
+        }
     }
     
     func testCanUpdateAUser() throws {
-        
-        let hash = try app.make(BCryptDigest.self)
-        var response: Response!
-        
-        let form = ["name": "rb_de0", "password": "123456789"]
-        
-        response = try waitResponse(method: .POST, url: "/admin/user/edit") { request in
-            try request.setFormData(form, csrfToken: self.csrfToken)
+        try test(.POST, "/admin/user/edit", body: "name=rb_de0&password=123456789", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
         }
-        
-        XCTAssertEqual(response.http.status, .seeOther)
-        XCTAssertEqual(response.http.headers.firstValue(name: .location), "/admin/user/edit")
-        
-        response = try waitResponse(method: .GET, url: "/admin/user/edit")
-        
-        let user = try User.query(on: conn).all().wait().first
-        XCTAssertEqual(view.get("name")?.string, "rb_de0")
+        try test(.POST, "/admin/user/edit", body: "name=rb_de0&password=123456789") { response in
+            XCTAssertEqual(response.status, .seeOther)
+            XCTAssertEqual(response.headers.first(name: .location), "/admin/user/edit")
+        }
+        let user = try User.query(on: db).first().wait()
         XCTAssertEqual(user?.name, "rb_de0")
-        XCTAssert(try hash.verify("123456789", created: user?.password ?? ""))
+        XCTAssert(try Bcrypt.verify("123456789", created: (user?.password ?? "")))
+    }
+    
+    func testCannotUpdateInvalidFormData() throws {
+        do {
+            try test(.POST, "/admin/user/edit", body: "name=&password=123456789") { response in
+                XCTAssertEqual(response.status, .seeOther)
+                XCTAssertEqual(response.headers.first(name: .location), "/admin/user/edit")
+            }
+            try test(.GET, "/admin/user/edit") { response in
+                XCTAssertNotNil(view.get("errorMessage"))
+            }
+            let user = try User.query(on: db).first().wait()
+            XCTAssertEqual(user?.name, "root")
+            XCTAssertFalse(try Bcrypt.verify("123456789", created: (user?.password ?? "")))
+        }
+        do {
+            try test(.POST, "/admin/user/edit", body: "name=rb_de0&password=") { response in
+                XCTAssertEqual(response.status, .seeOther)
+                XCTAssertEqual(response.headers.first(name: .location), "/admin/user/edit")
+            }
+            try test(.GET, "/admin/user/edit") { response in
+                XCTAssertNotNil(view.get("errorMessage"))
+            }
+            let user = try User.query(on: db).first().wait()
+            XCTAssertEqual(user?.name, "root")
+            XCTAssertFalse(try Bcrypt.verify("123456789", created: (user?.password ?? "")))
+        }
+        do {
+            let longName = String(repeating: "a", count: 33)
+            try test(.POST, "/admin/user/edit", body: "name=\(longName)&password=123456789") { response in
+                XCTAssertEqual(response.status, .seeOther)
+                XCTAssertEqual(response.headers.first(name: .location), "/admin/user/edit")
+            }
+            try test(.GET, "/admin/user/edit") { response in
+                XCTAssertNotNil(view.get("errorMessage"))
+            }
+            let user = try User.query(on: db).first().wait()
+            XCTAssertEqual(user?.name, "root")
+            XCTAssertFalse(try Bcrypt.verify("123456789", created: (user?.password ?? "")))
+        }
     }
 }
 
 extension AdminUserControllerTests {
     public static let allTests = [
         ("testCanViewCreateView", testCanViewCreateView),
-        ("testCanUpdateAUser", testCanUpdateAUser)
+        ("testCanUpdateAUser", testCanUpdateAUser),
+        ("testCannotUpdateInvalidFormData", testCannotUpdateInvalidFormData)
     ]
 }

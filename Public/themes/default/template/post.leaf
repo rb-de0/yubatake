@@ -1,55 +1,57 @@
-#set("resources") {
+#extend("base"):
+
+#export("resources"):
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/monokai-sublime.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
   <script async src="https://platform.twitter.com/widgets.js"></script>
-}
+#endexport
 
-#set("content") {
+#export("content"):
 
   <div id="post-content">
     <div id="post-content-header">
       <div id="post-content-title">#(title)</div>
 
-      #if(is_static) {} else {
+      #if(isStatic): #else:
         <div id="post-content-header-content">
 
           <div id="post-content-header-post-attribute">
-            #if(category) {
+            #if(category.id):
               <div>
                 Category:
                 <span>
                   <a class="category-link" href="/categories/#(category.id)/posts">#(category.name)</a>
                 </span>
               </div>
-            } else {
+            #else:
               <div>
                 Category:
                 <span>
                   <a class="category-link" href="/categories/noncategorized/posts">NonCategorized</a>
                 </span>
               </div>
-            }
-            #if(count(tags) != 0) {
+            #endif
+            #if(count(tags) != 0):
               <div>
                 Tag:
-                #for(tag in tags) {
+                #for(tag in tags):
                   <span><a class="tag-link" href="/tags/#(tag.id)/posts">#(tag.name)</a></span>
-                }
+                #endfor
               </div>
-            }
+            #endif
           </div>
 
           <div id="post-content-header-date">
-            <div class="post-content-header-text">CreatedAt: #date(created_at, date_format)</div>
-            <div class="post-content-header-text">UpdatedAt: #date(updated_at, date_format)</div>
+            <div class="post-content-header-text">CreatedAt: #date(createdAt, dateFormat)</div>
+            <div class="post-content-header-text">UpdatedAt: #date(updatedAt, dateFormat)</div>
           </div>
         </div>
-      }
+      #endif
 
     </div>
 
     <div id="post-content-body">
-      #get(html_content)
+      #(htmlContent)
     </div>
 
     <div id="post-content-share-container">
@@ -59,6 +61,6 @@
   </div>
 
   <script>hljs.initHighlightingOnLoad()</script>
-}
+#endexport
 
-#embed("base")
+#endextend

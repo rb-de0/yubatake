@@ -73,11 +73,11 @@ var viewModel = new Vue({
         }
       })
       .then(function (response) {
-        receiver.hasNext = response.data.page.position.next !== undefined
-        receiver.hasPrevious = response.data.page.position.previous !== undefined
-        receiver.imageGroups = response.data.data
-        receiver.totalPage = response.data.page.position.max
-        receiver.page = response.data.page.position.current
+        receiver.hasNext = response.data.metadata.page < response.data.metadata.totalPage
+        receiver.hasPrevious = response.data.metadata.page > 1
+        receiver.imageGroups = response.data.items
+        receiver.totalPage = response.data.metadata.totalPage
+        receiver.page = response.data.metadata.page
       })
     },
     upload: function (e) {
@@ -96,9 +96,9 @@ var viewModel = new Vue({
       var tasks = Array.from(e.target.files).map(function(file) {
         var fileName = file.name
         var data = new FormData()
-        data.append('image_file_name', fileName)
-        data.append('image_file_data', file)
-        data.append('csrf-token', csrfToken)
+        data.append('imageFileName', fileName)
+        data.append('imageFileData', file)
+        data.append('csrfToken', csrfToken)
         return axios.post(makeRequestURL('/api/images'), data)
           .then(function(response) {
             receiver.completedTaskCount += 1
@@ -126,7 +126,7 @@ var viewModel = new Vue({
 
       var imageElement = document.createElement('img')
       imageElement.setAttribute('src', image.path)
-      imageElement.setAttribute('alt', image.alt_description)
+      imageElement.setAttribute('alt', image.altDescription)
 
       var beforeCursor = currentText.substr(0, cursorPosition)
       var afterCursor = currentText.substr(cursorPosition, currentTextLength)

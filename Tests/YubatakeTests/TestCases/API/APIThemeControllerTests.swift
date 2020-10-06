@@ -1,58 +1,65 @@
 @testable import App
-import Vapor
-import XCTest
+import XCTVapor
 
-final class APIThemeControllerTests: FileHandleTestCase, AdminTestCase {
+final class APIThemeControllerTests: ControllerTestCase {
+    
+    private let fm = FileManager.default
+    private static let workDirectory = String.workingDirectory.appending("/.test")
     
     struct Theme: Decodable {
         let name: String
         let selected: Bool
     }
     
+    override func buildApp() -> Application {
+        let app = try! ApplicationBuilder.buildForAdmin(workingDirectory: Self.workDirectory)
+        return app
+    }
+    
     override func setUp() {
         super.setUp()
-        try! FileManager.default.createDirectory(atPath: fileConfig.themeDir.finished(with: "/").appending("default"), withIntermediateDirectories: true, attributes: nil)
-        try! FileManager.default.createDirectory(atPath: fileConfig.themeDir.finished(with: "/").appending("custom"), withIntermediateDirectories: true, attributes: nil)
+        if !fm.fileExists(atPath: Self.workDirectory) {
+            try! fm.createDirectory(atPath: Self.workDirectory, withIntermediateDirectories: true, attributes: nil)
+        }
+        try! fm.createDirectory(atPath: app.fileConfig.themeDirectory.finished(with: "/").appending("default"), withIntermediateDirectories: true, attributes: nil)
+        try! fm.createDirectory(atPath: app.fileConfig.themeDirectory.finished(with: "/").appending("custom"), withIntermediateDirectories: true, attributes: nil)
+    }
+    
+    override func tearDown() {
+        super.tearDown()
+        if fm.fileExists(atPath: Self.workDirectory) {
+            try! fm.removeItem(atPath: Self.workDirectory)
+        }
     }
     
     func testCanIndexView() throws {
-        
-        let siteInfo = try SiteInfo.shared(on: conn).wait()
-        XCTAssertNil(siteInfo.theme)
-        
-        let response = try waitResponse(method: .GET, url: "/api/themes")
-        let themes = try response.content.syncDecode([Theme].self)
-        
-        XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(themes.count, 2)
-        XCTAssertEqual(themes.first?.name, "custom")
-        XCTAssertEqual(themes.first?.selected, false)
-        XCTAssertEqual(themes.last?.name, "default")
-        XCTAssertEqual(themes.last?.selected, true)
+        try test(.GET, "/api/themes") { response in
+            let themes = try response.content.decode([Theme].self)
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(themes.count, 2)
+            XCTAssertEqual(themes.first?.name, "custom")
+            XCTAssertEqual(themes.first?.selected, false)
+            XCTAssertEqual(themes.last?.name, "default")
+            XCTAssertEqual(themes.last?.selected, true)
+        }
     }
     
-    func testCanChangeTheme() throws  {
-        
-        var response: Response!
-        
-        response = try waitResponse(method: .POST, url: "/api/themes") { request in
-            try request.setJSONData(["name": "custom"], csrfToken: self.csrfToken)
+    func testCanChangeTheme() throws {
+        try test(.POST, "/api/themes", body: "name=custom", withCSRFToken: false) { response in
+            XCTAssertEqual(response.status, .forbidden)
         }
-        
-        XCTAssertEqual(response.http.status, .ok)
-        
-        let siteInfo = try SiteInfo.shared(on: conn).wait()
-        XCTAssertEqual(siteInfo.theme, "custom")
-        
-        response = try waitResponse(method: .GET, url: "/api/themes")
-        let themes = try response.content.syncDecode([Theme].self)
-        
-        XCTAssertEqual(response.http.status, .ok)
-        XCTAssertEqual(themes.count, 2)
-        XCTAssertEqual(themes.first?.name, "custom")
-        XCTAssertEqual(themes.first?.selected, true)
-        XCTAssertEqual(themes.last?.name, "default")
-        XCTAssertEqual(themes.last?.selected, false)
+        try test(.POST, "/api/themes", body: "name=custom") { response in
+            XCTAssertEqual(response.status, .ok)
+        }
+        try test(.GET, "/api/themes") { response in
+            let themes = try response.content.decode([Theme].self)
+            XCTAssertEqual(response.status, .ok)
+            XCTAssertEqual(themes.count, 2)
+            XCTAssertEqual(themes.first?.name, "custom")
+            XCTAssertEqual(themes.first?.selected, true)
+            XCTAssertEqual(themes.last?.name, "default")
+            XCTAssertEqual(themes.last?.selected, false)
+        }
     }
 }
 
