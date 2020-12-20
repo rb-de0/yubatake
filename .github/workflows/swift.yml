@@ -20,8 +20,6 @@ jobs:
           - 3306
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_USER: test
-          MYSQL_PASSWORD: test
 
     steps:
     - uses: actions/checkout@v2
@@ -31,6 +29,7 @@ jobs:
         mysql -h 127.0.0.1 --port 3306 -u root -proot -e "set global max_connections = 1000"	
         mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create database yubatake_tests default character set utf8"	
         mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create database schema_check default character set utf8"
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create user 'test'@'localhost' IDENTIFIED BY 'test'"
         mysql -h 127.0.0.1 --port 3306 -u root -proot -e "grant all on yubatake_tests.* TO 'test'@'localhost'"
         mysql -h 127.0.0.1 --port 3306 -u root -proot -e "grant all on schema_check.* TO 'test'@'localhost'"
     - name: Build
