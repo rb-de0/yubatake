@@ -7,15 +7,26 @@ on:
   pull_request:
     branches: 
       - master
-      - vapor4.0
 
 jobs:
   build:
+    
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_USER: test
+          MYSQL_PASSWORD: test
 
-    runs-on: macos-10.15
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build
-      run: swift build
-
+    - name: Prepare
+      run: | 
+        mysql -u root -e "set global max_connections = 1000"
+        mysql -u root -e "create database yubatake_tests default character set utf8"
+        mysql -u root -e "create database schema_check default character set utf8"
