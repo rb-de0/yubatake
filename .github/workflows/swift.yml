@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     
     services:
       mysql:
@@ -25,5 +25,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: build
-      run: swift build
+    - name: Prepare
+      run: |
+        mysql -u root -e "set global max_connections = 1000"	
+        mysql -u root -e "create database yubatake_tests default character set utf8"	
+        mysql -u root -e "create database schema_check default character set utf8"
