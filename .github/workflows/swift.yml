@@ -19,7 +19,7 @@ jobs:
         ports:
           - 3306
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD: root
           MYSQL_USER: test
           MYSQL_PASSWORD: test
 
@@ -28,6 +28,6 @@ jobs:
     - name: Prepare
       run: |
         sudo /etc/init.d/mysql start
-        mysql -h 127.0.0.1 --port 3306 -u root -e "set global max_connections = 1000"	
-        mysql -h 127.0.0.1 --port 3306 -u root -e "create database yubatake_tests default character set utf8"	
-        mysql -h 127.0.0.1 --port 3306 -u root -e "create database schema_check default character set utf8"
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "set global max_connections = 1000"	
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create database yubatake_tests default character set utf8"	
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create database schema_check default character set utf8"
