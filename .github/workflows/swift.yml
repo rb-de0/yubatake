@@ -27,6 +27,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Prepare
       run: |
+        sudo /etc/init.d/mysql start
         mysql -h 127.0.0.1 --port 3306 -u root -e "set global max_connections = 1000"	
         mysql -h 127.0.0.1 --port 3306 -u root -e "create database yubatake_tests default character set utf8"	
         mysql -h 127.0.0.1 --port 3306 -u root -e "create database schema_check default character set utf8"
