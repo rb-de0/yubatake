@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     
+    runs-on: macos-latest
+    
     services:
       mysql:
         image: mysql:5.7
@@ -20,8 +22,6 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_USER: test
           MYSQL_PASSWORD: test
-
-    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
