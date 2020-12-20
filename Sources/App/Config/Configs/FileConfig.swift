@@ -1,6 +1,6 @@
 import Vapor
 
-struct FileConfig: Decodable {
+struct FileConfig {
 
     let themeRoot = "themes"
     let imageRoot = "documents/imgs"

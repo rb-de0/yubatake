@@ -20,9 +20,9 @@ class ControllerTestCase: XCTestCase {
         view = app.testViewDecorator
         db = app.db
         cookies = nil
-        try! test(.GET, "csrf") { response in
+        try! test(.GET, "csrf", afterResponse:  { response in
             self.csrfToken = try! response.content.decode(CSRFToken.self).token
-        }
+        })
     }
     
     override func tearDown() {

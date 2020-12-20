@@ -33,7 +33,7 @@ final class APIThemeControllerTests: ControllerTestCase {
     }
     
     func testCanIndexView() throws {
-        try test(.GET, "/api/themes") { response in
+        try test(.GET, "/api/themes", afterResponse:  { response in
             let themes = try response.content.decode([Theme].self)
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(themes.count, 2)
@@ -41,17 +41,17 @@ final class APIThemeControllerTests: ControllerTestCase {
             XCTAssertEqual(themes.first?.selected, false)
             XCTAssertEqual(themes.last?.name, "default")
             XCTAssertEqual(themes.last?.selected, true)
-        }
+        })
     }
     
     func testCanChangeTheme() throws {
-        try test(.POST, "/api/themes", body: "name=custom", withCSRFToken: false) { response in
+        try test(.POST, "/api/themes", body: "name=custom", withCSRFToken: false, afterResponse:  { response in
             XCTAssertEqual(response.status, .forbidden)
-        }
-        try test(.POST, "/api/themes", body: "name=custom") { response in
+        })
+        try test(.POST, "/api/themes", body: "name=custom", afterResponse:  { response in
             XCTAssertEqual(response.status, .ok)
-        }
-        try test(.GET, "/api/themes") { response in
+        })
+        try test(.GET, "/api/themes", afterResponse:  { response in
             let themes = try response.content.decode([Theme].self)
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(themes.count, 2)
@@ -59,7 +59,7 @@ final class APIThemeControllerTests: ControllerTestCase {
             XCTAssertEqual(themes.first?.selected, true)
             XCTAssertEqual(themes.last?.name, "default")
             XCTAssertEqual(themes.last?.selected, false)
-        }
+        })
     }
 }
 
