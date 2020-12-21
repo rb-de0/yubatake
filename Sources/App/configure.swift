@@ -4,6 +4,7 @@ import FluentMySQLDriver
 import Leaf
 import Vapor
 import VaporSecurityHeaders
+import Redis
 
 public func configure(_ app: Application) throws {
 
@@ -36,9 +37,12 @@ public func configure(_ app: Application) throws {
     app.leaf.tags["date"] = DateTag()
     app.views.use(.leaf)
     app.register(viewCreator: .default())
+    
+    // redis
+    app.redis.configuration = try RedisConfiguration(hostname: "127.0.0.1")
 
     // session
-    app.sessions.use(.memory)
+    app.sessions.use(.redis)
 
     // middleware
     let cspConfig: CSPConfig = try ConfigJSONLoader.load(for: app, name: "csp")
