@@ -37,5 +37,7 @@ jobs:
         echo "MYSQL_USER=test" >> $GITHUB_ENV
         echo "MYSQL_PASSWORD=test" >> $GITHUB_ENV
         echo "MYSQL_PORT=3306" >> $GITHUB_ENV
-    - name: Build
+    - name: Scheme Check
+      run: sh schema_checker.sh
+    - name: Test
       run: swift test
