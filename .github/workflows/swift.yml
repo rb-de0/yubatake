@@ -11,7 +11,7 @@ on:
 jobs:
   build:
     
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     
     services:
       mysql:
@@ -23,6 +23,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6
+    - name: Setup Bundler
+      run: |
+        gem install bundler
+        bundle install --jobs 4 --retry 3
     - name: Prepare
       run: |
         sudo /etc/init.d/mysql start
@@ -39,5 +47,3 @@ jobs:
         echo "MYSQL_PORT=3306" >> $GITHUB_ENV
     - name: Scheme Check
       run: sh schema_checker.sh
-    - name: Test
-      run: swift test
