@@ -7,15 +7,45 @@ on:
   pull_request:
     branches: 
       - master
-      - vapor4.0
 
 jobs:
   build:
-
-    runs-on: macos-10.15
+    
+    runs-on: ubuntu-16.04
+    
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build
-      run: swift build
-
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6
+    - name: Setup Bundler
+      run: |
+        gem install bundler
+        bundle install --jobs 4 --retry 3
+    - name: Prepare
+      run: |
+        sudo /etc/init.d/mysql start
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "set global max_connections = 1000"	
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create database yubatake_tests default character set utf8"	
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create database schema_check default character set utf8"
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "create user 'test'@'localhost' IDENTIFIED BY 'test'"
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "grant all on yubatake_tests.* TO 'test'@'localhost'"
+        mysql -h 127.0.0.1 --port 3306 -u root -proot -e "grant all on schema_check.* TO 'test'@'localhost'"
+    - name: SetEnv
+      run: |
+        echo "MYSQL_USER=test" >> $GITHUB_ENV
+        echo "MYSQL_PASSWORD=test" >> $GITHUB_ENV
+        echo "MYSQL_PORT=3306" >> $GITHUB_ENV
+    - name: Scheme Check
+      run: sh schema_checker.sh
+    - name: Test
+      run: swift test
