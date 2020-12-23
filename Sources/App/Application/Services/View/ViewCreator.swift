@@ -1,4 +1,5 @@
 import Leaf
+import LeafKit
 import Vapor
 
 final class ViewCreator {

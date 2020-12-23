@@ -18,12 +18,12 @@ final class APIImageControllerTests: ControllerTestCase {
         try app.imageRepository.save(image: "image".data(using: .utf8)!, for: "favicon")
         let image = DataMaker.makeImage(path: "/documents/imgs/favicon", altDescription: "favicon")
         try image.save(on: db).wait()
-        try test(.GET, "/api/images") { response in
+        try test(.GET, "/api/images", afterResponse:  { response in
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(try response.content.get(at: "metadata", "page") as Int, 1)
             XCTAssertEqual(try response.content.get(at: "metadata", "total") as Int, 1)
             XCTAssertEqual(try response.content.get(at: "metadata", "totalPage") as Int, 1)
-        }
+        })
     }
 }
     

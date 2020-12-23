@@ -1,15 +1,12 @@
 # yubatake
 
-[![Build Status](https://travis-ci.org/rb-de0/yubatake.svg?branch=master)](https://travis-ci.org/rb-de0/yubatake)
-[![Coverage Status](https://coveralls.io/repos/github/rb-de0/yubatake/badge.svg?branch=master)](https://coveralls.io/github/rb-de0/yubatake?branch=master)
-
 yubatake is simple blogging engine for Swift.
 
 # Prerequisites
 
 ### Swift
 
-- 5.2
+- 5.3.2
 
 ### OS
 
@@ -23,13 +20,13 @@ Tests passed on the following Systems.
 
 #### 1. Install Swift
 
-Please install Swift in your environment. For macOS please download Xcode 11.4.
+Please install Swift in your environment. For macOS please download Xcode 12.3.
 If you are using Ubuntu, it is easy to install using swiftenv.
 
 Example(swiftenv)
 
 ```bash
-$ swiftenv install 5.2
+$ swiftenv install 5.3.2
 ```
 
 #### 2. Install MySQL

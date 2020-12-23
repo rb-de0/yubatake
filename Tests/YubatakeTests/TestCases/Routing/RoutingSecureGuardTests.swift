@@ -73,16 +73,16 @@ final class RoutingSecureGuardTests: ControllerTestCase {
     }
     
     private func canGuard(method: HTTPMethod, path: String) throws {
-        try test(method, path) { response in
+        try test(method, path, afterResponse:  { response in
             XCTAssertEqual(response.status, .seeOther)
             XCTAssertEqual(response.headers.first(name: .location), "/login")
-        }
+        })
     }
     
     private func canGuardAPI(method: HTTPMethod, path: String) throws {
-        try test(method, path) { response in
+        try test(method, path, afterResponse:  { response in
             XCTAssertEqual(response.status, .forbidden)
-        }
+        })
     }
 }
 

@@ -46,11 +46,11 @@ final class APIFileControllerTests: ControllerTestCase {
     }
     
     func testCanIndexView() throws {
-        try test(.GET, "/api/themes/default/files") { response in
+        try test(.GET, "/api/themes/default/files", afterResponse:  { response in
             let groups = try response.content.decode([FileGroup].self)
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(groups.count, 3)
-    
+            
             XCTAssertEqual(groups[0].files.count, 1)
             XCTAssertEqual(groups[0].files.first?.name, "test.js")
             XCTAssertEqual(groups[0].name, "js")
@@ -62,30 +62,30 @@ final class APIFileControllerTests: ControllerTestCase {
             XCTAssertEqual(groups[2].files.count, 1)
             XCTAssertEqual(groups[2].files.first?.name, "test.leaf")
             XCTAssertEqual(groups[2].name, "leaf")
-        }
+        })
     }
     
     func testCanShowFileBody() throws {
-        try test(.GET, "/api/files?path=/default/test.leaf") { response in
+        try test(.GET, "/api/files?path=/default/test.leaf", afterResponse:  { response in
             let body = try response.content.decode(FileBody.self)
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(body.body, "Template")
-        }
+        })
     }
     
     func testCanUpdateFileBody() throws {
         let body = "path=/default/test.leaf&body=AfterUpdate"
-        try test(.POST, "/api/files", body: body, withCSRFToken: false) { response in
+        try test(.POST, "/api/files", body: body, withCSRFToken: false, afterResponse:  { response in
             XCTAssertEqual(response.status, .forbidden)
-        }
-        try test(.POST, "/api/files", body: body) { response in
+        })
+        try test(.POST, "/api/files", body: body, afterResponse:  { response in
             XCTAssertEqual(response.status, .ok)
-        }
-        try test(.GET, "/api/files?path=/default/test.leaf") { response in
+        })
+        try test(.GET, "/api/files?path=/default/test.leaf", afterResponse:  { response in
             let body = try response.content.decode(FileBody.self)
             XCTAssertEqual(response.status, .ok)
             XCTAssertEqual(body.body, "AfterUpdate")
-        }
+        })
     }
 }
 
