@@ -7,6 +7,7 @@ struct ApplicationConfig: Decodable {
     let imageGroupDateFormat: String
     let faviconPath: String?
     let meta: Meta?
+    let useRedis: Bool?
 }
 
 extension ApplicationConfig {
