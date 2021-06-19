@@ -10,5 +10,6 @@
             "imageAlt": "imageAlt",
             "username": "rb_de0"
         }
-    }
+    },
+    "useRedis": false
 }

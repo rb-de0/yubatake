@@ -42,7 +42,11 @@ public func configure(_ app: Application) throws {
     app.redis.configuration = try RedisConfiguration(hostname: "127.0.0.1")
 
     // session
-    app.sessions.use(.redis)
+    if app.applicationConfig.useRedis == true {
+        app.sessions.use(.redis)
+    } else {
+        app.sessions.use(.memory)
+    }
 
     // middleware
     let cspConfig: CSPConfig = try ConfigJSONLoader.load(for: app, name: "csp")
